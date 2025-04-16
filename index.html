@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewpaaort" content="width=device-width, initial-scale=1.0" />
+    <title>ZenPay Payment Plugin - Updated Demo</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+
+    <!-- ZenPay CSS -->
+    <link
+      href="https://cdn.travelpay.com.au/css/zenpay.payment.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin-top: 2rem;
+      }
+      pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .small-text {
+        font-size: 0.9rem;
+      }
+      .copy-btn-icon {
+        border: none;
+        background: transparent;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #0d6efd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-4 text-center">ZenPay Payment Plugin</h1>
+      <!-- Row: Form Inputs + Action -->
+      <div class="row">
+        <!-- Left Column: Configuration Form -->
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Plugin Configuration</h5>
+              <hr />
+
+              <!-- API Key -->
+              <div class="mb-3">
+                <label for="apiKeyInput" class="form-label">API Key</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apiKeyInput"
+                  placeholder="APIKEYHERE"
+                />
+              </div>
+
+              <!-- Username -->
+              <div class="mb-3">
+                <label for="usernameInput" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="usernameInput"
+                  placeholder="USERNAMEHERE"
+                />
+              </div>
+
+              <!-- Password -->
+              <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="passwordInput"
+                  placeholder="PASSWORDHERE"
+                />
+              </div>
+
+              <!-- Merchant Code -->
+              <div class="mb-3">
+                <label for="merchantCodeInput" class="form-label"
+                  >Merchant Code</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="merchantCodeInput"
+                  placeholder="MERCHANTCODEHERE"
+                />
+              </div>
+
+              <!-- Payment Amount -->
+              <div class="mb-3">
+                <label for="paymentAmountInput" class="form-label">
+                  Payment Amount (e.g., 100.00)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  class="form-control"
+                  id="paymentAmountInput"
+                  placeholder="0.00"
+                />
+              </div>
+
+              <!-- Payment Mode Selector -->
+              <div class="mb-3">
+                <label for="modeSelect" class="form-label">Payment Mode</label>
+                <select class="form-select" id="modeSelect">
+                  <option value="0">Payment Mode (0)</option>
+                  <option value="1">Tokenization Mode (1)</option>
+                  <option value="2">Custom Payment Mode (2)</option>
+                  <option value="3">PreAuth Mode (3)</option>
+                </select>
+              </div>
+
+              <hr />
+              <button id="initializePlugin" class="btn btn-primary w-100">
+                Initialize Plugin
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Code Preview -->
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">Code Preview</h5>
+              <!-- Copy to clipboard icon -->
+              <button
+                class="copy-btn-icon"
+                id="copyCodeBtn"
+                title="Copy Code to Clipboard"
+              >
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+            <div class="card-body">
+              <pre><code id="codePreview" class="language-js">
+// Code will appear here...
+            </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional: Info Panel or Additional Guidance -->
+      <div class="alert alert-info small-text">
+        <strong>Note:</strong> In production, never hard-code sensitive
+        credentials (API key, password, etc.). Use a secure server-side
+        integration or environment variables to manage secrets safely.
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <!-- Other dependencies: Bootstrap, ZenPay, SHA3 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha3/0.8.0/sha3.min.js"></script>
+    <script src="https://cdn.travelpay.com.au/js/zenpay.payment.bs5.js"></script>
+
+    <script>
+      "use strict";
+
+      /************************************************************
+       *  RESTORE & SAVE CREDENTIALS in sessionStorage
+       ************************************************************/
+      function restoreSessionValues() {
+        // If sessionStorage is empty (or not used yet), these will be empty strings
+        $("#apiKeyInput").val(sessionStorage.getItem("demoApiKey") || "");
+        $("#usernameInput").val(sessionStorage.getItem("demoUsername") || "");
+        $("#passwordInput").val(sessionStorage.getItem("demoPassword") || "");
+        $("#merchantCodeInput").val(
+          sessionStorage.getItem("demoMerchantCode") || ""
+        );
+        $("#paymentAmountInput").val(
+          sessionStorage.getItem("demoPaymentAmount") || ""
+        );
+        $("#modeSelect").val(sessionStorage.getItem("demoMode") || "0");
+      }
+
+      // Save all form fields to session storage
+      function saveSessionValues() {
+        sessionStorage.setItem("demoApiKey", $("#apiKeyInput").val().trim());
+        sessionStorage.setItem(
+          "demoUsername",
+          $("#usernameInput").val().trim()
+        );
+        sessionStorage.setItem(
+          "demoPassword",
+          $("#passwordInput").val().trim()
+        );
+        sessionStorage.setItem(
+          "demoMerchantCode",
+          $("#merchantCodeInput").val().trim()
+        );
+        sessionStorage.setItem(
+          "demoPaymentAmount",
+          $("#paymentAmountInput").val().trim()
+        );
+        sessionStorage.setItem("demoMode", $("#modeSelect").val());
+      }
+
+      /************************************************************
+       *  HELPER FUNCTIONS
+       ************************************************************/
+      function generateCurrentDatetime() {
+        return new Date().toISOString().slice(0, 19);
+      }
+
+      function generateUUID() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+          /[xy]/g,
+          function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+          }
+        );
+      }
+
+      function createSHA3Hash(
+        apiKey,
+        username,
+        password,
+        mode,
+        hashAmount,
+        merchantUniquePaymentId,
+        timestamp
+      ) {
+        const data = [
+          apiKey,
+          username,
+          password,
+          mode,
+          hashAmount,
+          merchantUniquePaymentId,
+          timestamp,
+        ].join("|");
+        return sha3_512(data);
+      }
+
+      function buildCodeSnippet({
+        apiKey,
+        username,
+        password,
+        merchantCode,
+        paymentAmount,
+        mode,
+        timestamp,
+        merchantUniquePaymentId,
+        customerReference,
+        fingerprint,
+      }) {
+        return `
+var payment = $.zpPayment({
+  url: "https://payuat.travelpay.com.au/online/v5",
+  merchantCode: "${merchantCode}",
+  apiKey: "${apiKey}",
+  fingerprint: "${fingerprint}",
+  redirectUrl: "https://payuat.travelpay.com.au/demo/",
+  mode: ${mode},
+  merchantUniquePaymentId: "${merchantUniquePaymentId}",
+  customerName: "Test User",
+  contactNumber: "0400123123",
+  customerEmail: "test@zenpay.com.au",
+  customerReference: "${customerReference}"
+  paymentAmount: ${paymentAmount},
+  timeStamp: "${timestamp}"
+});
+
+payment.open(); 
+      `.trim();
+      }
+
+      /************************************************************
+       *  UPDATE CODE PREVIEW
+       ************************************************************/
+      function updateCodePreview() {
+        const timestamp = generateCurrentDatetime();
+        const merchantUniquePaymentId = generateUUID();
+        const customerReference = generateUUID();
+        const apiKey = $("#apiKeyInput").val().trim();
+        const username = $("#usernameInput").val().trim();
+        const password = $("#passwordInput").val().trim();
+        const merchantCode = $("#merchantCodeInput").val().trim();
+
+        const inputPaymentAmount =
+          parseFloat($("#paymentAmountInput").val()) || 0.0;
+        const paymentAmount = +inputPaymentAmount.toFixed(2);
+
+        const selectedMode = parseInt($("#modeSelect").val(), 10) || 0;
+
+        // For the fingerprint process, if Mode 2 is selected, use 0 as the payment amount.
+        const fingerprintPaymentAmount = selectedMode === 2 ? 0 : paymentAmount;
+        const hashAmount = Math.round(fingerprintPaymentAmount * 100);
+
+        const fingerprint = createSHA3Hash(
+          apiKey,
+          username,
+          password,
+          selectedMode,
+          hashAmount,
+          merchantUniquePaymentId,
+          timestamp
+        );
+
+        const snippet = buildCodeSnippet({
+          apiKey,
+          username,
+          password,
+          merchantCode,
+          paymentAmount,
+          mode: selectedMode,
+          timestamp,
+          merchantUniquePaymentId,
+          customerReference,
+          fingerprint,
+        });
+
+        const codeBlock = document.getElementById("codePreview");
+        codeBlock.textContent = snippet;
+        hljs.highlightElement(codeBlock);
+      }
+
+      /************************************************************
+       *  PLUGIN INITIALIZATION
+       ************************************************************/
+      function initializeZenPayPlugin() {
+        try {
+          saveSessionValues(); // Demo only.
+
+          const timestamp = generateCurrentDatetime();
+          const merchantUniquePaymentId = generateUUID();
+          const customerReference = generateUUID();
+          const apiKey = $("#apiKeyInput").val().trim();
+          const username = $("#usernameInput").val().trim();
+          const password = $("#passwordInput").val().trim();
+          const merchantCode = $("#merchantCodeInput").val().trim();
+
+          const inputPaymentAmount =
+            parseFloat($("#paymentAmountInput").val()) || 0.0;
+          const paymentAmount = +inputPaymentAmount.toFixed(2);
+
+          const selectedMode = parseInt($("#modeSelect").val(), 10) || 0;
+
+          // For the fingerprint process, if Mode 2 is selected, use 0 as the payment amount for fingerprinting.
+          const fingerprintPaymentAmount =
+            selectedMode === 2 ? 0 : paymentAmount;
+          const hashAmount = Math.round(fingerprintPaymentAmount * 100);
+
+          const fingerprint = createSHA3Hash(
+            apiKey,
+            username,
+            password,
+            selectedMode,
+            hashAmount,
+            merchantUniquePaymentId,
+            timestamp
+          );
+
+          // Initialize plugin
+          const payment = $.zpPayment({
+            url: "https://payuat.travelpay.com.au/online/v5",
+            merchantCode: merchantCode,
+            apiKey: apiKey,
+            fingerprint: fingerprint,
+            redirectUrl: "https://payuat.travelpay.com.au/demo/",
+            mode: selectedMode,
+            merchantUniquePaymentId: merchantUniquePaymentId,
+            customerName: "Test User",
+            contactNumber: "0400123123",
+            customerEmail: "test@zenpay.com.au",
+            customerReference: customerReference,
+            paymentAmount: paymentAmount,
+            timeStamp: timestamp,
+          });
+
+          console.log(
+            "Payment object initialized with payload:",
+            payment.options
+          );
+          payment.open();
+        } catch (err) {
+          console.error("Error initializing plugin:", err);
+          alert("Unable to initialize plugin. See console for details.");
+        }
+      }
+
+      /************************************************************
+       *  COPY SNIPPET TO CLIPBOARD
+       ************************************************************/
+      function copyCodeToClipboard() {
+        const codeText = $("#codePreview").text();
+        navigator.clipboard
+          .writeText(codeText)
+          .then(() => {
+            alert("Code copied to clipboard!");
+          })
+          .catch((err) => {
+            console.error("Failed to copy code:", err);
+          });
+      }
+
+      /************************************************************
+       *  DOCUMENT READY
+       ************************************************************/
+      $(document).ready(() => {
+        // Restore saved session values (if any) into the form fields
+        restoreSessionValues();
+
+        // Generate the initial code preview
+        updateCodePreview();
+
+        // Update preview whenever form inputs or mode changes
+        $(
+          "#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect"
+        ).on("input change", updateCodePreview);
+
+        // Click to initialize plugin
+        $("#initializePlugin").on("click", initializeZenPayPlugin);
+
+        // Copy to clipboard icon
+        $("#copyCodeBtn").on("click", copyCodeToClipboard);
+      });
+    </script>
+  </body>
+</html>
