@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZenPay Payment Plugin</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+    <!-- Highlight.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+    <!-- ZenPay CSS -->
+    <link href="https://cdn.travelpay.com.au/css/zenpay.payment.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- <link rel="stylesheet" href="errorCodes.css" /> -->
+    <link rel="stylesheet" href="params.css" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center h-100">
+                <!-- Home button on left -->
+                <a href="#" class="btn btn-link text-decoration-none p-0" data-bs-toggle="tooltip"
+                    data-bs-placement="bottom" title="Go to Dashboard">
+                    <i class="bi bi-house-door-fill"></i>
+                </a>
+
+                <!-- Centered app title -->
+                <h5 class="mb-0 fw-bold">ZenPay Payment Plugin</h5>
+
+                <div class="d-flex">
+                    <!-- Return Parameters button (add this between Parameters and Error Codes buttons) -->
+                    <button id="returnParamsBtn" class="btn p-0 me-3" aria-label="View return parameters"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Return Parameters Reference">
+                        <i class="bi bi-reply-all"></i>
+                    </button>
+                    <!-- Parameters button (add this before the error codes button) -->
+                    <button id="parametersBtn" class="btn p-0 me-3" aria-label="View input parameters"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Input Parameters Reference">
+                        <i class="bi bi-list-check"></i>
+                    </button>
+
+                    <!-- Error codes button -->
+                    <button id="errorCodesBtn" class="btn p-0 me-3" aria-label="View error codes"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Error Codes Reference">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </button>
+
+                    <!-- Theme toggle on right -->
+                    <button id="themeToggle" class="btn p-0" aria-label="Toggle theme" data-bs-toggle="tooltip"
+                        data-bs-placement="bottom" title="Toggle Dark Mode">
+                        <i class="bi bi-sun-fill" id="lightIcon"></i>
+                        <i class="bi bi-moon-fill d-none" id="darkIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-2">
+        <!-- Optional: Info Panel or Additional Guidance -->
+        <div class="alert alert-info small-text">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Note:</strong> In production, never hard-code sensitive
+            credentials (API key, password, etc.). Use a secure server-side
+            integration or environment variables to manage secrets safely.
+        </div>
+
+        <!-- Row: Form Inputs + Action -->
+        <div class="row equal-height">
+            <!-- Left Column: Configuration Form -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Plugin Configuration</h5>
+                        <button class="browse-btn-icon" id="browseConfigBtn" title="Browse Configuration"
+                            aria-label="Browse configuration" data-bs-toggle="tooltip" data-bs-placement="top">
+                            <i class="bi bi-folder2-open"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- API Endpoint -->
+                        <div class="form-floating mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                <div class="form-floating flex-grow-1 position-relative">
+                                    <input type="text" class="form-control border-start-0 pe-5" id="urlPreview"
+                                        placeholder="API Endpoint" value="https://payuat.travelpay.com.au/online/v5"
+                                        readonly>
+                                    <label for="urlPreview">API Endpoint</label>
+                                    <button
+                                        class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary"
+                                        type="button" data-bs-toggle="modal" data-bs-target="#urlBuilderModal"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Configure API endpoint">
+                                        <i class="bi bi-gear-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Mode Selector (moved from Credentials tab) -->
+                        <div class="form-floating mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-gear-fill"></i></span>
+                                <div class="form-floating flex-grow-1">
+                                    <select class="form-select border-start-0" id="modeSelect">
+                                        <option value="0">Payment Mode (0)</option>
+                                        <option value="1">Tokenization Mode (1)</option>
+                                        <option value="2">Custom Payment Mode (2)</option>
+                                        <option value="3">PreAuth Mode (3)</option>
+                                    </select>
+                                    <label for="modeSelect">Payment Mode</label>
+                                </div>
+                                <button class="btn btn-outline-secondary payment-mode-info" type="button"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Select the payment processing mode">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Configuration Tabs -->
+                        <ul class="nav nav-tabs" id="mainConfigTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="credentials-tab" data-bs-toggle="tab"
+                                    data-bs-target="#credentials" type="button" role="tab" aria-controls="credentials"
+                                    aria-selected="true">
+                                    <i class="bi bi-key me-1"></i>Credentials
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="extended-tab" data-bs-toggle="tab"
+                                    data-bs-target="#extended" type="button" role="tab" aria-controls="extended"
+                                    aria-selected="false">
+                                    <i class="bi bi-gear-wide-connected me-1"></i>Extended
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="payment-methods-tab" data-bs-toggle="tab"
+                                    data-bs-target="#payment-methods" type="button" role="tab"
+                                    aria-controls="payment-methods" aria-selected="false">
+                                    <i class="bi bi-credit-card me-1"></i>Payment
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="additional-options-tab" data-bs-toggle="tab"
+                                    data-bs-target="#additional-options" type="button" role="tab"
+                                    aria-controls="additional-options" aria-selected="false">
+                                    <i class="bi bi-sliders me-1"></i>Options
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="mainConfigTabsContent">
+                            <!-- Credentials Tab -->
+                            <div class="tab-pane fade show active" id="credentials" role="tabpanel"
+                                aria-labelledby="credentials-tab">
+                                <!-- API Key -->
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                        <div class="form-floating flex-grow-1">
+                                            <input type="text" class="form-control border-start-0" id="apiKeyInput"
+                                                placeholder="Enter your API key" />
+                                            <label for="apiKeyInput">API Key</label>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Your ZenPay API key for authentication">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Username -->
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                        <div class="form-floating flex-grow-1">
+                                            <input type="text" class="form-control border-start-0" id="usernameInput"
+                                                placeholder="Enter your username" />
+                                            <label for="usernameInput">Username</label>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Your ZenPay account username">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                        <div class="form-floating flex-grow-1">
+                                            <input type="text" class="form-control border-start-0" id="passwordInput"
+                                                placeholder="Enter your password" />
+                                            <label for="passwordInput">Password</label>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Your ZenPay account password">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Merchant Code -->
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                        <div class="form-floating flex-grow-1">
+                                            <input type="text" class="form-control border-start-0"
+                                                id="merchantCodeInput" placeholder="Enter your merchant code" />
+                                            <label for="merchantCodeInput">Merchant Code</label>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Your unique merchant identifier">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Amount -->
+                                <div class="form-floating mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                        <div class="form-floating flex-grow-1">
+                                            <input type="number" step="0.01" class="form-control border-start-0"
+                                                id="paymentAmountInput" placeholder="Payment Amount" />
+                                            <label for="paymentAmountInput">Payment Amount</label>
+                                        </div>
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="Amount to be processed (e.g., 100.00)">
+                                            <i class="bi bi-info-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Extended Options Tab -->
+                            <div class="tab-pane fade" id="extended" role="tabpanel" aria-labelledby="extended-tab">
+                                <div id="extendedOptionsFields" class="extended-options-fields">
+                                    <!-- Redirect URL -->
+                                    <div class="form-floating mb-2">
+                                        <input type="text" class="form-control form-control-sm" id="redirectUrlInput"
+                                            placeholder="Redirect URL" value="https://payuat.travelpay.com.au/demo/">
+                                        <label for="redirectUrlInput">Redirect URL</label>
+                                    </div>
+
+                                    <!-- Callback URL -->
+                                    <div class="form-floating mb-2">
+                                        <input type="text" class="form-control form-control-sm" id="callbackUrlInput"
+                                            placeholder="Callback URL">
+                                        <label for="callbackUrlInput">Callback URL</label>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Customer Name -->
+                                            <div class="form-floating mb-2">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="customerNameInput" placeholder="Customer Name"
+                                                    value="Test User">
+                                                <label for="customerNameInput">Customer Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Contact Number -->
+                                            <div class="form-floating mb-2">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="contactNumberInput" placeholder="Contact Number"
+                                                    value="0400123123">
+                                                <label for="contactNumberInput">Contact Number</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Customer Email -->
+                                    <div class="form-floating mb-2">
+                                        <input type="email" class="form-control form-control-sm" id="customerEmailInput"
+                                            placeholder="Customer Email" value="test@zenpay.com.au">
+                                        <label for="customerEmailInput">Customer Email</label>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Customer Reference -->
+                                            <div class="form-floating mb-2">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="customerReferenceInput" placeholder="Customer Reference">
+                                                <label for="customerReferenceInput">Customer Reference</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Merchant Unique Payment ID -->
+                                            <div class="form-floating mb-2">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="merchantUniquePaymentIdInput"
+                                                    placeholder="Merchant Unique Payment ID">
+                                                <label for="merchantUniquePaymentIdInput">Merchant Payment ID</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Methods Tab -->
+                            <div class="tab-pane fade" id="payment-methods" role="tabpanel"
+                                aria-labelledby="payment-methods-tab">
+                                <div class="payment-method-grid">
+                                    <!-- Bank Account -->
+                                    <div class="payment-method-card" data-option="allowBankAcOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowBankAcOneOffPayment" data-option="allowBankAcOneOffPayment">
+                                        <label for="allowBankAcOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-bank"></i>
+                                            </div>
+                                            <div class="payment-method-name">Bank</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- PayTo -->
+                                    <div class="payment-method-card" data-option="allowPayToOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowPayToOneOffPayment" data-option="allowPayToOneOffPayment">
+                                        <label for="allowPayToOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-credit-card"></i>
+                                            </div>
+                                            <div class="payment-method-name">PayTo</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- PayID -->
+                                    <div class="payment-method-card" data-option="allowPayIdOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowPayIdOneOffPayment" data-option="allowPayIdOneOffPayment">
+                                        <label for="allowPayIdOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-qr-code"></i>
+                                            </div>
+                                            <div class="payment-method-name">PayID</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Apple Pay -->
+                                    <div class="payment-method-card" data-option="allowApplePayOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowApplePayOneOffPayment" data-option="allowApplePayOneOffPayment">
+                                        <label for="allowApplePayOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-apple"></i>
+                                            </div>
+                                            <div class="payment-method-name">Apple</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Google Pay -->
+                                    <div class="payment-method-card" data-option="allowGooglePayOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowGooglePayOneOffPayment" data-option="allowGooglePayOneOffPayment">
+                                        <label for="allowGooglePayOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-google"></i>
+                                            </div>
+                                            <div class="payment-method-name">Google</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Latitude Pay -->
+                                    <div class="payment-method-card" data-option="allowLatitudePayOneOffPayment">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowLatitudePayOneOffPayment"
+                                            data-option="allowLatitudePayOneOffPayment">
+                                        <label for="allowLatitudePayOneOffPayment" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-credit-card-2-front"></i>
+                                            </div>
+                                            <div class="payment-method-name">Latitude</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Save Card Option -->
+                                    <div class="payment-method-card" data-option="allowSaveCardUserOption">
+                                        <input type="checkbox" class="payment-method-toggle visually-hidden"
+                                            id="allowSaveCardUserOption" data-option="allowSaveCardUserOption">
+                                        <label for="allowSaveCardUserOption" class="payment-method-label">
+                                            <div class="payment-method-icon">
+                                                <i class="bi bi-save"></i>
+                                            </div>
+                                            <div class="payment-method-name">Save</div>
+                                            <div class="payment-method-status">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options Tab -->
+                            <div class="tab-pane fade" id="additional-options" role="tabpanel"
+                                aria-labelledby="additional-options-tab">
+                                <div class="options-container">
+                                    <!-- Notifications Section -->
+                                    <div class="options-section mb-3">
+                                        <h6 class="mb-2 small"><i class="bi bi-bell me-1"></i>Notifications</h6>
+                                        <div class="option-chips">
+                                            <!-- Send Email to Customer -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="sendConfirmationEmailToCustomer"
+                                                    data-option="sendConfirmationEmailToCustomer">
+                                                <label for="sendConfirmationEmailToCustomer" class="option-label">
+                                                    <i class="bi bi-envelope me-1"></i>Email Customer
+                                                </label>
+                                            </div>
+
+                                            <!-- Send Email to Merchant -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="sendConfirmationEmailToMerchant"
+                                                    data-option="sendConfirmationEmailToMerchant">
+                                                <label for="sendConfirmationEmailToMerchant" class="option-label">
+                                                    <i class="bi bi-envelope-fill me-1"></i>Email Merchant
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- UI Options Section -->
+                                    <div class="options-section mb-3">
+                                        <h6 class="mb-2 small"><i class="bi bi-display me-1"></i>UI Options</h6>
+                                        <div class="option-chips">
+                                            <!-- Hide Terms and Conditions -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="hideTermsAndConditions" data-option="hideTermsAndConditions">
+                                                <label for="hideTermsAndConditions" class="option-label">
+                                                    <i class="bi bi-file-earmark-text me-1"></i>Hide Terms
+                                                </label>
+                                            </div>
+
+                                            <!-- Hide Merchant Logo -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="hideMerchantLogo" data-option="hideMerchantLogo">
+                                                <label for="hideMerchantLogo" class="option-label">
+                                                    <i class="bi bi-image me-1"></i>Hide Logo
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Min Height Input -->
+                                        <div class="form-floating mt-2">
+                                            <input type="number" class="form-control form-control-sm"
+                                                id="uiMinHeightInput" placeholder="Min Height">
+                                            <label for="uiMinHeightInput">Min Height (px)</label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tokenization-specific options (only visible when mode is 1) -->
+                                    <div id="tokenizationOptions" class="options-section d-none">
+                                        <h6 class="mb-2 small"><i
+                                                class="bi bi-credit-card-2-front me-1"></i>Tokenization Options</h6>
+                                        <div class="option-chips">
+                                            <!-- Show Fee on Tokenising -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="showFeeOnTokenising" data-option="showFeeOnTokenising">
+                                                <label for="showFeeOnTokenising" class="option-label">
+                                                    <i class="bi bi-cash me-1"></i>Show Fee
+                                                </label>
+                                            </div>
+
+                                            <!-- Show Failed Payment Fee -->
+                                            <div class="option-chip">
+                                                <input type="checkbox" class="option-toggle visually-hidden"
+                                                    id="showFailedPaymentFeeOnTokenising"
+                                                    data-option="showFailedPaymentFeeOnTokenising">
+                                                <label for="showFailedPaymentFeeOnTokenising" class="option-label">
+                                                    <i class="bi bi-exclamation-triangle me-1"></i>Show Failed Fee
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <button id="initializePlugin" class="btn btn-primary w-100" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Initialize the ZenPay payment plugin with current settings">
+                            <i class="bi bi-play-fill me-2"></i>Initialize Plugin
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Code Preview -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-code-slash me-2"></i>Code Preview</h5>
+                        <!-- Copy to clipboard icon -->
+                        <button class="copy-btn-icon" id="copyCodeBtn" title="Copy Code to Clipboard"
+                            aria-label="Copy code to clipboard" data-bs-toggle="tooltip" data-bs-placement="top">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <pre><code id="codePreview" class="language-js">
+// Code will appear here...
+              </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Builder Modal -->
+        <div class="modal fade" id="urlBuilderModal" tabindex="-1" aria-labelledby="urlBuilderModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="urlBuilderModalLabel">Configure API Endpoint</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Subdomain Selector -->
+                        <div class="mb-3">
+                            <label class="form-label">Subdomain</label>
+                            <div class="btn-group w-100" role="group" aria-label="Subdomain selector">
+                                <input type="radio" class="btn-check" name="subdomain" id="subdomain-payuat"
+                                    value="payuat" checked>
+                                <label class="btn btn-outline-primary" for="subdomain-payuat">payuat</label>
+                                <input type="radio" class="btn-check" name="subdomain" id="subdomain-pay" value="pay">
+                                <label class="btn btn-outline-primary" for="subdomain-pay">pay</label>
+                            </div>
+                        </div>
+
+                        <!-- Domain Selector -->
+                        <div class="mb-3">
+                            <label class="form-label">Domain</label>
+                            <select class="form-select" id="domainSelect">
+                                <option value="travelpay" selected>travelpay</option>
+                                <option value="rentalrewards">rentalrewards</option>
+                                <option value="b2bpay">b2bpay</option>
+                                <option value="childcareeasypay">childcareeasypay</option>
+                                <option value="schooleasypay">schooleasypay</option>
+                                <option value="thoroughbredpayments">thoroughbredpayments</option>
+                            </select>
+                        </div>
+
+                        <!-- Version Selector -->
+                        <div class="mb-3">
+                            <label class="form-label">API Version</label>
+                            <div class="btn-group w-100" role="group" aria-label="Version selector">
+                                <input type="radio" class="btn-check" name="version" id="version-v3" value="v3">
+                                <label class="btn btn-outline-primary" for="version-v3">v3</label>
+                                <input type="radio" class="btn-check" name="version" id="version-v4" value="v4">
+                                <label class="btn btn-outline-primary" for="version-v4">v4</label>
+                                <input type="radio" class="btn-check" name="version" id="version-v5" value="v5" checked>
+                                <label class="btn btn-outline-primary" for="version-v5">v5</label>
+                            </div>
+                        </div>
+
+                        <!-- URL Preview -->
+                        <div class="mb-3">
+                            <label class="form-label">URL Preview</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="modalUrlPreview"
+                                    value="https://payuat.travelpay.com.au/online/v5" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="modalCopyUrlBtn"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Copy URL">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="applyUrlChanges"
+                            data-bs-dismiss="modal">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Error Codes Modal -->
+    <div class="modal fade" id="errorCodesModal" tabindex="-1" aria-labelledby="errorCodesModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorCodesModalLabel">Error Codes Reference</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Search and filter controls -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <div class="form-floating flex-grow-1">
+                                    <input type="text" class="form-control border-start-0" id="errorSearchInput"
+                                        placeholder="Search">
+                                    <label for="errorSearchInput">Search error codes</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select class="form-select" id="errorCategoryFilter">
+                                    <option value="">All Categories</option>
+                                    <!-- Categories will be populated dynamically -->
+                                </select>
+                                <label for="errorCategoryFilter">Filter by category</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error codes table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="10%">Code</th>
+                                    <th width="20%">Category</th>
+                                    <th width="70%">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody id="errorCodesTableBody">
+                                <!-- Error codes will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Parameters Reference Modal -->
+                    <div class="modal fade" id="parametersModal" tabindex="-1" aria-labelledby="parametersModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="parametersModalLabel">Input Parameters Reference</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Search and filter controls -->
+                                    <div class="row mb-4">
+                                        <div class="col-lg-6 mb-2 mb-lg-0">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                                <div class="form-floating flex-grow-1">
+                                                    <input type="text" class="form-control border-start-0"
+                                                        id="paramSearchInput" placeholder="Search">
+                                                    <label for="paramSearchInput">Search parameters</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="row g-2">
+                                                <div class="col-md-4">
+                                                    <div class="form-floating">
+                                                        <select class="form-select" id="paramCategoryFilter">
+                                                            <option value="">All Categories</option>
+                                                        </select>
+                                                        <label for="paramCategoryFilter">Category</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-floating">
+                                                        <select class="form-select" id="paramModeFilter">
+                                                            <option value="">All Modes</option>
+                                                            <option value="0">Mode 0 (Payment)</option>
+                                                            <option value="1">Mode 1 (Tokenize)</option>
+                                                            <option value="2">Mode 2 (Custom)</option>
+                                                            <option value="3">Mode 3 (PreAuth)</option>
+                                                        </select>
+                                                        <label for="paramModeFilter">Mode</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-floating">
+                                                        <select class="form-select" id="paramRequirementFilter">
+                                                            <option value="">All Types</option>
+                                                            <option value="required">Required</option>
+                                                            <option value="conditional">Conditional</option>
+                                                            <option value="optional">Optional</option>
+                                                        </select>
+                                                        <label for="paramRequirementFilter">Requirement</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Legend -->
+                                    <div class="param-legend mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="small mb-2">Requirement Types:</h6>
+                                                <span class="badge bg-danger me-1">Required</span>
+                                                <span class="badge bg-warning me-1">Conditional</span>
+                                                <span class="badge bg-secondary">Optional</span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="small mb-2">Mode Types:</h6>
+                                                <span class="badge bg-success-subtle text-success me-1">Mode 0
+                                                    (Payment)</span>
+                                                <span class="badge bg-primary-subtle text-primary me-1">Mode 1
+                                                    (Tokenize)</span>
+                                                <span class="badge bg-info-subtle text-info me-1">Mode 2 (Custom)</span>
+                                                <span class="badge bg-warning-subtle text-warning">Mode 3
+                                                    (PreAuth)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Parameters table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-hover parameters-table">
+                                            <thead>
+                                                <tr>
+                                                    <th width="25%">Parameter</th>
+                                                    <th width="15%">Data Type</th>
+                                                    <th width="15%">Requirement</th>
+                                                    <th width="45%">Applicable Modes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="paramsTableBody">
+                                                <!-- Parameters will be populated here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- No results message -->
+                                    <div id="noParamsFound" class="alert alert-info d-none">
+                                        No parameters match your search criteria.
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                                <!-- Return Parameters Modal -->
+                                <div class="modal fade" id="returnParametersModal" tabindex="-1"
+                                    aria-labelledby="returnParametersModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="returnParametersModalLabel">Return
+                                                    Parameters Reference</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Search and filter controls -->
+                                                <div class="row mb-4">
+                                                    <div class="col-lg-6 mb-2 mb-lg-0">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="bi bi-search"></i></span>
+                                                            <div class="form-floating flex-grow-1">
+                                                                <input type="text" class="form-control border-start-0"
+                                                                    id="returnParamSearchInput" placeholder="Search">
+                                                                <label for="returnParamSearchInput">Search return
+                                                                    parameters</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        <div class="row g-2">
+                                                            <div class="col-md-6">
+                                                                <div class="form-floating">
+                                                                    <select class="form-select"
+                                                                        id="returnParamCategoryFilter">
+                                                                        <option value="">All Categories</option>
+                                                                    </select>
+                                                                    <label
+                                                                        for="returnParamCategoryFilter">Category</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-floating">
+                                                                    <select class="form-select"
+                                                                        id="returnParamModeFilter">
+                                                                        <option value="">All Modes</option>
+                                                                        <option value="0">Mode 0 (Payment)</option>
+                                                                        <option value="1">Mode 1 (Tokenize)</option>
+                                                                        <option value="2">Mode 2 (Custom)</option>
+                                                                        <option value="3">Mode 3 (PreAuth)</option>
+                                                                    </select>
+                                                                    <label for="returnParamModeFilter">Mode</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Legend -->
+                                                <div class="param-legend mb-3">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h6 class="small mb-2">Mode Types:</h6>
+                                                            <span class="badge bg-success-subtle text-success me-1">Mode
+                                                                0 (Payment)</span>
+                                                            <span class="badge bg-primary-subtle text-primary me-1">Mode
+                                                                1 (Tokenize)</span>
+                                                            <span class="badge bg-info-subtle text-info me-1">Mode 2
+                                                                (Custom)</span>
+                                                            <span class="badge bg-warning-subtle text-warning">Mode 3
+                                                                (PreAuth)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Parameters table -->
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover return-parameters-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th width="25%">Parameter</th>
+                                                                <th width="15%">Data Type</th>
+                                                                <th width="35%">Applicable Modes</th>
+                                                                <th width="25%">Condition</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="returnParamsTableBody">
+                                                            <!-- Return Parameters will be populated here -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <!-- No results message -->
+                                                <div id="noReturnParamsFound" class="alert alert-info d-none">
+                                                    No return parameters match your search criteria.
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- No results message -->
+                    <div id="noErrorCodesFound" class="alert alert-info d-none">
+                        No error codes match your search criteria.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row align-items-center h-100">
+                <div class="col-md-4">
+                    <!-- App logo in bottom-left -->
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-credit-card-fill me-1"></i>
+                        <span class="fw-bold">ZenPay</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <!-- Centered copyright text -->
+                    <p class="mb-0">&copy; 2023 ZenPay Payment Solutions</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <!-- Icon links in bottom-right -->
+                    <a href="#" class="text-decoration-none me-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Documentation">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </a>
+                    <a href="#" class="text-decoration-none me-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Support">
+                        <i class="bi bi-question-circle"></i>
+                    </a>
+                    <a href="#" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top"
+                        title="Contact">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <!-- Other dependencies: Bootstrap, ZenPay, SHA3 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha3/0.8.0/sha3.min.js"></script>
+    <script src="https://cdn.travelpay.com.au/js/zenpay.payment.bs5.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+    <script src="errorCodes.js"></script>
+    <script src="params.js"></script>
+</body>
+
+</html>
