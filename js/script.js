@@ -301,33 +301,35 @@ $(document).ready(() => {
 		}
 	});
 
-	// Fix placeholder behavior for credential fields
-	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput').each(function () {
-		const $input = $(this);
-		const placeholderText = $input.attr('placeholder');
-
-		// Store the original placeholder
-		$input.data('original-placeholder', placeholderText);
-
-		// Set a data attribute for the placeholder text
-		$input.attr('data-placeholder', placeholderText);
-
-		// Clear the placeholder initially to prevent overlap with label
-		$input.attr('placeholder', '');
-
-		// Show placeholder on focus if empty
-		$input.on('focus', function () {
-			if (!$(this).val()) {
-				$(this).attr('placeholder', $(this).data('original-placeholder'));
-			}
-		});
-
-		// Hide placeholder on blur
-		$input.on('blur', function () {
-			$(this).attr('placeholder', '');
-		});
-	});
+	// Initialize our placeholder fix for Credentials form
+	initPlaceholderFix();
 });
+
+// Fix for placeholder visibility in Credentials form fields
+function initPlaceholderFix() {
+	// List of credential input fields
+	const credentialFields = [
+		'#apiKeyInput',
+		'#usernameInput', 
+		'#passwordInput', 
+		'#merchantCodeInput', 
+		'#paymentAmountInput'
+	];
+	
+	// Add placeholders to these fields
+	$(credentialFields.join(', ')).each(function() {
+		const $this = $(this);
+		const placeholderText = $this.attr('placeholder') || '';
+		
+		// Store the original placeholder if not already done
+		if (!$this.data('original-placeholder')) {
+			$this.data('original-placeholder', placeholderText);
+		}
+		
+		// Set the placeholder explicitly
+		$this.attr('placeholder', $this.data('original-placeholder'));
+	});
+}
 
 // Add schema validation function
 function validateConfigSchema(config) {

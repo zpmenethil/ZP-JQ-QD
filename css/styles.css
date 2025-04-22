@@ -868,3 +868,32 @@ hr {
 	color: var(--text-color);
 	opacity: 0.6;
 }
+
+/* FIX FOR CREDENTIALS FORM PLACEHOLDER VISIBILITY */
+/* Makes placeholders visible in non-focused credential fields */
+.input-group .form-floating .form-control::placeholder {
+	color: var(--secondary-color);
+	opacity: 0.7 !important;
+}
+
+[data-bs-theme='dark'] .input-group .form-floating .form-control::placeholder {
+	color: var(--text-color);
+	opacity: 0.6 !important;
+}
+
+/* Fix for nested form floating elements in credential form */
+.input-group .form-floating {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Move the label up even when not focused, in credential fields */
+#credentials .input-group .form-floating .form-control {
+	padding-top: 1.25rem;
+	padding-bottom: 0.25rem;
+}
+
+#credentials .input-group .form-floating label {
+	opacity: 0.65;
+	transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
