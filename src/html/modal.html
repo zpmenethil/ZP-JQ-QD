@@ -1,0 +1,59 @@
+<!-- Error Codes Modal -->
+<div class="modal fade" id="errorCodesModal" tabindex="-1" aria-labelledby="errorCodesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorCodesModalLabel">Error Codes Reference</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Search and filter controls -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <div class="form-floating flex-grow-1">
+                                <input type="text" class="form-control border-start-0" id="errorSearchInput"
+                                    placeholder="Search">
+                                <label for="errorSearchInput">Search error codes</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="errorCategoryFilter">
+                                <option value="">All Categories</option>
+                                <!-- Categories will be populated dynamically -->
+                            </select>
+                            <label for="errorCategoryFilter">Filter by category</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error codes table -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="10%">Code</th>
+                                <th width="20%">Category</th>
+                                <th width="70%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="errorCodesTableBody">
+                            <!-- Error codes will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No results message -->
+                <div id="noErrorCodesFound" class="alert alert-info d-none">
+                    No error codes match your search criteria.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

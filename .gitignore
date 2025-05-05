@@ -1,2 +1,38 @@
 **.bak**
 node_modules/
+
+# Added by Claude Task Master
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+# Dependency directories
+# Environment variables
+.env
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+.DS_Store
+# Task files
+tasks.json
+tasks/ 
+build/css/temp.js
+TP.json
+repomix-output.md
+.repomixignore
+.github/taskmaster.instructions.md
+.github/instructions/application_summary.instructions.md
+.github/instructions/github_rules.instructions.md
+.github/instructions/self_improve.instructions.md
+.scripts/example_prd.txt
+.scripts/prd.txt
+build/css/temp.js.map

@@ -1,0 +1,41 @@
+{
+    "input": {
+        "maxFileSize": 52428800
+    },
+    "output": {
+        "filePath": "repomix-output.md",
+        "style": "markdown",
+        "parsableStyle": false,
+        "fileSummary": true,
+        "directoryStructure": true,
+        "files": true,
+        "removeComments": true,
+        "removeEmptyLines": true,
+        "compress": false,
+        "showLineNumbers": false,
+        "copyToClipboard": false,
+        "git": {
+            "sortByChanges": true,
+            "sortByChangesMaxCommits": 100
+        }
+    },
+    "include": [
+        "src/html/**/*",
+        "src/js/**/*",
+        "src/css/**/*",
+        "./webpack.js.config.js",
+        "./webpack.css.config.js",
+        "./gulpfile.js"
+    ],
+    "ignore": {
+        "useGitignore": true,
+        "useDefaultPatterns": true,
+        "customPatterns": []
+    },
+    "security": {
+        "enableSecurityCheck": true
+    },
+    "tokenCount": {
+        "encoding": "o200k_base"
+    }
+}

@@ -16,7 +16,7 @@ var sha3_512 =
 		: () => {
 				console.warn('sha3_512 function is not defined. Ensure the library is loaded.');
 				return '';
-		  }; // Placeholder for sha3_512
+		  };
 
 // Blizzard character names for random generation
 const blizzardFirstNames = [
@@ -308,24 +308,18 @@ $(document).ready(() => {
 // Fix for placeholder visibility in Credentials form fields
 function initPlaceholderFix() {
 	// List of credential input fields
-	const credentialFields = [
-		'#apiKeyInput',
-		'#usernameInput', 
-		'#passwordInput', 
-		'#merchantCodeInput', 
-		'#paymentAmountInput'
-	];
-	
+	const credentialFields = ['#apiKeyInput', '#usernameInput', '#passwordInput', '#merchantCodeInput', '#paymentAmountInput'];
+
 	// Add placeholders to these fields
-	$(credentialFields.join(', ')).each(function() {
+	$(credentialFields.join(', ')).each(function () {
 		const $this = $(this);
 		const placeholderText = $this.attr('placeholder') || '';
-		
+
 		// Store the original placeholder if not already done
 		if (!$this.data('original-placeholder')) {
 			$this.data('original-placeholder', placeholderText);
 		}
-		
+
 		// Set the placeholder explicitly
 		$this.attr('placeholder', $this.data('original-placeholder'));
 	});
