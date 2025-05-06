@@ -1,41 +1,68 @@
 // Import dependencies
 import { $, hljs } from './globals.js';
 import { reinitializeTooltips } from './tooltips.js';
+import { saveToStorage, getFromStorage, STORAGE_TYPE } from './session.js';
 
-const THEME_STORAGE_KEY = 'zpTheme';
+const THEME_STORAGE_KEY = 'ZPL';
 
 /**
- * Determine the initial theme based on storage, device preference, or default.
- * @returns {string} 'light' or 'dark'
+ * Determine the initial theme based on storage or device preference.
+ * Supports both plain strings ("light"/"dark") and JSON-wrapped strings.
+ * @returns {'light'|'dark'}
  */
 function determineInitialTheme() {
-	const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-	if (storedTheme) {
-		console.log(`Theme found in localStorage: ${storedTheme}`); // Added log
-		return storedTheme; // Use stored theme if available
+	const raw = getFromStorage(THEME_STORAGE_KEY, null, STORAGE_TYPE.LOCAL);
+	let theme;
+
+	if (typeof raw === 'string') {
+		// 1) Try to parse JSON wrapper
+		try {
+			const obj = JSON.parse(raw);
+			if (obj && typeof obj.theme === 'string') {
+				theme = obj.theme;
+			}
+			// eslint-disable-next-line no-unused-vars
+		} catch (e) {
+			// not JSON, ignore
+		}
+		// 2) Fallback: if it’s literally "light" or "dark"
+		if (!theme && (raw === 'light' || raw === 'dark')) {
+			theme = raw;
+		}
+	}
+	// (Edge-case) if getFromStorage ever returned an object
+	else if (raw && typeof raw === 'object' && typeof raw.theme === 'string') {
+		theme = raw.theme;
 	}
 
-	// If no stored theme, check device preference
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-		console.log('Device prefers dark mode. Using dark theme.'); // Added log
-		return 'dark'; // Use dark mode if preferred by device
+	if (theme === 'light' || theme === 'dark') {
+		console.log(`Theme found in storage: ${theme}`);
+		return theme;
 	}
 
-	console.log('No theme in localStorage or device preference found. Defaulting to light theme.'); // Added log
-	return 'light'; // Default to light mode
+	// No usable stored theme → system preference
+	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	theme = prefersDark ? 'dark' : 'light';
+	console.log(`Device preference found: ${theme}`);
+	return theme;
 }
 
 /**
- * Apply the theme to the document and update UI elements.
- * @param {string} theme - 'light' or 'dark'
+ * Apply the theme and persist as a JSON object.
+ * @param {'light'|'dark'} theme
  */
 function applyTheme(theme) {
 	const lightIcon = $('#lightIcon');
 	const darkIcon = $('#darkIcon');
 
+	// 1) Update attribute
 	document.documentElement.setAttribute('data-bs-theme', theme);
-	localStorage.setItem(THEME_STORAGE_KEY, theme); // Save the determined/updated theme
 
+	// 2) Persist as a JSON object
+	saveToStorage(THEME_STORAGE_KEY, { theme }, STORAGE_TYPE.LOCAL);
+	console.log(`Theme saved to localStorage as JSON: ${JSON.stringify({ theme })}`);
+
+	// 3) Icon swap
 	if (theme === 'dark') {
 		lightIcon.addClass('d-none');
 		darkIcon.removeClass('d-none');
@@ -44,40 +71,31 @@ function applyTheme(theme) {
 		lightIcon.removeClass('d-none');
 	}
 
-	// Re-highlight code if preview exists
-	if (document.getElementById('codePreview')) {
-		hljs.highlightElement(document.getElementById('codePreview'));
-	}
-
-	// Reinitialize tooltips for proper styling
+	// 4) Highlight & tooltips
+	const codePreview = document.getElementById('codePreview');
+	if (codePreview) hljs.highlightElement(codePreview);
 	reinitializeTooltips();
 }
-
 /**
- * Initialize theme toggle functionality.
- * Handles theme switching between light and dark modes,
- * persists the theme choice in localStorage,
- * and updates UI elements accordingly.
+ * Wire everything up.
  */
 export function initThemeToggle() {
 	const themeToggle = $('#themeToggle');
 	const initialTheme = determineInitialTheme();
 
-	// Set initial theme based on determination logic
 	applyTheme(initialTheme);
 
-	// Add listener for device preference changes
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-		// Only update if there's no user-set theme in localStorage
-		if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-			const newColorScheme = event.matches ? 'dark' : 'light';
-			applyTheme(newColorScheme);
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+		// only honor system if user hasn’t explicitly picked
+		const stored = getFromStorage(THEME_STORAGE_KEY, null, STORAGE_TYPE.LOCAL);
+		if (!stored) {
+			applyTheme(event.matches ? 'dark' : 'light');
 		}
 	});
 
 	themeToggle.on('click', () => {
-		const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-		const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-		applyTheme(newTheme); // Apply the new theme and save it
+		const current = document.documentElement.getAttribute('data-bs-theme');
+		const next = current === 'dark' ? 'light' : 'dark';
+		applyTheme(next);
 	});
 }

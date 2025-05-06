@@ -13,8 +13,8 @@ const onError = function (err) {
 const paths = {
 	html: {
 		src: 'src/html/',
-		dest: 'build/'
-	}
+		dest: 'build/',
+	},
 };
 
 // HTML task - combine partials
@@ -25,7 +25,7 @@ gulp.task('html', function () {
 		.pipe(
 			fileInclude({
 				prefix: '@@',
-				basepath: paths.html.src
+				basepath: paths.html.src,
 			})
 		)
 		.pipe(gulp.dest(paths.html.dest));

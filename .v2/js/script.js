@@ -16,7 +16,7 @@ var sha3_512 =
 		: () => {
 				console.warn('sha3_512 function is not defined. Ensure the library is loaded.');
 				return '';
-		  };
+			};
 
 // Blizzard character names for random generation
 const blizzardFirstNames = [
@@ -59,7 +59,7 @@ const blizzardFirstNames = [
 	'Kharazim',
 	'Sonya',
 	'Valla',
-	'Malthael'
+	'Malthael',
 ];
 
 const blizzardLastNames = [
@@ -99,7 +99,7 @@ const blizzardLastNames = [
 	'Faol',
 	'Ravencrest',
 	'Shadowsun',
-	'Executor'
+	'Executor',
 ];
 
 // Store payment method options
@@ -110,7 +110,7 @@ const paymentMethodOptions = {
 	allowApplePayOneOffPayment: false,
 	allowGooglePayOneOffPayment: false,
 	allowLatitudePayOneOffPayment: false,
-	allowSaveCardUserOption: false
+	allowSaveCardUserOption: false,
 };
 
 // Store additional options
@@ -120,7 +120,7 @@ const additionalOptions = {
 	sendConfirmationEmailToCustomer: false,
 	sendConfirmationEmailToMerchant: false,
 	showFeeOnTokenising: false,
-	showFailedPaymentFeeOnTokenising: false
+	showFailedPaymentFeeOnTokenising: false,
 };
 
 // Store extended options
@@ -132,7 +132,7 @@ const extendedOptions = {
 	customerReference: '',
 	customerEmail: 'test@zenpay.com.au',
 	merchantUniquePaymentId: '',
-	contactNumber: '0400123123'
+	contactNumber: '0400123123',
 };
 
 // Generate random payment amount between 10 and 1000 with 2 decimal places
@@ -151,13 +151,15 @@ $(document).ready(() => {
 
 		switch (currentMode) {
 			case '0':
-				tooltipText = 'Payment mode using a static payment amount supplied via the payload, which cannot be changed after plugin initialization.';
+				tooltipText =
+					'Payment mode using a static payment amount supplied via the payload, which cannot be changed after plugin initialization.';
 				break;
 			case '1':
 				tooltipText = 'Tokenization mode, suitable for building wallets.';
 				break;
 			case '2':
-				tooltipText = 'Dynamic payment mode, allowing the payment amount to be changed after plugin initialization.';
+				tooltipText =
+					'Dynamic payment mode, allowing the payment amount to be changed after plugin initialization.';
 				break;
 			case '3':
 				tooltipText = 'Preauth mode for authorizing payments without immediate capture.';
@@ -201,7 +203,9 @@ $(document).ready(() => {
 	updateCodePreview();
 
 	// Update preview whenever form inputs or mode changes
-	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect').on('input change', updateCodePreview);
+	$(
+		'#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect'
+	).on('input change', updateCodePreview);
 
 	// Handle payment method toggles
 	$('.payment-method-toggle').on('change', function () {
@@ -250,18 +254,20 @@ $(document).ready(() => {
 		fileInput.accept = '.json';
 
 		// Handle file selection
-		fileInput.addEventListener('change', e => {
+		fileInput.addEventListener('change', (e) => {
 			if (e.target.files.length > 0) {
 				const file = e.target.files[0];
 				const reader = new FileReader();
 
-				reader.onload = event => {
+				reader.onload = (event) => {
 					try {
 						const config = JSON.parse(event.target.result);
 
 						// Validate schema
 						if (!validateConfigSchema(config)) {
-							alert('Invalid configuration file format. Please ensure it contains apiKey, username, password, and merchantCode.');
+							alert(
+								'Invalid configuration file format. Please ensure it contains apiKey, username, password, and merchantCode.'
+							);
 							return;
 						}
 
@@ -308,7 +314,13 @@ $(document).ready(() => {
 // Fix for placeholder visibility in Credentials form fields
 function initPlaceholderFix() {
 	// List of credential input fields
-	const credentialFields = ['#apiKeyInput', '#usernameInput', '#passwordInput', '#merchantCodeInput', '#paymentAmountInput'];
+	const credentialFields = [
+		'#apiKeyInput',
+		'#usernameInput',
+		'#passwordInput',
+		'#merchantCodeInput',
+		'#paymentAmountInput',
+	];
 
 	// Add placeholders to these fields
 	$(credentialFields.join(', ')).each(function () {
@@ -328,7 +340,14 @@ function initPlaceholderFix() {
 // Add schema validation function
 function validateConfigSchema(config) {
 	// Check if all required fields exist and are strings
-	return config && typeof config === 'object' && typeof config.apiKey === 'string' && typeof config.username === 'string' && typeof config.password === 'string' && typeof config.merchantCode === 'string';
+	return (
+		config &&
+		typeof config === 'object' &&
+		typeof config.apiKey === 'string' &&
+		typeof config.username === 'string' &&
+		typeof config.password === 'string' &&
+		typeof config.merchantCode === 'string'
+	);
 }
 
 /************************************************************
@@ -351,7 +370,9 @@ function initExtendedOptions() {
 	extendedOptions.contactNumber = mobileNumber;
 
 	// Handle input changes in extended options
-	$('#redirectUrlInput, #callbackUrlInput, #customerNameInput, #customerReferenceInput, #customerEmailInput, #merchantUniquePaymentIdInput, #contactNumberInput').on('input', function () {
+	$(
+		'#redirectUrlInput, #callbackUrlInput, #customerNameInput, #customerReferenceInput, #customerEmailInput, #merchantUniquePaymentIdInput, #contactNumberInput'
+	).on('input', function () {
 		const id = $(this).attr('id');
 		const value = $(this).val();
 
@@ -363,7 +384,7 @@ function initExtendedOptions() {
 			customerReferenceInput: 'customerReference',
 			customerEmailInput: 'customerEmail',
 			merchantUniquePaymentIdInput: 'merchantUniquePaymentId',
-			contactNumberInput: 'contactNumber'
+			contactNumberInput: 'contactNumber',
 		};
 
 		// Update the corresponding option
@@ -445,13 +466,13 @@ function initUrlBuilder() {
 	}
 
 	// Add event listeners to all URL builder elements
-	subdomainInputs.forEach(input => {
+	subdomainInputs.forEach((input) => {
 		input.addEventListener('change', updateUrlPreview);
 	});
 
 	domainSelect.addEventListener('change', updateUrlPreview);
 
-	versionInputs.forEach(input => {
+	versionInputs.forEach((input) => {
 		input.addEventListener('change', updateUrlPreview);
 	});
 
@@ -494,9 +515,9 @@ function initTooltips() {
 	// Initialize all tooltips
 	const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
 	tooltipTriggerList.map(
-		tooltipTriggerEl =>
+		(tooltipTriggerEl) =>
 			new bootstrap.Tooltip(tooltipTriggerEl, {
-				trigger: 'hover focus'
+				trigger: 'hover focus',
 			})
 	);
 
@@ -586,14 +607,24 @@ function restoreSessionValues() {
 	}
 
 	// Restore extended option values
-	$('#redirectUrlInput').val(sessionStorage.getItem('demo_redirectUrl') || extendedOptions.redirectUrl);
+	$('#redirectUrlInput').val(
+		sessionStorage.getItem('demo_redirectUrl') || extendedOptions.redirectUrl
+	);
 	$('#callbackUrlInput').val(sessionStorage.getItem('demo_callbackUrl') || '');
 	$('#minHeightInput').val(sessionStorage.getItem('demo_minHeight') || '');
-	$('#customerNameInput').val(sessionStorage.getItem('demo_customerName') || extendedOptions.customerName);
+	$('#customerNameInput').val(
+		sessionStorage.getItem('demo_customerName') || extendedOptions.customerName
+	);
 	$('#customerReferenceInput').val(sessionStorage.getItem('demo_customerReference') || '');
-	$('#customerEmailInput').val(sessionStorage.getItem('demo_customerEmail') || extendedOptions.customerEmail);
-	$('#merchantUniquePaymentIdInput').val(sessionStorage.getItem('demo_merchantUniquePaymentId') || '');
-	$('#contactNumberInput').val(sessionStorage.getItem('demo_contactNumber') || extendedOptions.contactNumber);
+	$('#customerEmailInput').val(
+		sessionStorage.getItem('demo_customerEmail') || extendedOptions.customerEmail
+	);
+	$('#merchantUniquePaymentIdInput').val(
+		sessionStorage.getItem('demo_merchantUniquePaymentId') || ''
+	);
+	$('#contactNumberInput').val(
+		sessionStorage.getItem('demo_contactNumber') || extendedOptions.contactNumber
+	);
 
 	// Restore URL builder settings
 	const savedSubdomain = sessionStorage.getItem('demoSubdomain');
@@ -689,15 +720,31 @@ function generateCurrentDatetime() {
 }
 
 function generateUUID() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
 		const v = c === 'x' ? r : (r & 0x3) | 0x8;
 		return v.toString(16);
 	});
 }
 
-function createSHA3Hash(apiKey, username, password, mode, hashAmount, merchantUniquePaymentId, timestamp) {
-	const data = [apiKey, username, password, mode, hashAmount, merchantUniquePaymentId, timestamp].join('|');
+function createSHA3Hash(
+	apiKey,
+	username,
+	password,
+	mode,
+	hashAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
+	const data = [
+		apiKey,
+		username,
+		password,
+		mode,
+		hashAmount,
+		merchantUniquePaymentId,
+		timestamp,
+	].join('|');
 	return sha3_512(data);
 }
 
@@ -715,7 +762,18 @@ function generateBlizzardEmail() {
 	return `${firstName.toLowerCase()}@zenpay.com.au`;
 }
 
-function buildCodeSnippet({ apiKey, username, password, merchantCode, paymentAmount, mode, timestamp, merchantUniquePaymentId, customerReference, fingerprint }) {
+function buildCodeSnippet({
+	apiKey,
+	username,
+	password,
+	merchantCode,
+	paymentAmount,
+	mode,
+	timestamp,
+	merchantUniquePaymentId,
+	customerReference,
+	fingerprint,
+}) {
 	// Get the URL from the URL preview
 	const url = document.getElementById('urlPreview').value;
 
@@ -807,7 +865,15 @@ function updateCodePreview() {
 	const fingerprintPaymentAmount = selectedMode === '2' ? 0 : paymentAmount;
 	const hashAmount = Math.round(fingerprintPaymentAmount * 100);
 
-	const fingerprint = createSHA3Hash(apiKey, username, password, selectedMode, hashAmount, merchantUniquePaymentId, timestamp);
+	const fingerprint = createSHA3Hash(
+		apiKey,
+		username,
+		password,
+		selectedMode,
+		hashAmount,
+		merchantUniquePaymentId,
+		timestamp
+	);
 
 	const snippet = buildCodeSnippet({
 		apiKey,
@@ -819,7 +885,7 @@ function updateCodePreview() {
 		timestamp,
 		merchantUniquePaymentId,
 		customerReference,
-		fingerprint
+		fingerprint,
 	});
 
 	const codeBlock = document.getElementById('codePreview');
@@ -852,7 +918,15 @@ function initializeZenPayPlugin() {
 		const fingerprintPaymentAmount = selectedMode === '2' ? 0 : paymentAmount;
 		const hashAmount = Math.round(fingerprintPaymentAmount * 100);
 
-		const fingerprint = createSHA3Hash(apiKey, username, password, selectedMode, hashAmount, merchantUniquePaymentId, timestamp);
+		const fingerprint = createSHA3Hash(
+			apiKey,
+			username,
+			password,
+			selectedMode,
+			hashAmount,
+			merchantUniquePaymentId,
+			timestamp
+		);
 
 		// Initialize plugin with base configuration
 		const paymentConfig = {
@@ -868,7 +942,7 @@ function initializeZenPayPlugin() {
 			customerName: extendedOptions.customerName,
 			contactNumber: extendedOptions.contactNumber,
 			customerEmail: extendedOptions.customerEmail,
-			customerReference: customerReference
+			customerReference: customerReference,
 		};
 
 		// Add callback URL if provided
@@ -928,7 +1002,7 @@ function copyCodeToClipboard() {
 				copyBtn.html(originalIcon);
 			}, 2000);
 		})
-		.catch(err => {
+		.catch((err) => {
 			console.error('Failed to copy code:', err);
 			alert('Failed to copy code. Please try again.');
 		});
@@ -965,7 +1039,7 @@ function enhancePlaceholderConsistency() {
 		'#customerEmailInput',
 		'#customerReferenceInput',
 		'#merchantUniquePaymentIdInput',
-		'#uiMinHeightInput'
+		'#uiMinHeightInput',
 	];
 
 	$(inputSelectors.join(', ')).each(function () {

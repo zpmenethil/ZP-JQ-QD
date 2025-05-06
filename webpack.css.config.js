@@ -7,7 +7,7 @@ module.exports = (_, argv) => {
 		entry: './src/css/styles.css',
 		output: {
 			path: path.resolve(__dirname, 'build'),
-			filename: 'css/temp.js'
+			filename: 'css/temp.js',
 		},
 		module: {
 			rules: [
@@ -15,17 +15,17 @@ module.exports = (_, argv) => {
 					test: /\.css$/,
 					use: [
 						MiniCssExtractPlugin.loader,
-						'css-loader'
+						'css-loader',
 						// Removed postcss-loader to avoid the error
-					]
-				}
-			]
+					],
+				},
+			],
 		},
 		plugins: [
 			new MiniCssExtractPlugin({
-				filename: argv.mode === 'production' ? 'css/bundle.min.css' : 'css/bundle.css'
-			})
-		]
+				filename: argv.mode === 'production' ? 'css/bundle.min.css' : 'css/bundle.css',
+			}),
+		],
 	};
 
 	if (argv.mode === 'development') {
@@ -35,7 +35,7 @@ module.exports = (_, argv) => {
 		config.mode = 'production';
 		config.optimization = {
 			minimizer: [new CssMinimizerPlugin()],
-			minimize: true
+			minimize: true,
 		};
 	}
 

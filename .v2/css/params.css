@@ -38,7 +38,10 @@
 
 /* Badge styles */
 .badge {
-	font-family: system-ui, -apple-system, sans-serif;
+	font-family:
+		system-ui,
+		-apple-system,
+		sans-serif;
 	font-size: 0.8rem;
 	padding: 0.35em 0.65em;
 }
@@ -65,23 +68,23 @@
 }
 
 /* Dark theme adjustments */
-[data-bs-theme="dark"] .bg-primary-subtle {
+[data-bs-theme='dark'] .bg-primary-subtle {
 	background-color: rgba(var(--bs-primary-rgb), 0.2);
 }
 
-[data-bs-theme="dark"] .bg-success-subtle {
+[data-bs-theme='dark'] .bg-success-subtle {
 	background-color: rgba(var(--bs-success-rgb), 0.2);
 }
 
-[data-bs-theme="dark"] .bg-warning-subtle {
+[data-bs-theme='dark'] .bg-warning-subtle {
 	background-color: rgba(var(--bs-warning-rgb), 0.2);
 }
 
-[data-bs-theme="dark"] .bg-info-subtle {
+[data-bs-theme='dark'] .bg-info-subtle {
 	background-color: rgba(var(--bs-info-rgb), 0.2);
 }
 
-[data-bs-theme="dark"] .bg-secondary-subtle {
+[data-bs-theme='dark'] .bg-secondary-subtle {
 	background-color: rgba(var(--bs-secondary-rgb), 0.2);
 }
 
@@ -135,7 +138,7 @@
 .parameters-table td code,
 .return-parameters-table td code {
 	color: var(--primary-color);
-	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 	font-size: 0.9rem;
 }
 
@@ -144,7 +147,7 @@
 	background-color: rgba(var(--bs-primary-rgb), 0.03);
 }
 
-[data-bs-theme="dark"] .param-details {
+[data-bs-theme='dark'] .param-details {
 	background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
 
@@ -219,7 +222,7 @@
 	letter-spacing: 0.5px;
 }
 
-[data-bs-theme="dark"] .return-parameters-table .category-header {
+[data-bs-theme='dark'] .return-parameters-table .category-header {
 	background-color: rgba(var(--bs-secondary-rgb), 0.1);
 }
 

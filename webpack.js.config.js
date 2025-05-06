@@ -10,7 +10,7 @@ module.exports = [
 		entry: './src/js/index.js',
 		output: {
 			path: path.resolve(__dirname, 'build/js'),
-			filename: 'bundle.js'
+			filename: 'bundle.js',
 		},
 		module: {
 			rules: [
@@ -20,19 +20,19 @@ module.exports = [
 					use: {
 						loader: 'babel-loader',
 						options: {
-							presets: ['@babel/preset-env']
-						}
-					}
-				}
-			]
+							presets: ['@babel/preset-env'],
+						},
+					},
+				},
+			],
 		},
 		resolve: {
-			extensions: ['.js']
+			extensions: ['.js'],
 		},
 		optimization: {
-			minimize: false
+			minimize: false,
 		},
-		devtool: 'source-map'
+		devtool: 'source-map',
 	},
 
 	// Minified bundle.min.js configuration
@@ -42,7 +42,7 @@ module.exports = [
 		entry: './src/js/index.js',
 		output: {
 			path: path.resolve(__dirname, 'build/js'),
-			filename: 'bundle.min.js'
+			filename: 'bundle.min.js',
 		},
 		module: {
 			rules: [
@@ -52,22 +52,22 @@ module.exports = [
 					use: {
 						loader: 'babel-loader',
 						options: {
-							presets: ['@babel/preset-env']
-						}
-					}
-				}
-			]
+							presets: ['@babel/preset-env'],
+						},
+					},
+				},
+			],
 		},
 		resolve: {
-			extensions: ['.js']
+			extensions: ['.js'],
 		},
 		optimization: {
 			minimize: true,
 			minimizer: [
 				new TerserPlugin({
-					extractComments: false
-				})
-			]
-		}
-	}
+					extractComments: false,
+				}),
+			],
+		},
+	},
 ];

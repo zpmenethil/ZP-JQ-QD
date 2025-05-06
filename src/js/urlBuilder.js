@@ -1,108 +1,145 @@
-// Import dependencies
 import { $ } from './globals.js';
-import { extendedOptions } from './extendedOptions.js'; 
+import { extendedOptions } from './extendedOptions.js';
 import { updateCodePreview } from './codePreview.js';
 
 /**
- * Update the redirect URL based on selected domain and subdomain
+ * Update the redirect URL based on selected domain and subdomain.
+ * @returns {void}
  */
 export function updateRedirectUrl() {
-    const domain = $('#domainSelect').val();
-    const subdomain = $('input[name="subdomain"]:checked').val();
-    const redirectUrl = `https://${subdomain}.${domain}.com.au/demo/`;
-    const callbackUrl = `https://${subdomain}.${domain}.com.au/callback/`;
+	const domain = $('#domainSelect').val();
+	const subdomain = $('input[name="subdomain"]:checked').val();
+	const redirectUrl = `https://${subdomain}.${domain}.com.au/demo/`;
+	const callbackUrl = `https://${subdomain}.${domain}.com.au/callback/`;
 
-    $('#redirectUrlInput').val(redirectUrl);
-    $('#callbackUrlInput').attr('placeholder', callbackUrl);
+	$('#redirectUrlInput').val(redirectUrl);
+	$('#callbackUrlInput').attr('placeholder', callbackUrl);
 
-    // Update extended options
-    extendedOptions.redirectUrl = redirectUrl;
+	// Update extended options
+	extendedOptions.redirectUrl = redirectUrl;
 
-    // Trigger code preview update if available
-    if (typeof updateCodePreview === 'function') {
-        updateCodePreview();
-    }
+	// Trigger code preview update if available
+	if (typeof updateCodePreview === 'function') {
+		updateCodePreview();
+	}
 }
 
 /**
  * Initialize URL builder functionality.
  * Handles URL preview updates, modal tooltips, copy functionality,
  * and URL changes application.
+ * @param {boolean} restoreFromSession - Whether to restore values from session storage
+ * @returns {void}
  */
-export function initUrlBuilder() {
-    // Get all the URL builder elements
-    const subdomainInputs = document.querySelectorAll('input[name="subdomain"]');
-    const domainSelect = document.getElementById('domainSelect');
-    const versionInputs = document.querySelectorAll('input[name="version"]');
-    const urlPreview = document.getElementById('urlPreview');
-    const modalUrlPreview = document.getElementById('modalUrlPreview');
-    const modalCopyUrlBtn = document.getElementById('modalCopyUrlBtn');
-    const applyUrlChangesBtn = document.getElementById('applyUrlChanges');
+export function initUrlBuilder(restoreFromSession = true) {
+	const subdomainInputs = document.querySelectorAll('input[name="subdomain"]');
+	const domainSelect = document.getElementById('domainSelect');
+	const versionInputs = document.querySelectorAll('input[name="version"]');
+	const urlPreview = document.getElementById('urlPreview');
+	const modalUrlPreview = document.getElementById('modalUrlPreview');
+	const modalCopyUrlBtn = document.getElementById('modalCopyUrlBtn');
+	const applyUrlChangesBtn = document.getElementById('applyUrlChanges');
 
-    /**
-     * Update the URL preview based on current form values
-     */
-    function updateUrlPreview() {
-        const subdomain = document.querySelector('input[name="subdomain"]:checked').value;
-        const domain = domainSelect.value;
-        const version = document.querySelector('input[name="version"]:checked').value;
+	// Restore from session if requested
+	if (restoreFromSession) {
+		const savedSubdomain = sessionStorage.getItem('demo_subdomain');
+		const savedDomain = sessionStorage.getItem('demo_domain');
+		const savedVersion = sessionStorage.getItem('demo_version');
 
-        const url = `https://${subdomain}.${domain}.com.au/online/${version}`;
-        urlPreview.value = url;
+		// Apply saved subdomain
+		if (savedSubdomain) {
+			const subdomainInput = document.querySelector(
+				`input[name="subdomain"][value="${savedSubdomain}"]`
+			);
+			if (subdomainInput) {
+				subdomainInput.checked = true;
+			}
+		}
 
-        // Also update the modal URL preview if it exists
-        if (modalUrlPreview) {
-            modalUrlPreview.value = url;
-        }
+		// Apply saved domain
+		if (savedDomain && domainSelect) {
+			domainSelect.value = savedDomain;
+		}
 
-        // Update redirect URL when domain changes
-        updateRedirectUrl();
+		// Apply saved version
+		if (savedVersion) {
+			const versionInput = document.querySelector(`input[name="version"][value="${savedVersion}"]`);
+			if (versionInput) {
+				versionInput.checked = true;
+			}
+		}
+	}
 
-        // Update the code preview if available
-        if (typeof updateCodePreview === 'function') {
-            updateCodePreview();
-        }
-    }
+	/**
+	 * Update the URL preview based on current form values
+	 */
+	function updateUrlPreview() {
+		const subdomain = document.querySelector('input[name="subdomain"]:checked').value;
+		const domain = domainSelect.value;
+		const version = document.querySelector('input[name="version"]:checked').value;
 
-    // Add event listeners to all URL builder elements
-    subdomainInputs.forEach(input => {
-        input.addEventListener('change', updateUrlPreview);
-    });
+		// Save to session storage
+		sessionStorage.setItem('demo_subdomain', subdomain);
+		sessionStorage.setItem('demo_domain', domain);
+		sessionStorage.setItem('demo_version', version);
 
-    domainSelect.addEventListener('change', updateUrlPreview);
+		const url = `https://${subdomain}.${domain}.com.au/online/${version}`;
+		urlPreview.value = url;
 
-    versionInputs.forEach(input => {
-        input.addEventListener('change', updateUrlPreview);
-    });
+		// Also update the modal URL preview if it exists
+		if (modalUrlPreview) {
+			modalUrlPreview.value = url;
+		}
 
-    // Initialize tooltips for the modal when it's shown
-    $('#urlBuilderModal').on('shown.bs.modal', function () {
-        $(this).find('[data-bs-toggle="tooltip"]').tooltip();
-    });
+		// Update redirect URL when domain changes
+		updateRedirectUrl();
 
-    // Copy URL from modal to clipboard
-    if (modalCopyUrlBtn) {
-        modalCopyUrlBtn.addEventListener('click', () => {
-            modalUrlPreview.select();
-            document.execCommand('copy');
+		// Update the code preview if available
+		if (typeof updateCodePreview === 'function') {
+			updateCodePreview();
+		}
+	}
 
-            // Show success feedback
-            const originalIcon = modalCopyUrlBtn.innerHTML;
-            modalCopyUrlBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
+	// Add event listeners to all URL builder elements
+	subdomainInputs.forEach((input) => {
+		input.addEventListener('change', updateUrlPreview);
+	});
 
-            setTimeout(() => {
-                modalCopyUrlBtn.innerHTML = originalIcon;
-            }, 2000);
-        });
-    }
+	domainSelect.addEventListener('change', updateUrlPreview);
 
-    // Apply URL changes from modal
-    if (applyUrlChangesBtn) {
-        applyUrlChangesBtn.addEventListener('click', () => {
-            updateUrlPreview();
-        });
-    }
+	versionInputs.forEach((input) => {
+		input.addEventListener('change', updateUrlPreview);
+	});
 
-    // Initialize URL preview
-    updateUrlPreview();
+	// Initialize tooltips for the modal when it's shown
+	$('#urlBuilderModal').on('shown.bs.modal', function () {
+		$(this).find('[data-bs-toggle="tooltip"]').tooltip();
+	});
+
+	// Copy URL from modal to clipboard
+	if (modalCopyUrlBtn) {
+		modalCopyUrlBtn.addEventListener('click', () => {
+			modalUrlPreview.select();
+			document.execCommand('copy');
+			console.log('[initUrlBuilder] URL copied to clipboard:', modalUrlPreview.value);
+			// Show success feedback
+			const originalIcon = modalCopyUrlBtn.innerHTML;
+			modalCopyUrlBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
+
+			setTimeout(() => {
+				modalCopyUrlBtn.innerHTML = originalIcon;
+			}, 2000);
+		});
+	}
+
+	// Apply URL changes from modal
+	if (applyUrlChangesBtn) {
+		applyUrlChangesBtn.addEventListener('click', () => {
+			console.log(`[initUrlBuilder] Applying URL changes from modal ${modalUrlPreview.value}`);
+			updateUrlPreview();
+		});
+	}
+
+	// Initialize URL preview
+	updateUrlPreview();
 }

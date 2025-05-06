@@ -36,3 +36,7 @@ repomix-output.md
 .scripts/example_prd.txt
 .scripts/prd.txt
 build/css/temp.js.map
+src/js/applogger.old
+build/js/bundle.js.map
+build/js/bundle.min.js
+_fingerprint/

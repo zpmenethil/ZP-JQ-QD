@@ -19,16 +19,16 @@
     ],
     "scripts": {
         "build:js": "webpack --config webpack.js.config.js",
-        "build:css:dev": "webpack --config webpack.css.config.js --mode development",
-        "build:css:prod": "webpack --config webpack.css.config.js --mode production",
-        "build:css": "npm run build:css:dev && npm run build:css:prod",
-        "build:html": "gulp --config gulpfile.js",
+        "build:js:fp": "webpack --config webpack.js.fp.config.js",
+        "build:css": "webpack --config webpack.css.config.js",
+        "build:html": "gulp --gulpfile gulpfile.js",
+        "build:html:fp": "gulp --gulpfile gulpfile.fp.js",
         "lint": "eslint . --fix",
         "clean": "rimraf ./build",
         "pretty": "prettier --write .",
-        "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html",
-        "watch": "webpack --watch --mode development",
-        "serve": "webpack serve --mode development --open"
+        "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html && npm run lint && npm run pretty",
+        "build:fp": "npm run build:js:fp && npm run build:html:fp && npm run lint && npm run pretty",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
     "devDependencies": {
         "@babel/core": "^7.23.2",
@@ -38,8 +38,11 @@
         "css-minimizer-webpack-plugin": "^7.0.2",
         "eslint-webpack-plugin": "^5.0.1",
         "file-include-webpack-plugin": "^1.3.9",
+        "globals": "^16.0.0",
+        "gulp-rename": "^2.0.0",
         "html-loader": "^5.1.0",
         "html-webpack-plugin": "^5.6.3",
+        "jest-environment-jsdom": "^29.7.0",
         "mini-css-extract-plugin": "^2.9.2",
         "rimraf": "^6.0.1",
         "terser-webpack-plugin": "^5.3.14",
@@ -49,12 +52,18 @@
         "webpack-merge": "^5.10.0"
     },
     "dependencies": {
+        "@eslint/css": "^0.7.0",
+        "@eslint/js": "^9.26.0",
+        "@eslint/json": "^0.12.0",
+        "@eslint/markdown": "^6.4.0",
         "autoprefixer": "^10.4.21",
+        "eslint": "^9.26.0",
         "gulp": "^5.0.0",
         "gulp-file-include": "^2.3.0",
         "gulp-plumber": "^1.2.1",
         "postcss-loader": "^8.1.1",
         "sass": "^1.87.0",
-        "sass-loader": "^16.0.5"
+        "sass-loader": "^16.0.5",
+        "typescript-eslint": "^8.31.1"
     }
 }

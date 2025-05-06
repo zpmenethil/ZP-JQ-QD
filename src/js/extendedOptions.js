@@ -6,14 +6,14 @@ import { updateCodePreview } from './codePreview.js';
 
 // Extended options object with default values
 export const extendedOptions = {
-	redirectUrl: 'https://payuat.travelpay.com.au/demo/',
+	redirectUrl: '',
 	callbackUrl: '',
 	minHeight: '',
-	customerName: 'Test User',
+	customerName: '',
 	customerReference: '',
-	customerEmail: 'test@zenpay.com.au',
+	customerEmail: '',
 	merchantUniquePaymentId: '',
-	contactNumber: '0400123123'
+	contactNumber: '',
 };
 
 /**
@@ -40,35 +40,30 @@ export function generateAndSetUuids() {
  * Sets up default values and event handlers for extended options form fields.
  */
 export function initExtendedOptions() {
-	// Generate Blizzard character data
-	const characterName = generateFirstLastName();
-	const email = generateEmail();
+	const Name = generateFirstLastName();
+	const email = generateEmail(Name.firstName);
 	const mobileNumber = '0400000000';
-
-	// Set default values
-	$('#customerNameInput').val(characterName);
+	$('#customerNameInput').val(Name.fullName);
 	$('#customerEmailInput').val(email);
 	$('#contactNumberInput').val(mobileNumber);
-
-	// Update extended options object
-	extendedOptions.customerName = characterName;
+	extendedOptions.customerName = Name.fullName;
 	extendedOptions.customerEmail = email;
 	extendedOptions.contactNumber = mobileNumber;
 
 	// Handle input changes in extended options
 	const inputMap = {
-		redirectUrlInput: 'redirectUrl',
-		callbackUrlInput: 'callbackUrl',
-		customerNameInput: 'customerName',
-		customerReferenceInput: 'customerReference',
-		customerEmailInput: 'customerEmail',
-		merchantUniquePaymentIdInput: 'merchantUniquePaymentId',
-		contactNumberInput: 'contactNumber'
+		redirectUrlInput: 'redirectUrl', // Text field
+		callbackUrlInput: 'callbackUrl', // Text field
+		customerNameInput: 'customerName', // Text field
+		customerReferenceInput: 'customerReference', // Text field
+		customerEmailInput: 'customerEmail', // Text field
+		merchantUniquePaymentIdInput: 'merchantUniquePaymentId', // Text field
+		contactNumberInput: 'contactNumber', // Text field
 	};
 
 	// Add event listeners for all mapped inputs
 	Object.entries(inputMap).forEach(([inputId, optionKey]) => {
-		$(`#${inputId}`).on('input', function () {
+		$(`#${inputId}`).on('blur', function () {
 			const value = $(this).val();
 			extendedOptions[optionKey] = value;
 
@@ -83,65 +78,6 @@ export function initExtendedOptions() {
 	$('#domainSelect').on('change', () => {
 		updateRedirectUrl();
 	});
-
 	// Initial redirect URL setup
 	updateRedirectUrl();
-}
-
-/**
- * Restore extended options values from session storage
- */
-export function restoreExtendedOptions() {
-	// Restore extended option values
-	$('#redirectUrlInput').val(sessionStorage.getItem('demo_redirectUrl') || extendedOptions.redirectUrl);
-	$('#callbackUrlInput').val(sessionStorage.getItem('demo_callbackUrl') || '');
-	$('#minHeightInput').val(sessionStorage.getItem('demo_minHeight') || '');
-	$('#customerNameInput').val(sessionStorage.getItem('demo_customerName') || extendedOptions.customerName);
-	$('#customerReferenceInput').val(sessionStorage.getItem('demo_customerReference') || '');
-	$('#customerEmailInput').val(sessionStorage.getItem('demo_customerEmail') || extendedOptions.customerEmail);
-	$('#merchantUniquePaymentIdInput').val(sessionStorage.getItem('demo_merchantUniquePaymentId') || '');
-	$('#contactNumberInput').val(sessionStorage.getItem('demo_contactNumber') || extendedOptions.contactNumber);
-
-	// Update extended options object with restored values
-	extendedOptions.redirectUrl = $('#redirectUrlInput').val();
-	extendedOptions.callbackUrl = $('#callbackUrlInput').val();
-	extendedOptions.minHeight = $('#minHeightInput').val();
-	extendedOptions.customerName = $('#customerNameInput').val();
-	extendedOptions.customerReference = $('#customerReferenceInput').val();
-	extendedOptions.customerEmail = $('#customerEmailInput').val();
-	extendedOptions.merchantUniquePaymentId = $('#merchantUniquePaymentIdInput').val();
-	extendedOptions.contactNumber = $('#contactNumberInput').val();
-
-	// If customer name, email, or contact number are empty, generate new ones
-	if (!$('#customerNameInput').val()) {
-		const characterName = generateFirstLastName();
-		$('#customerNameInput').val(characterName);
-		extendedOptions.customerName = characterName;
-	}
-
-	if (!$('#customerEmailInput').val()) {
-		const email = generateEmail();
-		$('#customerEmailInput').val(email);
-		extendedOptions.customerEmail = email;
-	}
-
-	if (!$('#contactNumberInput').val()) {
-		$('#contactNumberInput').val('0400000000');
-		extendedOptions.contactNumber = '0400000000';
-	}
-}
-
-/**
- * Save extended options values to session storage
- */
-export function saveExtendedOptions() {
-	// Save extended options
-	sessionStorage.setItem('demo_redirectUrl', extendedOptions.redirectUrl);
-	sessionStorage.setItem('demo_callbackUrl', extendedOptions.callbackUrl);
-	sessionStorage.setItem('demo_minHeight', extendedOptions.minHeight);
-	sessionStorage.setItem('demo_customerName', extendedOptions.customerName);
-	sessionStorage.setItem('demo_customerReference', extendedOptions.customerReference);
-	sessionStorage.setItem('demo_customerEmail', extendedOptions.customerEmail);
-	sessionStorage.setItem('demo_merchantUniquePaymentId', extendedOptions.merchantUniquePaymentId);
-	sessionStorage.setItem('demo_contactNumber', extendedOptions.contactNumber);
 }
