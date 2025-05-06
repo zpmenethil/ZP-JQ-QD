@@ -1,8 +1,7 @@
 // Import dependencies
 import { $, hljs } from './globals.js';
-import { extendedOptions } from './extendedOptions.js';
-// import { generateUUID, createSHA3_512Hash } from './helpers.js';
-import { createSHA3_512Hash } from './helpers.js';
+import { extendedOptions, DEFAULT_VALUES } from './globals.js';
+import { generateFingerprint } from './hash.js';
 import { paymentMethodOptions, additionalOptions } from './globals.js';
 import { generateCurrentDatetime } from './helpers.js';
 
@@ -19,82 +18,65 @@ import { generateCurrentDatetime } from './helpers.js';
  * @param {string} config.fingerprint - Hash fingerprint for the transaction.
  * @returns {string} Formatted code snippet as a string.
  */
-function buildCodeSnippet({
-	apiKey,
-	merchantCode,
-	paymentAmount,
-	mode,
-	timestamp,
-	merchantUniquePaymentId,
-	customerReference,
-	fingerprint,
-}) {
+function buildCodeSnippet({ apiKey, paymentAmount, mode, timestamp, merchantUniquePaymentId, fingerprint }) {
 	// Get the URL from the URL preview
 	const url = document.getElementById('urlPreview').value;
 
-	// Start with the basic configuration
-	let snippet = `
-var payment = $.zpPayment({
-  url: "${url}",
-  merchantCode: "${merchantCode}",
-  apiKey: "${apiKey}",
-  fingerprint: "${fingerprint}",`;
+	const properties = [
+		`url: "${url}"`,
+		`apiKey: "${apiKey}"`,
+		`fingerprint: "${fingerprint}"`,
+		`paymentAmount: ${paymentAmount}`,
+		`merchantUniquePaymentId: "${merchantUniquePaymentId}"`,
+		`timeStamp: "${timestamp}"`,
+		`mode: ${mode}`,
+		`merchantCode: "${$('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode}"`,
+		`customerReference: "${$('#customerReferenceInput').val().trim() || DEFAULT_VALUES.credentials.customerReference}"`,
+		`customerName: "${$('#customerNameInput').val().trim() || DEFAULT_VALUES.extended.customerName}"`,
+		`customerEmail: "${$('#customerEmailInput').val().trim() || DEFAULT_VALUES.extended.customerEmail}"`,
+		`redirectUrl: "${$('#redirectUrlInput').val().trim() || DEFAULT_VALUES.extended.redirectUrl}"`
+	];
 
-	// Add redirect URL
-	snippet += `
-  redirectUrl: "${extendedOptions.redirectUrl}",`;
-
-	// Add callback URL if provided
-	if (extendedOptions.callbackUrl) {
-		snippet += `
-  callbackUrl: "${extendedOptions.callbackUrl}",`;
+	if (extendedOptions.callbackUrl && extendedOptions.callbackUrl.trim() !== '') {
+		properties.push(`callbackUrl: "${extendedOptions.callbackUrl.trim()}"`);
 	}
 
-	// Add minHeight from UI Options tab
-	const minHeight = $('#uiMinHeightInput').val();
-	if (minHeight) {
-		snippet += `
-  minHeight: ${minHeight},`;
+	if (extendedOptions.contactNumber && extendedOptions.contactNumber.trim() !== '') {
+		properties.push(`contactNumber: "${extendedOptions.contactNumber.trim()}"`);
 	}
-
-	// Add other required fields
-	snippet += `
-  mode: ${mode},
-  merchantUniquePaymentId: "${merchantUniquePaymentId}",
-  customerName: "${extendedOptions.customerName}",
-  contactNumber: "${extendedOptions.contactNumber}",
-  customerEmail: "${extendedOptions.customerEmail}",
-  customerReference: "${customerReference}",
-  paymentAmount: ${paymentAmount},
-  timeStamp: "${timestamp}"`;
+	
+	// Add minHeight if it exists in extendedOptions
+	if (extendedOptions.minHeight) {
+		properties.push(`minHeight: ${extendedOptions.minHeight}`);
+	}
 
 	// Add payment method options if they're enabled
 	for (const option in paymentMethodOptions) {
 		if (paymentMethodOptions[option]) {
-			snippet += `,
-  ${option}: true`;
+			properties.push(`${option}: true`);
 		}
 	}
 
 	// Add additional options if they're enabled
 	for (const option in additionalOptions) {
-		// Only include tokenization options if mode is 1
+		// Skip minHeight as it's handled separately
+		if (option === 'minHeight') continue;
+		
+		// Only include tokenization options if mode is '1' (string comparison)
 		if (option === 'showFeeOnTokenising' || option === 'showFailedPaymentFeeOnTokenising') {
 			if (mode === '1' && additionalOptions[option]) {
-				snippet += `,
-  ${option}: true`;
+				properties.push(`${option}: true`);
 			}
 		} else if (additionalOptions[option]) {
-			snippet += `,
-  ${option}: true`;
+			properties.push(`${option}: true`);
 		}
 	}
 
-	// Close the configuration object
-	snippet += `
-});
+	// Construct the final snippet
+	let snippet = `var payment = $.zpPayment({\n    ${properties.join(',\n    ')}\n});`;
 
-payment.open();`;
+	// Add payment.open() call
+	snippet += `\n\npayment.open();`;
 
 	return snippet.trim();
 }
@@ -107,64 +89,25 @@ export function updateCodePreview() {
 	const timestamp = generateCurrentDatetime();
 	console.log(`[updateCodePreview] Current timestamp: ${timestamp}`);
 	const merchantUniquePaymentId = $('#merchantUniquePaymentIdInput').val().trim();
-	const customerReference = $('#customerReferenceInput').val().trim();
 	const apiKey = $('#apiKeyInput').val().trim();
 	const username = $('#usernameInput').val().trim();
 	const password = $('#passwordInput').val().trim();
-	const merchantCode = $('#merchantCodeInput').val().trim();
-
-	const inputPaymentAmount = $('#paymentAmountInput').val() || 0.0;
-	const paymentAmount = Number(inputPaymentAmount);
-	const selectedMode = $('#modeSelect').val();
-
-	// For the fingerprint process, if Mode 2 is selected, use 0 as the payment amount.
-	if (selectedMode === '2') {
-		$('#paymentAmountInput').val(0);
-		console.log(`[updateCodePreview] Selected mode is ${selectedMode} setting payment amount to 0`);
-	}
-	const fingerprintPaymentAmount = selectedMode === '2' ? 0 : paymentAmount;
-	const hashAmount = Math.round(fingerprintPaymentAmount * 100);
+	const paymentAmount = $('#paymentAmountInput').val() || 0.0;
+	const mode = $('#modeSelect').val();
 
 	let fingerprint = '';
-	if (
-		apiKey &&
-		username &&
-		password &&
-		merchantCode &&
-		paymentAmount &&
-		selectedMode &&
-		timestamp &&
-		merchantUniquePaymentId
-	) {
-		console.log(`[updateCodePreview] All required fields are filled, creating fingerprint`);
-		fingerprint = createSHA3_512Hash(
-			apiKey,
-			username,
-			password,
-			selectedMode,
-			hashAmount,
-			merchantUniquePaymentId,
-			timestamp
-		);
-		console.log(`[updateCodePreview] Fingerprint: ${fingerprint}`);
-	} else {
-		console.log(`[updateCodePreview] Not all required fields are filled, not creating fingerprint`);
-		console.log(
-			`[updateCodePreview] Only have following values: apiKey: ${apiKey}, username: ${username}, password: ${password}, merchantCode: ${merchantCode}, paymentAmount: ${paymentAmount}, mode: ${selectedMode}, timestamp: ${timestamp}, merchantUniquePaymentId: ${merchantUniquePaymentId}`
-		);
+	if (apiKey && username && password && paymentAmount && mode && timestamp && merchantUniquePaymentId) {
+		console.log(`[updateCodePreview] creating fingerprint`);
+		fingerprint = generateFingerprint(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp);
 	}
 
 	const snippet = buildCodeSnippet({
 		apiKey,
-		username,
-		password,
-		merchantCode,
 		paymentAmount,
-		mode: selectedMode,
+		mode,
 		timestamp,
 		merchantUniquePaymentId,
-		customerReference,
-		fingerprint,
+		fingerprint
 	});
 
 	const codeBlock = document.getElementById('codePreview');
@@ -190,7 +133,7 @@ export function copyCodeToClipboard() {
 				copyBtn.html(originalIcon);
 			}, 2000);
 		})
-		.catch((err) => {
+		.catch(err => {
 			console.error('Failed to copy code:', err);
 			alert('Failed to copy code. Please try again.');
 		});
@@ -201,13 +144,15 @@ export function copyCodeToClipboard() {
  * @returns {void}
  */
 export function updateMinHeightBasedOnMode() {
+	console.log(`[updateMinHeightBasedOnMode] Current mode: ${$('#modeSelect').val()}`);
 	const mode = $('#modeSelect').val();
-	const defaultHeight = mode === '1' ? '600' : '825';
 
-	// Only set if user hasn't manually changed it
-	if (!$('#uiMinHeightInput').val()) {
-		$('#uiMinHeightInput').val(defaultHeight);
+	// If mode is 1, use 600, otherwise use the default from config
+	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight;
+	if (!$('#minHeightInput').val()) {
+		$('#minHeightInput').val(defaultHeight);
 		if (extendedOptions) {
+			console.log(`[updateMinHeightBasedOnMode] Setting minHeight to ${defaultHeight}`);
 			extendedOptions.minHeight = defaultHeight;
 		}
 	}

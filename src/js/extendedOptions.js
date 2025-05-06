@@ -1,83 +1,76 @@
-// Import dependencies
+/**
+ * @module extendedOptionsManager
+ * @description Handles extended options for the ZenPay demo plugin, including generating UUIDs,
+ * setting default customer details, updating redirect URLs, and wiring up UI event handlers.
+ */
+
 import { $ } from './globals.js';
-import { generateFirstLastName, generateEmail, generateUUID } from './helpers.js';
+import { generateFirstLastName, generateEmail, generateAndSetUuids } from './helpers.js';
 import { updateRedirectUrl } from './urlBuilder.js';
 import { updateCodePreview } from './codePreview.js';
-
-// Extended options object with default values
-export const extendedOptions = {
-	redirectUrl: '',
-	callbackUrl: '',
-	minHeight: '',
-	customerName: '',
-	customerReference: '',
-	customerEmail: '',
-	merchantUniquePaymentId: '',
-	contactNumber: '',
-};
+import { extendedOptions } from './globals.js';
 
 /**
- * Generate and set UUIDs for customer reference and merchant unique payment ID
- */
-export function generateAndSetUuids() {
-	const customerReference = generateUUID();
-	const merchantUniquePaymentId = generateUUID();
-
-	$('#customerReferenceInput').val(customerReference);
-	$('#merchantUniquePaymentIdInput').val(merchantUniquePaymentId);
-
-	extendedOptions.customerReference = customerReference;
-	extendedOptions.merchantUniquePaymentId = merchantUniquePaymentId;
-
-	// Update code preview if already defined
-	if (typeof updateCodePreview === 'function') {
-		updateCodePreview();
-	}
-}
-
-/**
- * Initialize extended options functionality.
- * Sets up default values and event handlers for extended options form fields.
+ * Initialize the extended options UI:
+ * 1. Populate default customer name, email, and contact number.
+ * 2. Wire up `blur` listeners on inputs to update `extendedOptions` and refresh preview.
+ * 3. Wire up `change` listener on domain selector to update redirect URL.
+ * 4. Perform an initial redirect URL update.
+ * @returns {void}
  */
 export function initExtendedOptions() {
-	const Name = generateFirstLastName();
-	const email = generateEmail(Name.firstName);
-	const mobileNumber = '0400000000';
-	$('#customerNameInput').val(Name.fullName);
-	$('#customerEmailInput').val(email);
-	$('#contactNumberInput').val(mobileNumber);
-	extendedOptions.customerName = Name.fullName;
-	extendedOptions.customerEmail = email;
-	extendedOptions.contactNumber = mobileNumber;
+	// Generate fresh customer data
+	const customerNameData = generateFirstLastName();
+	const customerEmail = generateEmail(customerNameData.firstName);
+	const customerMobileNumber = extendedOptions.contactNumber || '0400001002';
 
-	// Handle input changes in extended options
-	const inputMap = {
-		redirectUrlInput: 'redirectUrl', // Text field
-		callbackUrlInput: 'callbackUrl', // Text field
-		customerNameInput: 'customerName', // Text field
-		customerReferenceInput: 'customerReference', // Text field
-		customerEmailInput: 'customerEmail', // Text field
-		merchantUniquePaymentIdInput: 'merchantUniquePaymentId', // Text field
-		contactNumberInput: 'contactNumber', // Text field
+	// Set values in UI form fields
+	$('#customerNameInput').val(customerNameData.fullName);
+	$('#customerEmailInput').val(customerEmail);
+	$('#contactNumberInput').val(customerMobileNumber);
+
+	// Update extendedOptions with generated values
+	extendedOptions.customerName = customerNameData.fullName;
+	extendedOptions.customerEmail = customerEmail;
+	extendedOptions.contactNumber = customerMobileNumber;
+
+	// Generate UUIDs for customer reference and merchant unique payment ID
+	generateAndSetUuids();
+	console.log(
+		`[initExtendedOptions] Generated UUIDs: customerReference=${extendedOptions.customerReference}, merchantUniquePaymentId=${extendedOptions.merchantUniquePaymentId}`
+	);
+	// Maps HTML input IDs to their corresponding property names in the extendedOptions object
+	const formFieldToOptionMapping = {
+		redirectUrlInput: 'redirectUrl',
+		callbackUrlInput: 'callbackUrl',
+		customerNameInput: 'customerName',
+		customerReferenceInput: 'customerReference',
+		customerEmailInput: 'customerEmail',
+		merchantUniquePaymentIdInput: 'merchantUniquePaymentId',
+		contactNumberInput: 'contactNumber',
 	};
 
-	// Add event listeners for all mapped inputs
-	Object.entries(inputMap).forEach(([inputId, optionKey]) => {
-		$(`#${inputId}`).on('blur', function () {
-			const value = $(this).val();
-			extendedOptions[optionKey] = value;
+	// Set up event listeners for each form field to update the corresponding option
+	Object.entries(formFieldToOptionMapping).forEach(([inputElementId, optionPropertyName]) => {
+		/**
+		 * Update the corresponding extended option when the input loses focus.
+		 * @param {Event} blur event
+		 */
+		$(`#${inputElementId}`).on('blur', function () {
+			const inputValue = $(this).val();
+			extendedOptions[optionPropertyName] = inputValue;
 
-			// Update code preview if defined
 			if (typeof updateCodePreview === 'function') {
 				updateCodePreview();
 			}
 		});
 	});
 
-	// Update redirect URL when domain changes
+	// Update redirect URL when the selected domain changes
 	$('#domainSelect').on('change', () => {
 		updateRedirectUrl();
 	});
-	// Initial redirect URL setup
+
+	// Initial redirect URL calculation
 	updateRedirectUrl();
 }

@@ -524,79 +524,176 @@
 							aria-labelledby="additional-options-tab"
 						>
 							<div class="options-container">
-								<!-- Notifications Section -->
-								<div class="options-section mb-3">
-									<h6 class="mb-2 small"><i class="bi bi-bell me-1"></i>Notifications</h6>
-									<div class="option-chips">
-										<!-- Send Email to Customer -->
-										<div class="option-chip">
-											<input
-												type="checkbox"
-												class="option-toggle visually-hidden"
-												id="sendConfirmationEmailToCustomer"
-												data-option="sendConfirmationEmailToCustomer"
-											/>
-											<label for="sendConfirmationEmailToCustomer" class="option-label">
-												<i class="bi bi-envelope me-1"></i>Email Customer
-											</label>
-										</div>
+								<!-- Row 1: Notifications | UI Options -->
+								<div class="row mb-3">
+									<!-- Notifications (col 1) -->
+									<div class="col-md-6">
+										<div class="options-section">
+											<h6 class="mb-2 small"><i class="bi bi-bell me-1"></i>Notifications</h6>
+											<div class="option-chips">
+												<!-- Send Email to Customer -->
+												<div class="option-chip">
+													<input
+														type="checkbox"
+														class="option-toggle visually-hidden"
+														id="sendConfirmationEmailToCustomer"
+														data-option="sendConfirmationEmailToCustomer"
+													/>
+													<label for="sendConfirmationEmailToCustomer" class="option-label">
+														<i class="bi bi-envelope me-1"></i>Email Customer
+													</label>
+												</div>
 
-										<!-- Send Email to Merchant -->
-										<div class="option-chip">
-											<input
-												type="checkbox"
-												class="option-toggle visually-hidden"
-												id="sendConfirmationEmailToMerchant"
-												data-option="sendConfirmationEmailToMerchant"
-											/>
-											<label for="sendConfirmationEmailToMerchant" class="option-label">
-												<i class="bi bi-envelope-fill me-1"></i>Email Merchant
-											</label>
+												<!-- Send Email to Merchant -->
+												<div class="option-chip">
+													<input
+														type="checkbox"
+														class="option-toggle visually-hidden"
+														id="sendConfirmationEmailToMerchant"
+														data-option="sendConfirmationEmailToMerchant"
+													/>
+													<label for="sendConfirmationEmailToMerchant" class="option-label">
+														<i class="bi bi-envelope-fill me-1"></i>Email Merchant
+													</label>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- UI Options (col 2) -->
+									<div class="col-md-6">
+										<div class="options-section">
+											<h6 class="mb-2 small"><i class="bi bi-display me-1"></i>UI Options</h6>
+											<div class="option-chips">
+												<!-- Hide Terms and Conditions -->
+												<div class="option-chip">
+													<input
+														type="checkbox"
+														class="option-toggle visually-hidden"
+														id="hideTermsAndConditions"
+														data-option="hideTermsAndConditions"
+													/>
+													<label for="hideTermsAndConditions" class="option-label">
+														<i class="bi bi-file-earmark-text me-1"></i>Hide Terms
+													</label>
+												</div>
+
+												<!-- Hide Merchant Logo -->
+												<div class="option-chip">
+													<input
+														type="checkbox"
+														class="option-toggle visually-hidden"
+														id="hideMerchantLogo"
+														data-option="hideMerchantLogo"
+													/>
+													<label for="hideMerchantLogo" class="option-label">
+														<i class="bi bi-image me-1"></i>Hide Logo
+													</label>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
 
-								<!-- UI Options Section -->
-								<div class="options-section mb-3">
-									<h6 class="mb-2 small"><i class="bi bi-display me-1"></i>UI Options</h6>
-									<div class="option-chips">
-										<!-- Hide Terms and Conditions -->
-										<div class="option-chip">
-											<input
-												type="checkbox"
-												class="option-toggle visually-hidden"
-												id="hideTermsAndConditions"
-												data-option="hideTermsAndConditions"
-											/>
-											<label for="hideTermsAndConditions" class="option-label">
-												<i class="bi bi-file-earmark-text me-1"></i>Hide Terms
-											</label>
-										</div>
-
-										<!-- Hide Merchant Logo -->
-										<div class="option-chip">
-											<input
-												type="checkbox"
-												class="option-toggle visually-hidden"
-												id="hideMerchantLogo"
-												data-option="hideMerchantLogo"
-											/>
-											<label for="hideMerchantLogo" class="option-label">
-												<i class="bi bi-image me-1"></i>Hide Logo
-											</label>
+								<!-- Row 2: User Mode | Override Fee Payer -->
+								<div class="row mb-3">
+									<!-- User Mode (col 1) -->
+									<div class="col-md-6">
+										<div class="options-section">
+											<h6 class="mb-2 small"><i class="bi bi-person me-1"></i>User Mode</h6>
+											<div class="option-chips">
+												<div class="option-chip">
+													<input
+														type="radio"
+														class="option-toggle visually-hidden"
+														name="userMode"
+														id="selectUserModeCustomer"
+														data-option="userMode"
+														value="0"
+														checked
+													/>
+													<label for="selectUserModeCustomer" class="option-label">
+														Customer
+													</label>
+												</div>
+												<div class="option-chip">
+													<input
+														type="radio"
+														class="option-toggle visually-hidden"
+														name="userMode"
+														id="selectUserModeMerchant"
+														data-option="userMode"
+														value="1"
+													/>
+													<label for="selectUserModeMerchant" class="option-label">
+														Merchant
+													</label>
+												</div>
+											</div>
 										</div>
 									</div>
 
-									<!-- Min Height Input -->
-									<div class="form-floating mt-2">
-										<input
-											type="number"
-											class="form-control form-control-sm"
-											id="uiMinHeightInput"
-											placeholder="Min Height"
-										/>
-										<label for="uiMinHeightInput">Min Height (px)</label>
+									<!-- Override Fee Payer (col 2) -->
+									<div class="col-md-6">
+										<div class="options-section">
+											<h6 class="mb-2 small">
+												<i class="bi bi-currency-dollar me-1"></i>Override Fee Payer
+											</h6>
+											<div class="option-chips">
+												<div class="option-chip">
+													<input
+														type="radio"
+														class="option-toggle visually-hidden"
+														name="overrideFeePayer"
+														id="overrideFeePayerDefault"
+														data-option="overrideFeePayer"
+														value="0"
+														checked
+													/>
+													<label for="overrideFeePayerDefault" class="option-label">
+														Default
+													</label>
+												</div>
+												<div class="option-chip">
+													<input
+														type="radio"
+														class="option-toggle visually-hidden"
+														name="overrideFeePayer"
+														id="overrideFeePayerCustomer"
+														data-option="overrideFeePayer"
+														value="1"
+													/>
+													<label for="overrideFeePayerCustomer" class="option-label">
+														Customer
+													</label>
+												</div>
+												<div class="option-chip">
+													<input
+														type="radio"
+														class="option-toggle visually-hidden"
+														name="overrideFeePayer"
+														id="overrideFeePayerMerchant"
+														data-option="overrideFeePayer"
+														value="2"
+													/>
+													<label for="overrideFeePayerMerchant" class="option-label">
+														Merchant
+													</label>
+												</div>
+											</div>
+										</div>
 									</div>
+								</div>
+
+								<!-- Row 3: Min Height Input -->
+								<div class="form-floating mb-3">
+									<input
+										type="number"
+										class="form-control form-control-sm"
+										id="minHeightInput"
+										placeholder="Min Height"
+									/>
+									<label for="minHeightInput">Min Height (px)</label>
 								</div>
 
 								<!-- Tokenization-specific options (only visible when mode is 1) -->

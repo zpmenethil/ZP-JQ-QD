@@ -1,6 +1,7 @@
 node_modules
 dist
-build
+build/css
+build/js
 coverage
 .cache
 .v1/
@@ -20,3 +21,7 @@ webpack.css.config.js
 webpack.js.config.js
 webpack.js.fp.config.js
 _fingerprint/
+babel.config.js
+jest.config.js
+repomix.config.json
+tests/

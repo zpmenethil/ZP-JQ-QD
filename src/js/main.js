@@ -2,21 +2,18 @@
  * @file main.js
  * @description Main module for event-handler registration and user interactions.
  */
-
 import { $ } from './globals.js';
-// import { generateRandomPaymentAmount } from './helpers.js';
-// import { initTooltips, initPaymentModeTooltips } from './tooltips.js';
 import { initTooltips } from './tooltips.js';
-
+import './keyboardShortcuts.js';
 import { initThemeToggle } from './theme.js';
 import { initUrlBuilder } from './urlBuilder.js';
-import { initExtendedOptions, generateAndSetUuids } from './extendedOptions.js';
+import { initExtendedOptions } from './extendedOptions.js';
 import { initPlaceholder, setupPlaceholderStyling } from './placeholders.js';
 import { restoreSessionValues, setupSessionListeners } from './session.js';
 import { updateCodePreview, updateMinHeightBasedOnMode } from './codePreview.js';
 import './applogger.js';
 import {
-	initInputPreviewListeners,
+	initCredentialsListeners,
 	initPaymentMethodToggleListeners,
 	initAdditionalOptionsListeners,
 	initUiMinHeightListener,
@@ -26,18 +23,20 @@ import {
 	initOptionTooltips,
 	initPaymentModeHoverTooltip,
 	initPaymentModeChangeTooltip,
+	initPaymentAmountListener,
+	initUserModeToggle,
+	initOverrideFeePayerToggle,
 } from './listener.js';
+import { generateAndSetUuids } from './helpers.js';
 import { initFileInputListener } from './fileInput.js';
-
-export const APP_START_TIME = new Date().toISOString().slice(0, 19);
-window.APP_START_TIME = APP_START_TIME;
+import { generateRandomPaymentAmount } from './helpers.js';
 
 export function initializeApp() {
 	// Initialize UI components first
 	initTooltips();
 	initPaymentModeHoverTooltip();
 	initPaymentModeChangeTooltip();
-	initInputPreviewListeners();
+	initCredentialsListeners();
 	initPaymentMethodToggleListeners();
 	initAdditionalOptionsListeners();
 	initUiMinHeightListener();
@@ -48,21 +47,24 @@ export function initializeApp() {
 	initOptionTooltips();
 
 	initThemeToggle();
-	initUrlBuilder(false);
+	initUrlBuilder(true);
 	initExtendedOptions(false);
 	initPlaceholder();
 	setupPlaceholderStyling();
+
+	initPaymentAmountListener();
+	initUserModeToggle();
+	initOverrideFeePayerToggle(); //
+
 	restoreSessionValues();
 	setupSessionListeners();
 
-	// $('#paymentAmountInput').val($('#paymentAmountInput').val() || generateRandomPaymentAmount());
+	$('#paymentAmountInput').val($('#paymentAmountInput').val() || generateRandomPaymentAmount());
 	updateMinHeightBasedOnMode();
 	generateAndSetUuids();
-	// Run this only once at the end
 	// if (!$('#customerReferenceInput').val()) {
 	// 	generateAndSetUuids();
 	// }
-	// Call this only once at the end
 	updateCodePreview();
 }
 

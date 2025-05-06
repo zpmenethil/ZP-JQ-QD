@@ -1,6 +1,8 @@
-import { $ } from './globals.js';
-import { extendedOptions } from './extendedOptions.js';
+import { $, DEFAULT_VALUES } from './globals.js';
+import { extendedOptions } from './globals.js';
 import { updateCodePreview } from './codePreview.js';
+import { saveToSession, getFromSession } from './session.js';
+import { SESSION_KEYS } from './globals.js';
 
 /**
  * Update the redirect URL based on selected domain and subdomain.
@@ -42,9 +44,9 @@ export function initUrlBuilder(restoreFromSession = true) {
 
 	// Restore from session if requested
 	if (restoreFromSession) {
-		const savedSubdomain = sessionStorage.getItem('demo_subdomain');
-		const savedDomain = sessionStorage.getItem('demo_domain');
-		const savedVersion = sessionStorage.getItem('demo_version');
+		const savedSubdomain = getFromSession(SESSION_KEYS.SUBDOMAIN, DEFAULT_VALUES.url.subdomain);
+		const savedDomain = getFromSession(SESSION_KEYS.DOMAIN, DEFAULT_VALUES.url.domain);
+		const savedVersion = getFromSession(SESSION_KEYS.VERSION, DEFAULT_VALUES.url.version);
 
 		// Apply saved subdomain
 		if (savedSubdomain) {
@@ -78,10 +80,10 @@ export function initUrlBuilder(restoreFromSession = true) {
 		const domain = domainSelect.value;
 		const version = document.querySelector('input[name="version"]:checked').value;
 
-		// Save to session storage
-		sessionStorage.setItem('demo_subdomain', subdomain);
-		sessionStorage.setItem('demo_domain', domain);
-		sessionStorage.setItem('demo_version', version);
+		// Save to session storage using helper functions
+		saveToSession(SESSION_KEYS.SUBDOMAIN, subdomain);
+		saveToSession(SESSION_KEYS.DOMAIN, domain);
+		saveToSession(SESSION_KEYS.VERSION, version);
 
 		const url = `https://${subdomain}.${domain}.com.au/online/${version}`;
 		urlPreview.value = url;

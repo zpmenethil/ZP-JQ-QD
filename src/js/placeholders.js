@@ -46,37 +46,30 @@ export function enhancePlaceholderConsistency() {
 		'#customerEmailInput',
 		'#customerReferenceInput',
 		'#merchantUniquePaymentIdInput',
-		'#uiMinHeightInput',
+		'#minHeightInput',
 	];
 
 	$(inputSelectors.join(', ')).each(function () {
 		const $input = $(this);
 		const originalPlaceholder = $input.attr('placeholder');
 
-		if (!originalPlaceholder) return; // Skip if no placeholder
-
-		// Store original placeholder
+		if (!originalPlaceholder) return;
 		$input.data('original-placeholder', originalPlaceholder);
 
-		// When the input field has no value, add the has-placeholder class and show placeholder
 		function updatePlaceholderState() {
 			if (!$input.val()) {
 				$input.addClass('has-placeholder');
 				$input.attr('placeholder', $input.data('original-placeholder'));
 			} else {
 				$input.removeClass('has-placeholder');
-				// Keep placeholder empty when value exists to avoid confusion
 				$input.attr('placeholder', '');
 			}
 		}
 
-		// Initial state
 		updatePlaceholderState();
 
-		// Update on value change
 		$input.on('input change blur', updatePlaceholderState);
 
-		// Special handling for focus - keep the has-placeholder class but update text
 		$input.on('focus', function () {
 			if (!$input.val()) {
 				$input.addClass('has-placeholder');
@@ -97,7 +90,6 @@ export function setupPlaceholderStyling() {
 
 		if (!originalPlaceholder) return;
 
-		// Function to update the class based on value state
 		function updatePlaceholderState() {
 			if (!$input.val()) {
 				$input.addClass('placeholder-as-value');
@@ -106,10 +98,8 @@ export function setupPlaceholderStyling() {
 			}
 		}
 
-		// Set initial state
 		updatePlaceholderState();
 
-		// Update on input events
 		$input.on('input change blur', updatePlaceholderState);
 	});
 }

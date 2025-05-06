@@ -3,8 +3,8 @@
  * @module sessionManagement
  */
 
-import { $ } from './globals.js';
-import { paymentMethodOptions, additionalOptions } from './globals.js';
+import { $, SESSION_KEYS } from './globals.js';
+import { paymentMethodOptions, additionalOptions, DEFAULT_VALUES } from './globals.js';
 import { base64EncodeASCII, base64DecodeASCII } from './helpers.js';
 
 /**
@@ -24,40 +24,6 @@ export const ENCODING_TYPE = {
 	NONE: 'none',
 	JSON: 'json',
 	BASE64: 'base64',
-};
-
-/**
- * Object containing session storage keys for various form fields and settings.
- * @constant {Object}
- */
-export const SESSION_KEYS = {
-	// CREDS
-	API_KEY: 'demoApiKey',
-	USERNAME: 'demoUsername',
-	PASSWORD: 'demoPassword',
-	MERCHANT_CODE: 'demoMerchantCode',
-	//
-	PAYMENT_AMOUNT: 'demoPaymentAmount',
-	// MODE
-	MODE: 'demoMode',
-	// URL
-	SUBDOMAIN: 'demoSubdomain',
-	DOMAIN: 'demoDomain',
-	VERSION: 'demoVersion',
-	// Extended options
-	UI_MIN_HEIGHT: 'demo_uiMinHeight',
-	REDIRECT_URL: 'demo_redirectUrl',
-	CALLBACK_URL: 'demo_callbackUrl',
-	SENDEMAILCONFIRMATIONTOMERCHANT: 'demo_sendEmailConfirmationToMerchant',
-	SENDEMAILCONFIRMATIONTOCUSTOMER: 'demo_sendEmailConfirmationToCustomer',
-	// Payment method options
-	ALLOWBANKONEOFF: 'demo_allowBankOneOff',
-	ALLOWPAYTO: 'demo_allowPayTo',
-	ALLOWPAYID: 'demo_allowPayID',
-	ALLOWAPPLEPAY: 'demo_allowApplePay',
-	ALLOWGOOGLEPAY: 'demo_allowGooglePay',
-	ALLOWSAVECARDINFO: 'demo_allowSaveCardInfo',
-	ALLOWLATITUDEPAY: 'demo_allowLatitudePay',
 };
 
 /**
@@ -199,6 +165,7 @@ export function getFromSession(key, defaultValue = null) {
 		return defaultValue;
 	}
 }
+
 export function restoreSessionValues() {
 	console.trace(`[restoreSessionValues] Restoring session values called`);
 
@@ -277,8 +244,8 @@ export function restoreSessionValues() {
 	}
 
 	// Restore UI minHeight
-	if ($('#uiMinHeightInput').length) {
-		$('#uiMinHeightInput').val(getFromSession(SESSION_KEYS.UI_MIN_HEIGHT, ''));
+	if ($('#minHeightInput').length) {
+		$('#minHeightInput').val(getFromSession(SESSION_KEYS.MIN_HEIGHT, ''));
 	}
 }
 
@@ -286,40 +253,30 @@ export function restoreSessionValues() {
  * Save all form field values to session storage.
  * @returns {void}
  */
-export function saveSessionValues() {
+export function saveSessionValues(paymentConfig) {
 	console.trace(`[saveSessionValues] Saving session values called`);
 	// Save credential fields
-	saveToSession(SESSION_KEYS.API_KEY, $('#apiKeyInput').val().trim());
-	saveToSession(SESSION_KEYS.USERNAME, $('#usernameInput').val().trim());
-	saveToSession(SESSION_KEYS.PASSWORD, $('#passwordInput').val().trim());
-	saveToSession(SESSION_KEYS.MERCHANT_CODE, $('#merchantCodeInput').val().trim());
+	saveToSession(SESSION_KEYS.API_KEY, paymentConfig.apiKey);
+	saveToSession(SESSION_KEYS.USERNAME, paymentConfig.username);
+	saveToSession(SESSION_KEYS.PASSWORD, paymentConfig.password);
+	saveToSession(SESSION_KEYS.MERCHANT_CODE, paymentConfig.merchantCode);
 	// Mode
-	saveToSession(SESSION_KEYS.MODE, $('#modeSelect').val());
+	saveToSession(SESSION_KEYS.MODE, paymentConfig.mode);
 	// URL
-	saveToSession(SESSION_KEYS.SUBDOMAIN, $('input[name="subdomain"]:checked').val());
-	saveToSession(SESSION_KEYS.DOMAIN, $('#domainSelect').val());
-	saveToSession(SESSION_KEYS.VERSION, $('input[name="version"]:checked').val());
-
-	if (
-		$('#paymentAmountInput').val().trim() === '65' ||
-		$('#paymentAmountInput').val().trim() === '65.00'
-	) {
-		saveToSession(SESSION_KEYS.PAYMENT_AMOUNT, $('#paymentAmountInput').val().trim());
+	saveToSession(SESSION_KEYS.SUBDOMAIN, paymentConfig.subdomain);
+	saveToSession(SESSION_KEYS.DOMAIN, paymentConfig.domain);
+	saveToSession(SESSION_KEYS.VERSION, paymentConfig.version);
+	saveToSession(SESSION_KEYS.CALLBACK_URL, paymentConfig.callbackUrl);
+	const minHeightValue = paymentConfig.minHeight;
+	if (minHeightValue && minHeightValue !== DEFAULT_VALUES.options.minHeight.default) {
+		saveToSession(SESSION_KEYS.MIN_HEIGHT, minHeightValue);
 	}
 
-	saveToSession(SESSION_KEYS.CALLBACK_URL, $('#callbackUrlInput').val());
-
-	if ($('#uiMinHeightInput').val() !== '825' && $('#uiMinHeightInput').val() !== '600') {
-		saveToSession(SESSION_KEYS.MIN_HEIGHT, $('#uiMinHeightInput').val());
-	}
-
-	// Save payment method options
 	$('.payment-method-toggle').each(function () {
 		const option = $(this).data('option');
 		saveToSession(`demo_${option}`, $(this).prop('checked'));
 	});
 
-	// Save additional options
 	$('.option-toggle').each(function () {
 		const option = $(this).data('option');
 		saveToSession(`demo_${option}`, $(this).prop('checked'));

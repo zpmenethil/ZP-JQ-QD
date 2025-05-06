@@ -40,3 +40,11 @@ src/js/applogger.old
 build/js/bundle.js.map
 build/js/bundle.min.js
 _fingerprint/
+build/css/bundle.css
+build/js/bundle.js
+build/index.html
+stats.json
+repomix-output-js.md
+package-lock.json
+_playwright/
+.v3/

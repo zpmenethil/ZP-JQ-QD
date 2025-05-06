@@ -1,12 +1,30 @@
-// fileInput.js
+/**
+ * @module fileInput
+ * @description Handles browsing and loading of JSON configuration files for the ZenPay demo plugin.
+ */
+
 import { $ } from './globals.js';
-import { validateConfigSchema } from './helpers.js';
 import { showSuccess, showError } from './modal.js';
-import { saveSessionValues } from './session.js';
+import { saveToSession } from './session.js';
 import { updateCodePreview } from './codePreview.js';
+import { SESSION_KEYS } from './globals.js';
+/**
+ * Save only credential fields to session storage.
+ * @returns {void}
+ */
+function saveCredsToSession() {
+	saveToSession(SESSION_KEYS.API_KEY, $('#apiKeyInput').val().trim());
+	saveToSession(SESSION_KEYS.USERNAME, $('#usernameInput').val().trim());
+	saveToSession(SESSION_KEYS.PASSWORD, $('#passwordInput').val().trim());
+	saveToSession(SESSION_KEYS.MERCHANT_CODE, $('#merchantCodeInput').val().trim());
+}
 
 /**
- * Browse & load a JSON configuration file
+ * Initialize file input listener on the "Browse Configuration" button.
+ * Opens a file picker for `.json` files, validates the loaded configuration,
+ * populates the corresponding input fields, saves session values, updates the code preview,
+ * and displays a success or error modal.
+ * @returns {void}
  */
 export function initFileInputListener() {
 	$('#browseConfigBtn').on('click', () => {
@@ -14,15 +32,25 @@ export function initFileInputListener() {
 		fileInput.type = 'file';
 		fileInput.accept = '.json';
 
+		/**
+		 * Handle file selection event, read and process the JSON configuration.
+		 * @param {Event} e - The change event from the file input.
+		 */
 		fileInput.addEventListener('change', (e) => {
-			const files = e.target.files;
+			const files = /** @type {FileList} */ (e.target.files);
 			if (!files || files.length === 0) return;
 			const file = files[0];
 			const reader = new FileReader();
 
+			/**
+			 * Handle file read completion, parse and apply configuration.
+			 * @param {ProgressEvent<FileReader>} event - The load event containing file contents.
+			 */
 			reader.onload = (event) => {
 				try {
-					const config = JSON.parse(event.target.result);
+					const text = event.target.result;
+					const config = JSON.parse(text);
+
 					if (!validateConfigSchema(config)) {
 						showError(
 							'Invalid Configuration',
@@ -47,7 +75,7 @@ export function initFileInputListener() {
 						passwordField.length &&
 						merchantField.length
 					) {
-						saveSessionValues();
+						saveCredsToSession();
 						updateCodePreview();
 						showSuccess(
 							'Configuration Loaded',
@@ -55,7 +83,6 @@ export function initFileInputListener() {
 						);
 					}
 				} catch (error) {
-					console.error('Error parsing configuration file:', error);
 					showError('Load Failed', `Failed to parse JSON: ${error.message}`);
 				}
 			};
@@ -65,4 +92,25 @@ export function initFileInputListener() {
 
 		fileInput.click();
 	});
+}
+
+/**
+ * Validates the configuration object schema for required fields.
+ * @param {object} config - Configuration object to validate.
+ * @param {string} config.apiKey - Merchant API key.
+ * @param {string} config.username - Merchant username.
+ * @param {string} config.password - Merchant password.
+ * @param {string} config.merchantCode - Merchant code.
+ * @returns {boolean} `true` if the config has all required fields; otherwise `false`.
+ */
+export function validateConfigSchema(config) {
+	if (!config || typeof config !== 'object') return false;
+	// Check for required fields
+	const requiredFields = ['apiKey', 'username', 'password', 'merchantCode'];
+	return requiredFields.every(
+		(field) =>
+			Object.prototype.hasOwnProperty.call(config, field) &&
+			typeof config[field] === 'string' &&
+			config[field].trim() !== ''
+	);
 }

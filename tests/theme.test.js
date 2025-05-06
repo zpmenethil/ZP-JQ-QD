@@ -4,22 +4,22 @@
 
 // Mock dependencies
 jest.mock('../src/js/globals.js', () => ({
-	$: jest.fn(selector => {
+	$: jest.fn((selector) => {
 		const mockElement = {
 			addClass: jest.fn().mockReturnThis(),
 			removeClass: jest.fn().mockReturnThis(),
-			on: jest.fn().mockReturnThis()
+			on: jest.fn().mockReturnThis(),
 			// Add other jQuery methods if needed by the theme logic
 		};
 		return mockElement;
 	}),
 	hljs: {
-		highlightElement: jest.fn()
-	}
+		highlightElement: jest.fn(),
+	},
 }));
 
 jest.mock('../src/js/tooltips.js', () => ({
-	reinitializeTooltips: jest.fn()
+	reinitializeTooltips: jest.fn(),
 }));
 
 // Mock session.js partially - we need the real STORAGE_TYPE but mock the functions
@@ -28,7 +28,7 @@ jest.mock('../src/js/session.js', () => {
 	return {
 		...originalModule, // Keep original exports like STORAGE_TYPE
 		saveToStorage: jest.fn(),
-		getFromStorage: jest.fn()
+		getFromStorage: jest.fn(),
 	};
 });
 
@@ -39,7 +39,7 @@ import { reinitializeTooltips } from '../src/js/tooltips.js';
 import { saveToStorage, getFromStorage, STORAGE_TYPE } from '../src/js/session.js'; // Import mocks and real STORAGE_TYPE
 
 // --- Mock window.matchMedia ---
-const mockMatchMedia = matches => {
+const mockMatchMedia = (matches) => {
 	const mediaQueryList = {
 		matches: matches,
 		media: '(prefers-color-scheme: dark)',
@@ -58,23 +58,29 @@ const mockMatchMedia = matches => {
 		}),
 		dispatchEvent: jest.fn(),
 		// Helper to simulate change
-		simulateChange: newMatches => {
+		simulateChange: (newMatches) => {
 			mediaQueryList.matches = newMatches;
 			if (mediaQueryList.changeListener) {
 				mediaQueryList.changeListener({ matches: newMatches });
 			}
-		}
+		},
 	};
 	Object.defineProperty(window, 'matchMedia', {
 		writable: true,
 		configurable: true,
-		value: jest.fn().mockImplementation(query => {
+		value: jest.fn().mockImplementation((query) => {
 			if (query === '(prefers-color-scheme: dark)') {
 				return mediaQueryList;
 			}
 			// Fallback for other queries if needed
-			return { matches: false, addListener: jest.fn(), removeListener: jest.fn(), addEventListener: jest.fn(), removeEventListener: jest.fn() };
-		})
+			return {
+				matches: false,
+				addListener: jest.fn(),
+				removeListener: jest.fn(),
+				addEventListener: jest.fn(),
+				removeEventListener: jest.fn(),
+			};
+		}),
 	});
 	return mediaQueryList; // Return the specific mock for dark scheme query
 };
@@ -103,7 +109,7 @@ describe('Theme Management', () => {
 		lightIconMock = { addClass: jest.fn(), removeClass: jest.fn() };
 		darkIconMock = { addClass: jest.fn(), removeClass: jest.fn() };
 
-		$.mockImplementation(selector => {
+		$.mockImplementation((selector) => {
 			if (selector === '#themeToggle') return themeToggleButtonMock;
 			if (selector === '#lightIcon') return lightIconMock;
 			if (selector === '#darkIcon') return darkIconMock;
@@ -111,7 +117,7 @@ describe('Theme Management', () => {
 				// Default mock for other selectors if any
 				addClass: jest.fn(),
 				removeClass: jest.fn(),
-				on: jest.fn()
+				on: jest.fn(),
 			};
 		});
 

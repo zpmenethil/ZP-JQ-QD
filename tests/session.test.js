@@ -4,7 +4,7 @@
 
 // Mock dependencies
 jest.mock('../src/js/globals.js', () => ({
-	$: jest.fn(selector => {
+	$: jest.fn((selector) => {
 		// Basic jQuery mock
 		const mockElement = {
 			val: jest.fn().mockReturnThis(),
@@ -14,14 +14,14 @@ jest.mock('../src/js/globals.js', () => ({
 				// For now, just call the callback once for simplicity
 				callback.call({
 					data: jest.fn().mockReturnValue('mockOption'), // Example data attribute
-					prop: jest.fn().mockReturnValue(true) // Example property value
+					prop: jest.fn().mockReturnValue(true), // Example property value
 				});
 				return this;
 			}),
 			on: jest.fn().mockReturnThis(),
 			length: 1, // Assume element exists by default
 			removeClass: jest.fn().mockReturnThis(),
-			data: jest.fn().mockReturnValue('mockOption') // Default data attribute
+			data: jest.fn().mockReturnValue('mockOption'), // Default data attribute
 		};
 		// Allow chaining and specific value retrieval/setting
 		mockElement.val.mockImplementation(function (value) {
@@ -42,12 +42,12 @@ jest.mock('../src/js/globals.js', () => ({
 		return mockElement;
 	}),
 	paymentMethodOptions: {}, // Mock global options if needed
-	additionalOptions: {}
+	additionalOptions: {},
 }));
 
 jest.mock('../src/js/helpers.js', () => ({
-	base64EncodeASCII: jest.fn(str => `encoded(${str})`),
-	base64DecodeASCII: jest.fn(str => str.replace(/^encoded\((.*)\)$/, '$1'))
+	base64EncodeASCII: jest.fn((str) => `encoded(${str})`),
+	base64DecodeASCII: jest.fn((str) => str.replace(/^encoded\((.*)\)$/, '$1')),
 }));
 
 // Mock session.js partially - mock functions, keep constants
@@ -64,7 +64,7 @@ jest.mock('../src/js/session.js', () => {
 		// Keep the functions we are testing (will be replaced by actual below)
 		restoreSessionValues: originalModule.restoreSessionValues,
 		saveSessionValues: originalModule.saveSessionValues,
-		setupSessionListeners: originalModule.setupSessionListeners
+		setupSessionListeners: originalModule.setupSessionListeners,
 	};
 });
 
@@ -78,7 +78,7 @@ import {
 	getFromSession, // Mocked version
 	restoreSessionValues, // Actual function to test
 	saveSessionValues, // Actual function to test
-	setupSessionListeners // Actual function to test
+	setupSessionListeners, // Actual function to test
 } from '../src/js/session.js';
 import { $ } from '../src/js/globals.js';
 import { base64EncodeASCII, base64DecodeASCII } from '../src/js/helpers.js';
@@ -87,17 +87,17 @@ import { base64EncodeASCII, base64DecodeASCII } from '../src/js/helpers.js';
 const mockStorage = () => {
 	let store = {};
 	return {
-		getItem: jest.fn(key => store[key] || null),
+		getItem: jest.fn((key) => store[key] || null),
 		setItem: jest.fn((key, value) => {
 			store[key] = value.toString();
 		}),
-		removeItem: jest.fn(key => {
+		removeItem: jest.fn((key) => {
 			delete store[key];
 		}),
 		clear: jest.fn(() => {
 			store = {};
 		}),
-		getStore: () => store // Helper to inspect the store
+		getStore: () => store, // Helper to inspect the store
 	};
 };
 
@@ -198,14 +198,16 @@ describe('Session Management', () => {
 					[SESSION_KEYS.SUBDOMAIN]: 'dev',
 					[SESSION_KEYS.DOMAIN]: 'payments',
 					[SESSION_KEYS.VERSION]: 'v2',
-					[SESSION_KEYS.UI_MIN_HEIGHT]: '700'
+					[SESSION_KEYS.UI_MIN_HEIGHT]: '700',
 				};
 				return values[key] !== undefined ? values[key] : defaultValue;
 			});
 
-			document.querySelector = jest.fn(selector => {
-				if (selector === 'input[name="subdomain"][value="dev"]') return { checked: false, prop: jest.fn() };
-				if (selector === 'input[name="version"][value="v2"]') return { checked: false, prop: jest.fn() };
+			document.querySelector = jest.fn((selector) => {
+				if (selector === 'input[name="subdomain"][value="dev"]')
+					return { checked: false, prop: jest.fn() };
+				if (selector === 'input[name="version"][value="v2"]')
+					return { checked: false, prop: jest.fn() };
 				return null;
 			});
 
@@ -214,10 +216,22 @@ describe('Session Management', () => {
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.API_KEY, '', STORAGE_TYPE.SESSION);
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.USERNAME, '', STORAGE_TYPE.SESSION);
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.PASSWORD, '', STORAGE_TYPE.SESSION);
-			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION);
-			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION);
+			expect(getFromSession).toHaveBeenCalledWith(
+				SESSION_KEYS.MERCHANT_CODE,
+				'',
+				STORAGE_TYPE.SESSION
+			);
+			expect(getFromSession).toHaveBeenCalledWith(
+				SESSION_KEYS.PAYMENT_AMOUNT,
+				'',
+				STORAGE_TYPE.SESSION
+			);
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.MODE, '0', STORAGE_TYPE.SESSION);
-			expect(getFromSession).toHaveBeenCalledWith('demo_allowBankOneOff', false, STORAGE_TYPE.SESSION);
+			expect(getFromSession).toHaveBeenCalledWith(
+				'demo_allowBankOneOff',
+				false,
+				STORAGE_TYPE.SESSION
+			);
 			expect(getFromSession).toHaveBeenCalledWith('demo_sendEmailConfirmationToMerchant', false);
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.SUBDOMAIN);
 			expect(getFromSession).toHaveBeenCalledWith(SESSION_KEYS.DOMAIN);
@@ -242,7 +256,7 @@ describe('Session Management', () => {
 	// --- saveSessionValues ---
 	describe('saveSessionValues', () => {
 		it('should call the mocked saveToSession for relevant input fields', () => {
-			$.mockImplementation(selector => {
+			$.mockImplementation((selector) => {
 				const elements = {
 					'#apiKeyInput': { val: jest.fn().mockReturnValue(' savedApi ') },
 					'#usernameInput': { val: jest.fn().mockReturnValue(' savedUser ') },
@@ -259,22 +273,30 @@ describe('Session Management', () => {
 						each: jest.fn(function (cb) {
 							cb.call({
 								data: jest.fn().mockReturnValue('allowBankOneOff'),
-								prop: jest.fn().mockReturnValue(true)
+								prop: jest.fn().mockReturnValue(true),
 							});
 							return this;
-						})
+						}),
 					},
 					'.option-toggle': {
 						each: jest.fn(function (cb) {
 							cb.call({
 								data: jest.fn().mockReturnValue('sendEmailConfirmationToMerchant'),
-								prop: jest.fn().mockReturnValue(true)
+								prop: jest.fn().mockReturnValue(true),
 							});
 							return this;
-						})
-					}
+						}),
+					},
 				};
-				return elements[selector] || { val: jest.fn(), prop: jest.fn(), each: jest.fn().mockReturnThis(), data: jest.fn(), on: jest.fn() };
+				return (
+					elements[selector] || {
+						val: jest.fn(),
+						prop: jest.fn(),
+						each: jest.fn().mockReturnThis(),
+						data: jest.fn(),
+						on: jest.fn(),
+					}
+				);
 			});
 
 			saveSessionValues();
@@ -295,25 +317,44 @@ describe('Session Management', () => {
 		});
 
 		it('should NOT call saveToSession for payment amount if not 65 or 65.00', () => {
-			$.mockImplementation(selector => {
-				if (selector === '#paymentAmountInput') return { val: jest.fn().mockReturnValue(' 100.00 ') };
-				return { val: jest.fn(), prop: jest.fn(), each: jest.fn().mockReturnThis(), data: jest.fn() };
+			$.mockImplementation((selector) => {
+				if (selector === '#paymentAmountInput')
+					return { val: jest.fn().mockReturnValue(' 100.00 ') };
+				return {
+					val: jest.fn(),
+					prop: jest.fn(),
+					each: jest.fn().mockReturnThis(),
+					data: jest.fn(),
+				};
 			});
 			saveSessionValues();
-			expect(saveToSession).not.toHaveBeenCalledWith(SESSION_KEYS.PAYMENT_AMOUNT, expect.anything());
+			expect(saveToSession).not.toHaveBeenCalledWith(
+				SESSION_KEYS.PAYMENT_AMOUNT,
+				expect.anything()
+			);
 		});
 
 		it('should NOT call saveToSession for minHeight if 825 or 600', () => {
-			$.mockImplementation(selector => {
+			$.mockImplementation((selector) => {
 				if (selector === '#uiMinHeightInput') return { val: jest.fn().mockReturnValue('825') };
-				return { val: jest.fn(), prop: jest.fn(), each: jest.fn().mockReturnThis(), data: jest.fn() };
+				return {
+					val: jest.fn(),
+					prop: jest.fn(),
+					each: jest.fn().mockReturnThis(),
+					data: jest.fn(),
+				};
 			});
 			saveSessionValues();
 			expect(saveToSession).not.toHaveBeenCalledWith(SESSION_KEYS.MIN_HEIGHT, expect.anything());
 
-			$.mockImplementation(selector => {
+			$.mockImplementation((selector) => {
 				if (selector === '#uiMinHeightInput') return { val: jest.fn().mockReturnValue('600') };
-				return { val: jest.fn(), prop: jest.fn(), each: jest.fn().mockReturnThis(), data: jest.fn() };
+				return {
+					val: jest.fn(),
+					prop: jest.fn(),
+					each: jest.fn().mockReturnThis(),
+					data: jest.fn(),
+				};
 			});
 			saveSessionValues();
 			expect(saveToSession).not.toHaveBeenCalledWith(SESSION_KEYS.MIN_HEIGHT, expect.anything());
@@ -324,7 +365,7 @@ describe('Session Management', () => {
 	describe('setupSessionListeners', () => {
 		it('should attach change listeners using jQuery mock', () => {
 			const listeners = {};
-			$.mockImplementation(selector => {
+			$.mockImplementation((selector) => {
 				return {
 					on: jest.fn((event, handler) => {
 						if (!listeners[selector]) listeners[selector] = {};
@@ -336,7 +377,7 @@ describe('Session Management', () => {
 					each: jest.fn().mockReturnThis(),
 					data: jest.fn(),
 					length: 1,
-					removeClass: jest.fn()
+					removeClass: jest.fn(),
 				};
 			});
 
@@ -344,7 +385,9 @@ describe('Session Management', () => {
 
 			expect($).toHaveBeenCalledWith('.payment-method-toggle');
 			expect($).toHaveBeenCalledWith('#modeSelect');
-			expect($).toHaveBeenCalledWith('#domainSelect, input[name="subdomain"], input[name="version"]');
+			expect($).toHaveBeenCalledWith(
+				'#domainSelect, input[name="subdomain"], input[name="version"]'
+			);
 			expect($).toHaveBeenCalledWith('#sendEmailConfirmationToMerchant');
 			expect($).toHaveBeenCalledWith('#sendEmailConfirmationToCustomer');
 

@@ -4,7 +4,7 @@
 
 // Mocking dependencies
 jest.mock('../src/js/globals.js', () => ({
-	$: jest.fn(selector => {
+	$: jest.fn((selector) => {
 		// Mock jQuery functionality
 		const mockJQuery = {
 			val: jest.fn().mockImplementation(function (value) {
@@ -18,23 +18,23 @@ jest.mock('../src/js/globals.js', () => ({
 			attr: jest.fn().mockReturnThis(),
 			on: jest.fn().mockReturnThis(),
 			find: jest.fn().mockReturnThis(),
-			tooltip: jest.fn().mockReturnThis()
+			tooltip: jest.fn().mockReturnThis(),
 		};
 
 		// Store the selector to identify the element
 		mockJQuery.selector = selector;
 		return mockJQuery;
-	})
+	}),
 }));
 
 jest.mock('../src/js/extendedOptions.js', () => ({
 	extendedOptions: {
-		redirectUrl: ''
-	}
+		redirectUrl: '',
+	},
 }));
 
 jest.mock('../src/js/codePreview.js', () => ({
-	updateCodePreview: jest.fn()
+	updateCodePreview: jest.fn(),
 }));
 
 // Import modules after mocking
@@ -58,7 +58,7 @@ function setupDom() {
 
 	// Mock document.querySelector for radio buttons
 	const originalQuerySelector = document.querySelector;
-	document.querySelector = jest.fn().mockImplementation(selector => {
+	document.querySelector = jest.fn().mockImplementation((selector) => {
 		if (selector === 'input[name="subdomain"]:checked') {
 			return { value: 'test' };
 		}
@@ -70,17 +70,17 @@ function setupDom() {
 
 	// Mock querySelectorAll
 	const originalQuerySelectorAll = document.querySelectorAll;
-	document.querySelectorAll = jest.fn().mockImplementation(selector => {
+	document.querySelectorAll = jest.fn().mockImplementation((selector) => {
 		if (selector === 'input[name="subdomain"]') {
 			return [
 				{ value: 'test', addEventListener: jest.fn() },
-				{ value: 'dev', addEventListener: jest.fn() }
+				{ value: 'dev', addEventListener: jest.fn() },
 			];
 		}
 		if (selector === 'input[name="version"]') {
 			return [
 				{ value: 'v1', addEventListener: jest.fn() },
-				{ value: 'v2', addEventListener: jest.fn() }
+				{ value: 'v2', addEventListener: jest.fn() },
 			];
 		}
 		return originalQuerySelectorAll.call(document, selector);
@@ -88,7 +88,7 @@ function setupDom() {
 
 	// Mock getElementById
 	const originalGetElementById = document.getElementById;
-	document.getElementById = jest.fn().mockImplementation(id => {
+	document.getElementById = jest.fn().mockImplementation((id) => {
 		if (id === 'domainSelect') {
 			return { value: 'zenith', addEventListener: jest.fn() };
 		}
@@ -114,18 +114,18 @@ function setupDom() {
 	const sessionStorageMock = (() => {
 		let store = {};
 		return {
-			getItem: jest.fn(key => store[key] || null),
+			getItem: jest.fn((key) => store[key] || null),
 			setItem: jest.fn((key, value) => {
 				store[key] = value.toString();
 			}),
 			clear: jest.fn(() => {
 				store = {};
-			})
+			}),
 		};
 	})();
 
 	Object.defineProperty(window, 'sessionStorage', {
-		value: sessionStorageMock
+		value: sessionStorageMock,
 	});
 
 	// Mock console.log
@@ -152,7 +152,10 @@ describe('urlBuilder', () => {
 
 			// Assertions
 			expect($('#redirectUrlInput').val).toHaveBeenCalledWith('https://test.zenith.com.au/demo/');
-			expect($('#callbackUrlInput').attr).toHaveBeenCalledWith('placeholder', 'https://test.zenith.com.au/callback/');
+			expect($('#callbackUrlInput').attr).toHaveBeenCalledWith(
+				'placeholder',
+				'https://test.zenith.com.au/callback/'
+			);
 			expect(extendedOptions.redirectUrl).toBe('https://test.zenith.com.au/demo/');
 			expect(updateCodePreview).toHaveBeenCalled();
 		});
@@ -167,7 +170,10 @@ describe('urlBuilder', () => {
 
 			// Assertions
 			expect($('#redirectUrlInput').val).toHaveBeenCalledWith('https://dev.payments.com.au/demo/');
-			expect($('#callbackUrlInput').attr).toHaveBeenCalledWith('placeholder', 'https://dev.payments.com.au/callback/');
+			expect($('#callbackUrlInput').attr).toHaveBeenCalledWith(
+				'placeholder',
+				'https://dev.payments.com.au/callback/'
+			);
 			expect(extendedOptions.redirectUrl).toBe('https://dev.payments.com.au/demo/');
 			expect(updateCodePreview).toHaveBeenCalled();
 		});
@@ -191,17 +197,17 @@ describe('urlBuilder', () => {
 
 		it('should restore from session storage when restoreFromSession is true', () => {
 			// Setup session storage mock values
-			sessionStorage.getItem.mockImplementation(key => {
+			sessionStorage.getItem.mockImplementation((key) => {
 				const values = {
 					demo_subdomain: 'dev',
 					demo_domain: 'payments',
-					demo_version: 'v2'
+					demo_version: 'v2',
 				};
 				return values[key] || null;
 			});
 
 			// Mock document.querySelector to simulate finding inputs
-			document.querySelector.mockImplementation(selector => {
+			document.querySelector.mockImplementation((selector) => {
 				if (selector === 'input[name="subdomain"][value="dev"]') {
 					return { checked: false }; // Will be set to true by the function
 				}
@@ -236,7 +242,7 @@ describe('urlBuilder', () => {
 					return modalMock;
 				}),
 				find: jest.fn().mockReturnThis(),
-				tooltip: jest.fn()
+				tooltip: jest.fn(),
 			};
 			$('#urlBuilderModal').mockReturnValue(modalMock);
 
@@ -274,7 +280,9 @@ describe('urlBuilder', () => {
 			clickEventListener();
 
 			// Assertions
-			expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Applying URL changes from modal'));
+			expect(console.log).toHaveBeenCalledWith(
+				expect.stringContaining('Applying URL changes from modal')
+			);
 		});
 	});
 });

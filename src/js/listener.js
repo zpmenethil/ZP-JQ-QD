@@ -1,4 +1,8 @@
-// listener.js
+/**
+ * @module listener
+ * @description Sets up UI event listeners for the ZenPay demo plugin page.
+ */
+
 import { $ } from './globals.js';
 import { paymentMethodOptions, additionalOptions } from './globals.js';
 import {
@@ -6,19 +10,33 @@ import {
 	copyCodeToClipboard,
 	updateMinHeightBasedOnMode,
 } from './codePreview.js';
-import { initializeZenPayPlugin } from './pluginInit.js';
+import { initializeZenPayPlugin } from './initZP.js';
+import { extendedOptions } from './globals.js';
+
+// /**
+//  * Initialize input and select change listeners to trigger code preview updates.
+//  * @returns {void}
+//  */
+// export function initInputPreviewListeners() {
+// 	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect').on('input change', updateCodePreview);
+// }
 
 /**
- * Update code preview on inputs and mode change
+ * Initialize input and select change listeners to trigger code preview updates.
+ * @returns {void}
  */
-export function initInputPreviewListeners() {
-	$(
-		'#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect'
-	).on('input change', updateCodePreview);
+export function initCredentialsListeners() {
+	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput').on('blur', function () {
+		// const fieldName = $(this).attr('id');
+		// extendedOptions[fieldName] = $(this).val();
+		updateCodePreview();
+	});
 }
 
 /**
- * Payment-method toggles
+ * Initialize toggles for payment methods. Persists selections to sessionStorage
+ * and updates the code preview on change.
+ * @returns {void}
  */
 export function initPaymentMethodToggleListeners() {
 	$('.payment-method-toggle').on('change', function () {
@@ -28,9 +46,9 @@ export function initPaymentMethodToggleListeners() {
 		updateCodePreview();
 	});
 }
-
 /**
- * Additional-options toggles
+ * Initialize toggles for additional plugin options and update the code preview on change.
+ * @returns {void}
  */
 export function initAdditionalOptionsListeners() {
 	$('.option-toggle').on('change', function () {
@@ -41,14 +59,25 @@ export function initAdditionalOptionsListeners() {
 }
 
 /**
- * Dynamic minHeight input
+ * Initialize listener for dynamic UI min-height input to update the code preview.
+ * @returns {void}
  */
 export function initUiMinHeightListener() {
-	$('#uiMinHeightInput').on('input', updateCodePreview);
+	$('#minHeightInput').on('blur', updateCodePreview);
 }
 
 /**
- * Show/hide tokenization & update preview on mode change
+ * Initialize listener for payment amount input to update the code preview.
+ * @returns {void}
+ */
+export function initPaymentAmountListener() {
+	$('#paymentAmountInput').on('blur', updateCodePreview);
+}
+
+/**
+ * Initialize listener on the mode selector to show/hide tokenization options,
+ * adjust UI min-height, and update the code preview.
+ * @returns {void}
  */
 export function initModeSelectListener() {
 	$('#modeSelect').on('change', function () {
@@ -64,21 +93,50 @@ export function initModeSelectListener() {
 }
 
 /**
- * Initialize ZenPay plugin
+ * Initialize exclusive radio toggles for User Mode (0=Customer, 1=Merchant).
+ * Updates extendedOptions.userMode and refreshes preview on change.
+ * @returns {void}
+ */
+export function initUserModeToggle() {
+	$('input[name="userMode"]').on('change', function () {
+		extendedOptions.userMode = Number(this.value);
+		updateCodePreview();
+	});
+}
+
+/**
+ * Initialize exclusive radio toggles for Override Fee Payer (0=Default, 1=Customer, 2=Merchant).
+ * Updates extendedOptions.overrideFeePayer and refreshes preview on change.
+ * @returns {void}
+ */
+export function initOverrideFeePayerToggle() {
+	$('input[name="overrideFeePayer"]').on('change', function () {
+		extendedOptions.overrideFeePayer = Number(this.value);
+		updateCodePreview();
+	});
+}
+
+/**
+ * Initialize click listener to launch the ZenPay plugin initialization.
+ * @returns {void}
  */
 export function initInitializePluginListener() {
+	console.debug(`[initInitializePluginListener] Initializing plugin listener`);
 	$('#initializePlugin').on('click', initializeZenPayPlugin);
 }
 
 /**
- * Copy code preview to clipboard
+ * Initialize click listener to copy the current code preview to the clipboard.
+ * @returns {void}
  */
 export function initCopyCodeListener() {
 	$('#copyCodeBtn').on('click', copyCodeToClipboard);
 }
 
 /**
- * Native tooltips on each <option> in mode selector
+ * Initialize native browser tooltips on each <option> in the mode selector,
+ * using the data-tooltip attribute.
+ * @returns {void}
  */
 export function initOptionTooltips() {
 	$('#modeSelect option').each(function () {
@@ -90,7 +148,9 @@ export function initOptionTooltips() {
 }
 
 /**
- * Show payment mode tooltip on hover
+ * Initialize hover listener on the payment mode info icon to show a contextual tooltip
+ * describing the currently selected payment mode.
+ * @returns {void}
  */
 export function initPaymentModeHoverTooltip() {
 	$('.payment-mode-info').on('mouseenter', function () {
@@ -119,7 +179,9 @@ export function initPaymentModeHoverTooltip() {
 }
 
 /**
- * Hide payment mode tooltip when the mode changes
+ * Initialize change listener on the mode selector to hide any open
+ * payment mode tooltips when the selection changes.
+ * @returns {void}
  */
 export function initPaymentModeChangeTooltip() {
 	$('#modeSelect').on('change', function () {

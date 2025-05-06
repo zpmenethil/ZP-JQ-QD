@@ -28,28 +28,28 @@ export function showModal(
 	autoClose = false,
 	closeDelay = 3000
 ) {
-	// Ensure we have a modal container
-	let modal = document.getElementById('customAlertModal');
+	// Change the ID to something more unique
+	let modal = document.getElementById('appNotificationModal');
 	if (!modal) {
 		modal = document.createElement('div');
-		modal.id = 'customAlertModal';
-		modal.className = 'modal fade';
+		modal.id = 'appNotificationModal';
+		modal.className = 'modal fade notification-modal';
 		modal.tabIndex = -1;
 		modal.setAttribute('aria-hidden', 'true');
 		modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal-dialog modal-dialog-centered notification-dialog">
+    <div class="modal-content notification-content">
+        <div class="modal-header notification-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <div class="modal-body notification-body"></div>
+        <div class="modal-footer notification-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
-      </div>
     </div>
-  `;
+</div>
+`;
 		document.body.appendChild(modal);
 	}
 
