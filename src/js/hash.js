@@ -163,7 +163,6 @@ export async function generateFingerprint({
 	merchantUniquePaymentId,
 	timestamp,
 }) {
-	// Added async
 	// Make copies of the parameters to avoid modifying the originals
 	let _apiKey = apiKey;
 	let _username = username;
@@ -184,22 +183,11 @@ export async function generateFingerprint({
 		!timestamp
 	) {
 		console.warn('[generateFingerprint] Missing required values for fingerprint generation');
-		console.debug(`Following values are missing:`);
-		console.debug(
-			`apiKey: ${_apiKey}` |
-				`username: ${_username}` |
-				`password: ${_password}` |
-				`mode: ${mode}` |
-				`paymentAmount: ${paymentAmount}` |
-				`merchantUniquePaymentId: ${merchantUniquePaymentId}` |
-				`timestamp: ${timestamp}`
-		);
 		return '';
 	}
+
 	const selectedVersion = $('input[name="version"]:checked').val();
-	console.log(`[generateFingerprint] paymentAmount: ${paymentAmount}`);
 	let hashPaymentAmount = String(paymentAmount).replace('.', '');
-	console.log(`[generateFingerprint] Transformed to hashPaymentAmount: ${hashPaymentAmount}`);
 
 	if (mode === '2') {
 		hashPaymentAmount = '0';
@@ -216,7 +204,7 @@ export async function generateFingerprint({
 			hashPaymentAmount,
 			merchantUniquePaymentId,
 			timestamp
-		); // Added await
+		);
 	} else if (selectedVersion === 'v4') {
 		hash = await createSHA512Hash(
 			apiKey,
@@ -226,7 +214,7 @@ export async function generateFingerprint({
 			hashPaymentAmount,
 			merchantUniquePaymentId,
 			timestamp
-		); // Added await
+		);
 	} else {
 		hash = createSHA3_512Hash(
 			apiKey,
@@ -285,7 +273,6 @@ export async function createSHA1Hash(
 	merchantUniquePaymentId,
 	timestamp
 ) {
-	// Added async
 	const data = [
 		apiKey,
 		username,
@@ -305,7 +292,7 @@ export async function createSHA1Hash(
 		merchantUniquePaymentId,
 		timestamp,
 	});
-	const hash = await sha1Hash(data); // Added await
+	const hash = await sha1Hash(data);
 	console.log(`[createSHA1Hash] SHA1 👉 ${hash}`);
 	return hash;
 }
@@ -330,7 +317,6 @@ export async function createSHA512Hash(
 	merchantUniquePaymentId,
 	timestamp
 ) {
-	// Added async
 	const data = [
 		apiKey,
 		username,
@@ -350,7 +336,7 @@ export async function createSHA512Hash(
 		merchantUniquePaymentId,
 		timestamp,
 	});
-	const hash = await sha512Hash(data); // Added await
+	const hash = await sha512Hash(data);
 	console.log(`[createSHA512Hash] SHA-512 👉 ${hash}`);
 	return hash;
 }

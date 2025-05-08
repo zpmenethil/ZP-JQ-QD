@@ -86,7 +86,7 @@ document.addEventListener('keydown', function (event) {
 								});
 
 								if (updatedFields.length) {
-									console.info('Form updated from edited code preview:', updatedFields.join(', '));
+									// console.info('Form updated from edited code preview:', updatedFields.join(', '));
 									updatedFields.forEach((field) => $(`#${field}Input`).trigger('blur'));
 								}
 

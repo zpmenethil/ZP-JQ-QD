@@ -62,7 +62,13 @@ export function showModal(
 	modalTitle.textContent = title;
 	modalBody.innerHTML = message;
 
-	modalDialog.classList.remove('border', 'border-success', 'border-danger', 'border-warning', 'border-info');
+	modalDialog.classList.remove(
+		'border',
+		'border-success',
+		'border-danger',
+		'border-warning',
+		'border-info'
+	);
 	modalHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white');
 
 	// Apply type styling
