@@ -18,17 +18,9 @@ import { generateCurrentDatetime, debounce } from './helpers.js';
  * @param {string} config.fingerprint - Hash fingerprint for the transaction.
  * @returns {string} Formatted code snippet as a string.
  */
-function buildCodeSnippet({
-	apiKey,
-	paymentAmount,
-	mode,
-	timestamp,
-	merchantUniquePaymentId,
-	fingerprint,
-}) {
+function buildCodeSnippet({ apiKey, paymentAmount, mode, timestamp, merchantUniquePaymentId, fingerprint }) {
 	const url = $('#urlPreview').val().trim();
-	const merchantCode =
-		$('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode;
+	const merchantCode = $('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode;
 
 	// Get customer values without fallbacks
 	const customerReference = $('#customerReferenceInput').val().trim();
@@ -47,7 +39,7 @@ function buildCodeSnippet({
 		`paymentAmount: ${paymentAmount}`,
 		`merchantUniquePaymentId: "${merchantUniquePaymentId}"`,
 		`mode: ${mode}`,
-		`redirectUrl: "${redirectUrl}"`,
+		`redirectUrl: "${redirectUrl}"`
 	];
 
 	// Only add customer fields if they have values
@@ -101,7 +93,7 @@ function buildCodeSnippet({
 		}
 	}
 
-	if (extendedOptions.contactNumber !== '' && extendedOptions.contactNumber !== '0400001002') {
+	if (extendedOptions.contactNumber !== '') {
 		properties.push(`contactNumber: ${extendedOptions.contactNumber}`);
 	}
 
@@ -115,27 +107,18 @@ function buildCodeSnippet({
  * Original update code preview function.
  * @private
  */
+
 async function _updateCodePreviewInternal() {
-	console.trace(`[updateCodePreview] Updating code preview...`);
 	const timestamp = generateCurrentDatetime();
 	const merchantUniquePaymentId = $('#merchantUniquePaymentIdInput').val().trim();
 	const apiKey = $('#apiKeyInput').val().trim() || DEFAULT_VALUES.credentials.apiKey;
 	const username = $('#usernameInput').val().trim() || DEFAULT_VALUES.credentials.username;
 	const password = $('#passwordInput').val().trim() || DEFAULT_VALUES.credentials.password;
-	const paymentAmount = $('#paymentAmountInput').val() || 0.0;
+	const paymentAmount = $('#paymentAmountInput').val().trim();
 	const mode = $('#modeSelect').val();
-
 	let fingerprint = '';
 	try {
-		if (
-			apiKey &&
-			username &&
-			password &&
-			paymentAmount &&
-			mode &&
-			timestamp &&
-			merchantUniquePaymentId
-		) {
+		if (apiKey && username && password && paymentAmount && mode && timestamp && merchantUniquePaymentId) {
 			fingerprint = await generateFingerprint({
 				apiKey,
 				username,
@@ -143,7 +126,7 @@ async function _updateCodePreviewInternal() {
 				mode,
 				paymentAmount,
 				merchantUniquePaymentId,
-				timestamp,
+				timestamp
 			});
 		}
 	} catch (error) {
@@ -156,31 +139,36 @@ async function _updateCodePreviewInternal() {
 		mode,
 		timestamp,
 		merchantUniquePaymentId,
-		fingerprint,
+		fingerprint
 	});
-	$('#codePreview').text(snippet);
-	hljs.highlightElement($('#codePreview')[0]);
-}
 
+	// Update the code preview and re-highlight safely
+	const codePreviewEl = document.getElementById('codePreview');
+	if (codePreviewEl) {
+		// Insert raw text (clears previous HTML)
+		codePreviewEl.textContent = snippet;
+		// Clear any flag so hljs can highlight again without warning
+		delete codePreviewEl.dataset.highlighted;
+		// Highlight once
+		hljs.highlightElement(codePreviewEl);
+	}
+}
 /**
  * Debounced version of updateCodePreview.
  * Update the code preview with current form values.
  * Waits 250ms after the last call before executing.
  * @returns {void}
  */
-export const updateCodePreview = debounce(_updateCodePreviewInternal, 250);
+export const updateCodePreview = debounce(_updateCodePreviewInternal, 50);
 
 export function updateMinHeightBasedOnMode() {
 	const mode = $('#modeSelect').val();
-	console.log(`[updateMinHeightBasedOnMode] mode: ${mode}`);
-
 	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight;
 
 	const currentHeight = $('#minHeightInput').val();
 	if (!currentHeight || currentHeight === '600' || currentHeight === '925') {
 		$('#minHeightInput').val(defaultHeight);
 		if (extendedOptions) {
-			console.log(`[updateMinHeightBasedOnMode] Setting minHeight to ${defaultHeight}`);
 			extendedOptions.minHeight = defaultHeight;
 		}
 	}
@@ -191,7 +179,6 @@ export function updateMinHeightBasedOnMode() {
  * @returns {Object} The parsed configuration object
  */
 export function parseCodePreviewConfig() {
-	// Get the code preview text using jQuery for consistency
 	const codePreviewText = $('#codePreview').text();
 
 	try {
@@ -204,7 +191,7 @@ export function parseCodePreviewConfig() {
 		const configLines = configText.split(',\n');
 		const parsedConfig = {};
 
-		configLines.forEach((line) => {
+		configLines.forEach(line => {
 			const match = line.trim().match(/^([^:]+):\s*(.+)$/);
 			if (!match) return;
 
@@ -229,7 +216,7 @@ export function parseCodePreviewConfig() {
 			parsedConfig.timestamp = parsedConfig.timeStamp;
 			delete parsedConfig.timeStamp;
 		}
-
+		console.debug(`[parseCodePreviewConfig] Parsed config:`, parsedConfig);
 		return parsedConfig;
 	} catch (err) {
 		console.error('[parseCodePreviewConfig] Error parsing code preview:', err);

@@ -65,13 +65,12 @@ export function initializeApp() {
 
 	restoreSessionValues();
 
-	$('#paymentAmountInput').val($('#paymentAmountInput').val() || generateRandomPaymentAmount());
+	generateRandomPaymentAmount();
 	updateMinHeightBasedOnMode();
 	generateAndSetUuids();
 	updateCodePreview();
 
 	if (typeof updateActionButtonsState === 'function') {
-		console.log('[main] Calling updateActionButtonsState after session restoration');
 		updateActionButtonsState();
 	} else {
 		console.warn('[main] updateActionButtonsState not available after session restoration');

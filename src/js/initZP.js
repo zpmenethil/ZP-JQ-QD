@@ -12,16 +12,15 @@ import { parseCodePreviewConfig } from './codePreview.js';
  * @returns {void}
  */
 export async function initializeZenPayPlugin() {
-
 	try {
 		const parsedConfig = parseCodePreviewConfig();
-		console.log('[initializeZenPayPlugin] Parsed config from code preview:', parsedConfig);
+		const paymentAmount = parsedConfig.paymentAmount.toFixed(2);
 
 		const username = $('#usernameInput').val().trim();
 		const password = $('#passwordInput').val().trim();
 
 		if (!username || !password) {
-			showError('Validation Error', 'Username and password are required for initialization.');
+			showError('Validation Error', 'Credentials are required for initialization.');
 			return;
 		}
 
@@ -37,26 +36,22 @@ export async function initializeZenPayPlugin() {
 		const fingerprint = await generateFingerprint({
 			apiKey: parsedConfig.apiKey,
 			username: username,
-			password: password, 
+			password: password,
 			mode: String(parsedConfig.mode),
-			paymentAmount: String(parsedConfig.paymentAmount),
+			paymentAmount: paymentAmount,
 			merchantUniquePaymentId: parsedConfig.merchantUniquePaymentId,
-			timestamp: timestamp,
+			timestamp: timestamp
 		});
 
 		if (!fingerprint) {
 			console.error('[initializeZenPayPlugin] Failed to generate fingerprint');
-			showError(
-				'Validation Error',
-				'Failed to generate security fingerprint. Please check API credentials.'
-			);
+			showError('Validation Error', 'Failed to generate security fingerprint. Please check API credentials.');
 			return;
 		}
 
-		console.log(`[initializeZenPayPlugin] Using fingerprint: ${fingerprint}`);
 		parsedConfig.fingerprint = fingerprint;
 		const minHeightFromUI = $('#minHeightInput').val() ? $('#minHeightInput').val().trim() : '';
-        parsedConfig.minHeight = minHeightFromUI;
+		parsedConfig.minHeight = minHeightFromUI;
 
 		const sessionConfig = { ...parsedConfig };
 		sessionConfig.username = username;
@@ -65,9 +60,10 @@ export async function initializeZenPayPlugin() {
 		saveSessionValues(sessionConfig);
 		const payment = $.zpPayment(parsedConfig);
 		console.log('[initializeZenPayPlugin] 👇 ZP Payload 👇');
-		console.log(parsedConfig);
+		console.info(parsedConfig);
+		console.log('');
 		console.log('[initializeZenPayPlugin] 👇 Payment object initialized 👇');
-		console.log(payment.options);
+		console.info(payment.options);
 		payment.open();
 	} catch (err) {
 		console.error('[initializeZenPayPlugin] Error initializing plugin:', err);

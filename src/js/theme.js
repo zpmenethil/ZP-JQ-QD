@@ -1,5 +1,6 @@
 // Import dependencies
-import { $, hljs } from './globals.js';
+import { $ } from './globals.js';
+// import { $, hljs } from './globals.js';
 import { reinitializeTooltips } from './tooltips.js';
 import { saveToStorage, getFromStorage, STORAGE_TYPE } from './session.js';
 
@@ -41,18 +42,15 @@ function determineInitialTheme() {
 	return theme;
 }
 
-/**
- * Apply the theme and persist as a JSON object.
- * @param {'light'|'dark'} theme
- */
 function applyTheme(theme) {
 	const lightIcon = $('#lightIcon');
 	const darkIcon = $('#darkIcon');
 
+	// 1. Set the BS theme attribute + persist it
 	document.documentElement.setAttribute('data-bs-theme', theme);
-
 	saveToStorage(THEME_STORAGE_KEY, { theme }, STORAGE_TYPE.LOCAL);
 
+	// 2. Toggle your icons
 	if (theme === 'dark') {
 		lightIcon.addClass('d-none');
 		darkIcon.removeClass('d-none');
@@ -61,10 +59,9 @@ function applyTheme(theme) {
 		lightIcon.removeClass('d-none');
 	}
 
-	const codePreview = document.getElementById('codePreview');
-	if (codePreview) hljs.highlightElement(codePreview);
 	reinitializeTooltips();
 }
+
 /**
  * Wire everything up.
  */

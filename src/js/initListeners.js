@@ -36,7 +36,7 @@ export function updateActionButtonsState() {
 		downloadButton.attr('title', 'Download Standalone Demo');
 
 		// Enable Initialize Plugin Button
-		initializeButton.prop('disabled', false);
+		initializeButton.removeClass('btn-disabled');
 		initializeButton.attr('title', 'Initialize Plugin');
 	} else {
 		// "Disable" Download Button (visually, remains clickable)
@@ -46,8 +46,8 @@ export function updateActionButtonsState() {
 			'Please fill in API Key, Username, Password, and Merchant Code to enable download.'
 		);
 
-		// Disable Initialize Plugin Button (truly disabled)
-		initializeButton.prop('disabled', true);
+		 // "Disable" Initialize Plugin Button (visually, remains clickable)
+		initializeButton.addClass('btn-disabled');
 		initializeButton.attr(
 			'title',
 			'Please fill in API Key, Username, Password, and Merchant Code to initialize plugin.'
@@ -115,18 +115,12 @@ export function initUiMinHeightListener() {
  */
 export function initPaymentAmountListener() {
 	$('#paymentAmountInput').on('blur', function () {
-		let value = $(this).val().trim();
-		if (value) {
-			const numValue = parseFloat(value);
-			if (!isNaN(numValue)) {
-				const formattedValue = numValue.toFixed(2);
-				$(this).val(formattedValue);
-			}
-		}
+		const formatted = parseFloat($(this).val() || 0).toFixed(2);
+		$(this).val(formatted);
+        console.log(`[initPaymentAmountListener] Payment amount changed to: ${formatted}`);
 		updateCodePreview();
 	});
 }
-
 /**
  * Initialize listener on the mode selector to show/hide tokenization options,
  * adjust UI min-height, and update the code preview.

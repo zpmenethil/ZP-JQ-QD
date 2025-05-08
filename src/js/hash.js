@@ -185,13 +185,12 @@ export async function generateFingerprint({
 		console.warn('[generateFingerprint] Missing required values for fingerprint generation');
 		return '';
 	}
-
 	const selectedVersion = $('input[name="version"]:checked').val();
 	let hashPaymentAmount = String(paymentAmount).replace('.', '');
 
 	if (mode === '2') {
 		hashPaymentAmount = '0';
-		console.log(`[generateFingerprint] Payment mode is 2, setting hashPaymentAmount to 0`);
+		console.info(`[generateFingerprint] Payment mode is 2, setting hashPaymentAmount to 0`);
 	}
 
 	let hash = '';
@@ -293,7 +292,7 @@ export async function createSHA1Hash(
 		timestamp,
 	});
 	const hash = await sha1Hash(data);
-	console.log(`[createSHA1Hash] SHA1 👉 ${hash}`);
+	console.info(`[createSHA1Hash] SHA1 👉 ${hash}`);
 	return hash;
 }
 
@@ -337,7 +336,7 @@ export async function createSHA512Hash(
 		timestamp,
 	});
 	const hash = await sha512Hash(data);
-	console.log(`[createSHA512Hash] SHA-512 👉 ${hash}`);
+	console.info(`[createSHA512Hash] SHA-512 👉 ${hash}`);
 	return hash;
 }
 
@@ -383,6 +382,6 @@ export function createSHA3_512Hash(
 		timestamp,
 	});
 	const hash = sha3_512(data);
-	console.log(`[createSHA3_512Hash] SHA3-512 👉 ${hash}`);
+	console.info(`[createSHA3_512Hash] SHA3-512 👉 ${hash}`);
 	return hash;
 }

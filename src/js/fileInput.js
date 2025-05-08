@@ -52,8 +52,6 @@ export function initFileInputListener() {
 					const text = event.target.result;
 					const config = JSON.parse(text);
 
-					console.log('[fileInput] Loading config from file:', config);
-
 					if (!validateConfigSchema(config)) {
 						showError(
 							'Invalid Configuration',
@@ -80,18 +78,13 @@ export function initFileInputListener() {
 					) {
 						saveCredsToSession();
 						updateCodePreview();
-						console.log('[fileInput] Credentials set, about to call updateActionButtonsState()');
-						console.log('[fileInput] Values:', {
-							apiKey: apiKeyField.val(),
-							username: usernameField.val(),
-							password: passwordField.val(),
-							merchantCode: merchantField.val(),
-						});
-						updateActionButtonsState(); // Update button states after loading credentials
-						console.log('[fileInput] Called updateActionButtonsState()');
+
+						updateActionButtonsState();
 						showSuccess(
 							'Configuration Loaded',
-							`Successfully loaded configuration from <strong>${file.name}</strong>`
+							`Successfully loaded configuration from <strong>${file.name}</strong>`,
+							'success',
+							3000
 						);
 					}
 				} catch (error) {

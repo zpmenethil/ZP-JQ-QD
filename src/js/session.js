@@ -13,7 +13,7 @@ import { base64EncodeASCII, base64DecodeASCII } from './helpers.js';
  */
 export const STORAGE_TYPE = {
 	SESSION: 'session',
-	LOCAL: 'local',
+	LOCAL: 'local'
 };
 
 /**
@@ -23,7 +23,7 @@ export const STORAGE_TYPE = {
 export const ENCODING_TYPE = {
 	NONE: 'none',
 	JSON: 'json',
-	BASE64: 'base64',
+	BASE64: 'base64'
 };
 
 /**
@@ -95,20 +95,13 @@ export function getFromStorage(key, defaultValue = null, storageType = STORAGE_T
 	}
 }
 
-// Create a helper function to manage the ZPS object
 function getZPSObject() {
 	try {
-		// console.debug('[getZPSObject] Retrieving ZPS object from sessionStorage');
 		const storedData = sessionStorage.getItem('ZPS');
-		// Check if data exists before trying to decode
 		if (!storedData) {
-			console.debug('[getZPSObject] No ZPS data found in sessionStorage');
 			return {};
 		}
-
-		// Decode and parse the stored data
 		const decodedData = base64DecodeASCII(storedData);
-		// console.debug('[getZPSObject] Decoded ZPS data:', decodedData);
 		return JSON.parse(decodedData);
 	} catch (e) {
 		console.error('[getZPSObject] Error retrieving ZPS data:', e);
@@ -116,21 +109,14 @@ function getZPSObject() {
 	}
 }
 
-// Update saveToSession to save to the ZPS object
 export function saveToSession(key, value) {
 	try {
-		// console.debug(`[saveToSession] Saving ${key}:`, value);
-
-		// Get current ZPS object
 		const zpsData = getZPSObject();
 
-		// Convert demo prefix keys to standard format
 		const cleanKey = key.startsWith('demo') ? key.replace(/^demo(?:_)?/, '') : key;
 
-		// Update the value
 		zpsData[cleanKey] = value;
 
-		// Save back as BASE64 encoded JSON
 		const encodedData = base64EncodeASCII(JSON.stringify(zpsData));
 		sessionStorage.setItem('ZPS', encodedData);
 
@@ -140,19 +126,12 @@ export function saveToSession(key, value) {
 		return false;
 	}
 }
-
-// Update getFromSession to read from the ZPS object
 export function getFromSession(key, defaultValue = null) {
 	try {
-		// console.debug(`[getFromSession] Retrieving ${key}`);
-
-		// Get ZPS object
 		const zpsData = getZPSObject();
 
-		// Convert demo prefix keys to standard format
 		const cleanKey = key.startsWith('demo') ? key.replace(/^demo(?:_)?/, '') : key;
 
-		// Return the value if it exists
 		if (cleanKey in zpsData) {
 			return zpsData[cleanKey];
 		}
@@ -167,7 +146,6 @@ export function getFromSession(key, defaultValue = null) {
 export function restoreSessionValues() {
 	console.trace(`[restoreSessionValues] Restoring session values called`);
 
-	// Check and set credential fields
 	if ($('#apiKeyInput').length) {
 		$('#apiKeyInput').val(getFromSession(SESSION_KEYS.API_KEY, '', STORAGE_TYPE.SESSION));
 	}
@@ -181,35 +159,15 @@ export function restoreSessionValues() {
 	}
 
 	if ($('#merchantCodeInput').length) {
-		$('#merchantCodeInput').val(
-			getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION)
-		);
-	}
-
-	// Log the credential values after restoration
-	console.log('[restoreSessionValues] Credentials restored from session:', {
-		apiKey: $('#apiKeyInput').val(),
-		username: $('#usernameInput').val(),
-		password: $('#passwordInput').val(),
-		merchantCode: $('#merchantCodeInput').val(),
-	});
-
-	if ($('#paymentAmountInput').length) {
-		$('#paymentAmountInput').val(
-			getFromSession(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION)
-		);
+		$('#merchantCodeInput').val(getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION));
 	}
 
 	if ($('#modeSelect').length) {
 		$('#modeSelect').val(getFromSession(SESSION_KEYS.MODE, '0', STORAGE_TYPE.SESSION));
-
-		// Show tokenization options if mode is 1
 		if ($('#modeSelect').val() === '1' && $('#tokenizationOptions').length) {
 			$('#tokenizationOptions').removeClass('d-none');
 		}
 	}
-
-	// Restore payment method toggles
 	$('.payment-method-toggle').each(function () {
 		const option = $(this).data('option');
 		const savedValue = getFromSession(`demo_${option}`, false, STORAGE_TYPE.SESSION);
@@ -220,8 +178,6 @@ export function restoreSessionValues() {
 			}
 		}
 	});
-
-	// Restore additional options
 	$('.option-toggle').each(function () {
 		const option = $(this).data('option');
 		const savedValue = getFromSession(`demo_${option}`, false);
@@ -232,8 +188,6 @@ export function restoreSessionValues() {
 			}
 		}
 	});
-
-	// Restore URL builder settings if elements exist
 	const savedSubdomain = getFromSession(SESSION_KEYS.SUBDOMAIN);
 	if (savedSubdomain && $(`input[name="subdomain"][value="${savedSubdomain}"]`).length) {
 		$(`input[name="subdomain"][value="${savedSubdomain}"]`).prop('checked', true);
@@ -248,8 +202,6 @@ export function restoreSessionValues() {
 	if (savedVersion && $(`input[name="version"][value="${savedVersion}"]`).length) {
 		$(`input[name="version"][value="${savedVersion}"]`).prop('checked', true);
 	}
-
-	// Restore UI minHeight
 	if ($('#minHeightInput').length) {
 		$('#minHeightInput').val(getFromSession(SESSION_KEYS.MIN_HEIGHT, ''));
 	}

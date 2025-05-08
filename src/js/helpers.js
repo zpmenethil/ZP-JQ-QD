@@ -12,7 +12,9 @@ import { extendedOptions } from './globals.js';
  * @returns {string} A string representing the amount with two decimal places.
  */
 export function generateRandomPaymentAmount() {
-	return (Math.random() * 990 + 10).toFixed(2);
+	const paymentAmount = (Math.random() * (1000 - 10) + 10).toFixed(2);
+	const paymentAmountInput = $('#paymentAmountInput');
+	paymentAmountInput.val(paymentAmount);
 }
 
 /**
