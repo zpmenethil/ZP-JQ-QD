@@ -32,7 +32,15 @@ function validateTimestampFormat(timestamp) {
  * @param {string} timestamp
  * @returns {boolean} True if all required fields are valid, false otherwise.
  */
-function validateFingerprintPayload(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp) {
+function validateFingerprintPayload(
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
 	if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
 		showError('Validation Error', 'apiKey is required and must be a non-empty string.');
 		return false;
@@ -49,12 +57,24 @@ function validateFingerprintPayload(apiKey, username, password, mode, paymentAmo
 		showError('Validation Error', 'mode is required and must be a non-empty string.');
 		return false;
 	}
-	if (paymentAmount === undefined || paymentAmount === null || isNaN(Number(paymentAmount)) || Number(paymentAmount) <= 0) {
+	if (
+		paymentAmount === undefined ||
+		paymentAmount === null ||
+		isNaN(Number(paymentAmount)) ||
+		Number(paymentAmount) <= 0
+	) {
 		showError('Validation Error', 'paymentAmount is required and must be a positive number.');
 		return false;
 	}
-	if (!merchantUniquePaymentId || typeof merchantUniquePaymentId !== 'string' || merchantUniquePaymentId.trim() === '') {
-		showError('Validation Error', 'merchantUniquePaymentId is required and must be a non-empty string.');
+	if (
+		!merchantUniquePaymentId ||
+		typeof merchantUniquePaymentId !== 'string' ||
+		merchantUniquePaymentId.trim() === ''
+	) {
+		showError(
+			'Validation Error',
+			'merchantUniquePaymentId is required and must be a non-empty string.'
+		);
 		return false;
 	}
 	if (!timestamp || typeof timestamp !== 'string' || timestamp.trim() === '') {
@@ -68,7 +88,15 @@ function validateFingerprintPayload(apiKey, username, password, mode, paymentAmo
 	return true;
 }
 
-export function buildFingerprintPayload(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp) {
+export function buildFingerprintPayload(
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
 	console.log(`[buildFingerprintPayload] apiKey: ${apiKey}`);
 	console.log(`[buildFingerprintPayload] username: ${username}`);
 	console.log(`[buildFingerprintPayload] password: ${password}`);
@@ -76,7 +104,17 @@ export function buildFingerprintPayload(apiKey, username, password, mode, paymen
 	console.log(`[buildFingerprintPayload] paymentAmount: ${paymentAmount}`);
 	console.log(`[buildFingerprintPayload] merchantUniquePaymentId: ${merchantUniquePaymentId}`);
 	console.log(`[buildFingerprintPayload] timestamp: ${timestamp}`);
-	if (!validateFingerprintPayload(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp)) {
+	if (
+		!validateFingerprintPayload(
+			apiKey,
+			username,
+			password,
+			mode,
+			paymentAmount,
+			merchantUniquePaymentId,
+			timestamp
+		)
+	) {
 		throw new Error('[buildFingerprintPayload] Invalid fingerprint payload');
 	}
 	const payload = {
@@ -86,7 +124,7 @@ export function buildFingerprintPayload(apiKey, username, password, mode, paymen
 		mode,
 		paymentAmount,
 		merchantUniquePaymentId,
-		timestamp
+		timestamp,
 	};
 	console.log(`[buildFingerprintPayload] Payload:`);
 	console.log(payload);
@@ -116,7 +154,16 @@ export function checkDummyCreds(apiKey, username, password) {
 /**
  * Generate the SHA-3-512 fingerprint from a payload object.
  */
-export function generateFingerprint({ apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp }) {
+export async function generateFingerprint({
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp,
+}) {
+	// Added async
 	// Make copies of the parameters to avoid modifying the originals
 	let _apiKey = apiKey;
 	let _username = username;
@@ -127,95 +174,95 @@ export function generateFingerprint({ apiKey, username, password, mode, paymentA
 	if (_username === DummyUsername) _username = '';
 	if (_password === DummyPassword) _password = '';
 
-	// Check if any required values are missing
-	if (!_apiKey || !_username || !_password || !mode || !paymentAmount || !merchantUniquePaymentId || !timestamp) {
+	if (
+		!_apiKey ||
+		!_username ||
+		!_password ||
+		!mode ||
+		!paymentAmount ||
+		!merchantUniquePaymentId ||
+		!timestamp
+	) {
 		console.warn('[generateFingerprint] Missing required values for fingerprint generation');
 		console.debug(`Following values are missing:`);
-		console.debug(`apiKey: ${_apiKey}` | `username: ${_username}` | `password: ${_password}` | `mode: ${mode}` | `paymentAmount: ${paymentAmount}` | `merchantUniquePaymentId: ${merchantUniquePaymentId}` | `timestamp: ${timestamp}`);
+		console.debug(
+			`apiKey: ${_apiKey}` |
+				`username: ${_username}` |
+				`password: ${_password}` |
+				`mode: ${mode}` |
+				`paymentAmount: ${paymentAmount}` |
+				`merchantUniquePaymentId: ${merchantUniquePaymentId}` |
+				`timestamp: ${timestamp}`
+		);
 		return '';
 	}
-
 	const selectedVersion = $('input[name="version"]:checked').val();
-
 	console.log(`[generateFingerprint] paymentAmount: ${paymentAmount}`);
-	const hashPaymentAmount = String(paymentAmount).replace('.', '');
+	let hashPaymentAmount = String(paymentAmount).replace('.', '');
 	console.log(`[generateFingerprint] Transformed to hashPaymentAmount: ${hashPaymentAmount}`);
+
+	if (mode === '2') {
+		hashPaymentAmount = '0';
+		console.log(`[generateFingerprint] Payment mode is 2, setting hashPaymentAmount to 0`);
+	}
 
 	let hash = '';
 	if (selectedVersion === 'v3') {
-		hash = createSHA1Hash(
+		hash = await createSHA1Hash(
 			apiKey,
 			username,
 			password,
 			mode,
-			hashPaymentAmount, // Use transformed amount
+			hashPaymentAmount,
 			merchantUniquePaymentId,
 			timestamp
-		);
+		); // Added await
 	} else if (selectedVersion === 'v4') {
-		hash = createSHA512Hash(
+		hash = await createSHA512Hash(
 			apiKey,
 			username,
 			password,
 			mode,
-			hashPaymentAmount, // Use transformed amount
+			hashPaymentAmount,
 			merchantUniquePaymentId,
 			timestamp
-		);
+		); // Added await
 	} else {
 		hash = createSHA3_512Hash(
 			apiKey,
 			username,
 			password,
 			mode,
-			hashPaymentAmount, // Use transformed amount
+			hashPaymentAmount,
 			merchantUniquePaymentId,
 			timestamp
 		);
 	}
 	return hash;
 }
-/**
- * Convert a UTF-8 string into an ArrayBuffer.
- * @private
- * @param {string} str - String to convert.
- * @returns {Uint8Array} UTF-8 encoded bytes.
- */
-function STR2AB(str) {
-	return new TextEncoder().encode(str);
+
+async function sha512Hash(...inputs) {
+	const concatenated = inputs.join('');
+
+	const encoder = new TextEncoder();
+	const data = encoder.encode(concatenated);
+
+	const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/**
- * Convert an ArrayBuffer into a lowercase hex string.
- * @private
- * @param {ArrayBuffer} buffer - Buffer to convert.
- * @returns {string} Hexadecimal representation.
- */
-function AB2HEX(buffer) {
-	const bytes = new Uint8Array(buffer);
-	return Array.from(bytes)
-		.map(b => b.toString(16).padStart(2, '0'))
-		.join('');
-}
+async function sha1Hash(...inputs) {
+	const concatenated = inputs.join('');
 
-/**
- * Compute the SHA-1 hash of the given data string.
- * @param {string} data - Input string to hash.
- * @returns {Promise<string>} Promise resolving to a hex-encoded SHA-1 digest.
- */
-export async function sha1(data) {
-	const hashBuffer = await crypto.subtle.digest('SHA-1', STR2AB(data));
-	return AB2HEX(hashBuffer);
-}
+	const encoder = new TextEncoder();
+	const data = encoder.encode(concatenated);
 
-/**
- * Compute the SHA-512 hash of the given data string.
- * @param {string} data - Input string to hash.
- * @returns {Promise<string>} Promise resolving to a hex-encoded SHA-512 digest.
- */
-export async function sha512(data) {
-	const hashBuffer = await crypto.subtle.digest('SHA-512', STR2AB(data));
-	return AB2HEX(hashBuffer);
+	const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
@@ -229,9 +276,25 @@ export async function sha512(data) {
  * @param {string} timestamp - Timestamp string.
  * @returns {Promise<string>} Promise resolving to the SHA-1 fingerprint hash.
  */
-export function createSHA1Hash(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp) {
-	const data = [apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp].join('|');
-	console.trace('[createSHA1Hash] Called from:');
+export async function createSHA1Hash(
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
+	// Added async
+	const data = [
+		apiKey,
+		username,
+		password,
+		mode,
+		paymentAmount,
+		merchantUniquePaymentId,
+		timestamp,
+	].join('|');
 	console.log(`[createSHA1Hash] Fingerprint Payload 👇`);
 	console.json({
 		apiKey,
@@ -240,9 +303,9 @@ export function createSHA1Hash(apiKey, username, password, mode, paymentAmount, 
 		mode,
 		paymentAmount,
 		merchantUniquePaymentId,
-		timestamp
+		timestamp,
 	});
-	const hash = sha1(data);
+	const hash = await sha1Hash(data); // Added await
 	console.log(`[createSHA1Hash] SHA1 👉 ${hash}`);
 	return hash;
 }
@@ -258,9 +321,25 @@ export function createSHA1Hash(apiKey, username, password, mode, paymentAmount, 
  * @param {string} timestamp - Timestamp string.
  * @returns {Promise<string>} Promise resolving to the SHA-512 fingerprint hash.
  */
-export function createSHA512Hash(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp) {
-	const data = [apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp].join('|');
-	console.trace('[createSHAA512Hash] Called from:');
+export async function createSHA512Hash(
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
+	// Added async
+	const data = [
+		apiKey,
+		username,
+		password,
+		mode,
+		paymentAmount,
+		merchantUniquePaymentId,
+		timestamp,
+	].join('|');
 	console.log(`[createSHA512Hash] Fingerprint Payload 👇`);
 	console.json({
 		apiKey,
@@ -269,9 +348,9 @@ export function createSHA512Hash(apiKey, username, password, mode, paymentAmount
 		mode,
 		paymentAmount,
 		merchantUniquePaymentId,
-		timestamp
+		timestamp,
 	});
-	const hash = sha512(data);
+	const hash = await sha512Hash(data); // Added await
 	console.log(`[createSHA512Hash] SHA-512 👉 ${hash}`);
 	return hash;
 }
@@ -287,8 +366,24 @@ export function createSHA512Hash(apiKey, username, password, mode, paymentAmount
  * @param {string} timestamp - Timestamp string.
  * @returns {string} Hex-encoded SHA-3-512 fingerprint hash.
  */
-export function createSHA3_512Hash(apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp) {
-	const data = [apiKey, username, password, mode, paymentAmount, merchantUniquePaymentId, timestamp].join('|');
+export function createSHA3_512Hash(
+	apiKey,
+	username,
+	password,
+	mode,
+	paymentAmount,
+	merchantUniquePaymentId,
+	timestamp
+) {
+	const data = [
+		apiKey,
+		username,
+		password,
+		mode,
+		paymentAmount,
+		merchantUniquePaymentId,
+		timestamp,
+	].join('|');
 
 	console.trace('[createSHA3_512Hash] Called from');
 	console.log(`[createSHA3_512Hash] Fingerprint Payload 👇`);
@@ -299,7 +394,7 @@ export function createSHA3_512Hash(apiKey, username, password, mode, paymentAmou
 		mode,
 		paymentAmount,
 		merchantUniquePaymentId,
-		timestamp
+		timestamp,
 	});
 	const hash = sha3_512(data);
 	console.log(`[createSHA3_512Hash] SHA3-512 👉 ${hash}`);

@@ -13,7 +13,7 @@ import { base64EncodeASCII, base64DecodeASCII } from './helpers.js';
  */
 export const STORAGE_TYPE = {
 	SESSION: 'session',
-	LOCAL: 'local'
+	LOCAL: 'local',
 };
 
 /**
@@ -23,7 +23,7 @@ export const STORAGE_TYPE = {
 export const ENCODING_TYPE = {
 	NONE: 'none',
 	JSON: 'json',
-	BASE64: 'base64'
+	BASE64: 'base64',
 };
 
 /**
@@ -35,7 +35,6 @@ export const ENCODING_TYPE = {
  */
 export function saveToStorage(key, value, storageType = STORAGE_TYPE.SESSION) {
 	try {
-
 		// Choose storage
 		const storage = storageType === STORAGE_TYPE.LOCAL ? localStorage : sessionStorage;
 
@@ -64,7 +63,6 @@ export function saveToStorage(key, value, storageType = STORAGE_TYPE.SESSION) {
  */
 export function getFromStorage(key, defaultValue = null, storageType = STORAGE_TYPE.SESSION) {
 	try {
-
 		// Choose storage
 		const storage = storageType === STORAGE_TYPE.LOCAL ? localStorage : sessionStorage;
 
@@ -183,11 +181,23 @@ export function restoreSessionValues() {
 	}
 
 	if ($('#merchantCodeInput').length) {
-		$('#merchantCodeInput').val(getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION));
+		$('#merchantCodeInput').val(
+			getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION)
+		);
 	}
 
+	// Log the credential values after restoration
+	console.log('[restoreSessionValues] Credentials restored from session:', {
+		apiKey: $('#apiKeyInput').val(),
+		username: $('#usernameInput').val(),
+		password: $('#passwordInput').val(),
+		merchantCode: $('#merchantCodeInput').val(),
+	});
+
 	if ($('#paymentAmountInput').length) {
-		$('#paymentAmountInput').val(getFromSession(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION));
+		$('#paymentAmountInput').val(
+			getFromSession(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION)
+		);
 	}
 
 	if ($('#modeSelect').length) {

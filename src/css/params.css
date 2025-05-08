@@ -1,6 +1,3 @@
-/* Parameters Reference CSS - Both for error codes and parameters */
-
-/* Button styles */
 #errorCodesBtn,
 #parametersBtn,
 #returnParamsBtn {
@@ -14,28 +11,12 @@
 	color: var(--primary-color);
 }
 
-/* #errorCodesModal .modal-dialog {
-	max-width: 800px;
-}
-
-#parametersModal .modal-dialog,
-#returnParametersModal .modal-dialog {
-	max-width: 90%;
-}
-
-#errorCodesModal .modal-body,
-#parametersModal .modal-body,
-#returnParametersModal .modal-body {
-	padding: 1.5rem;
-} */
-
 #errorCodesModal .table,
 #parametersModal .table,
 #returnParametersModal .table {
 	margin-bottom: 0;
 }
 
-/* Badge styles */
 .badge {
 	font-family:
 		system-ui,
@@ -45,7 +26,6 @@
 	padding: 0.35em 0.65em;
 }
 
-/* Subtle badge backgrounds */
 .bg-primary-subtle {
 	background-color: rgba(var(--bs-primary-rgb), 0.1);
 }
@@ -66,7 +46,6 @@
 	background-color: rgba(var(--bs-secondary-rgb), 0.1);
 }
 
-/* Dark theme adjustments */
 [data-bs-theme='dark'] .bg-primary-subtle {
 	background-color: rgba(var(--bs-primary-rgb), 0.2);
 }

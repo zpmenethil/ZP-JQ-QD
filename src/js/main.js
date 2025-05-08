@@ -29,13 +29,14 @@ import {
 	initOverrideFeePayerToggle,
 	initUrlBuilderListeners,
 	initEmailConfirmationListeners,
+	updateActionButtonsState, // Import this function to use after session restoration
 } from './initListeners.js';
 import { generateAndSetUuids } from './helpers.js';
 import { initFileInputListener } from './fileInput.js';
 import { generateRandomPaymentAmount } from './helpers.js';
+import { initDownloadFunctionality } from './downloadApp.js'; // Import the new init function
 
 export function initializeApp() {
-	// Initialize UI components first
 	initTooltips();
 	initPaymentModeHoverTooltip();
 	initPaymentModeChangeTooltip();
@@ -49,7 +50,6 @@ export function initializeApp() {
 	initFileInputListener();
 	initOptionTooltips();
 
-	// Initialize new listeners that were moved from session.js
 	initUrlBuilderListeners();
 	initEmailConfirmationListeners();
 
@@ -63,14 +63,20 @@ export function initializeApp() {
 	initUserModeToggle();
 	initOverrideFeePayerToggle();
 
-	// Restore session values
 	restoreSessionValues();
-	// setupSessionListeners() is deprecated - all listeners now in initListeners.js
 
 	$('#paymentAmountInput').val($('#paymentAmountInput').val() || generateRandomPaymentAmount());
 	updateMinHeightBasedOnMode();
 	generateAndSetUuids();
 	updateCodePreview();
+
+	if (typeof updateActionButtonsState === 'function') {
+		console.log('[main] Calling updateActionButtonsState after session restoration');
+		updateActionButtonsState();
+	} else {
+		console.warn('[main] updateActionButtonsState not available after session restoration');
+	}
+	initDownloadFunctionality('#downloadDemoBtn');
 }
 
 $(document).ready(initializeApp);

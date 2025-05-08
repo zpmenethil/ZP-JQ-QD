@@ -133,14 +133,14 @@ export const DEFAULT_VALUES = {
 		sendConfirmationEmailToMerchant: false,
 		// UI options
 		hideTermsAndConditions: false,
-		hideMerchantLogo: true,
+		hideMerchantLogo: false,
 		userMode: 0,
 		overrideFeePayer: 0,
 		// Tokenization options
 		showFeeOnTokenising: false,
 		showFailedPaymentFeeOnTokenising: false,
 		// UI height options based on payment mode
-		minHeight: 825,
+		minHeight: 925,
 	},
 
 	// URL builder defaults

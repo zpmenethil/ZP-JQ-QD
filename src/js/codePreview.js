@@ -96,7 +96,7 @@ function buildCodeSnippet({
 		}
 	}
 	if (currentMode === '0' || currentMode === '2' || currentMode === '3') {
-		if (getminheightfield !== '825') {
+		if (getminheightfield !== '925') {
 			properties.push(`minHeight: ${getminheightfield}`);
 		}
 	}
@@ -115,7 +115,7 @@ function buildCodeSnippet({
  * Original update code preview function.
  * @private
  */
-function _updateCodePreviewInternal() {
+async function _updateCodePreviewInternal() {
 	console.trace(`[updateCodePreview] Updating code preview...`);
 	const timestamp = generateCurrentDatetime();
 	const merchantUniquePaymentId = $('#merchantUniquePaymentIdInput').val().trim();
@@ -127,7 +127,6 @@ function _updateCodePreviewInternal() {
 
 	let fingerprint = '';
 	try {
-		// Only attempt to generate fingerprint if all required fields are present
 		if (
 			apiKey &&
 			username &&
@@ -137,7 +136,7 @@ function _updateCodePreviewInternal() {
 			timestamp &&
 			merchantUniquePaymentId
 		) {
-			fingerprint = generateFingerprint({
+			fingerprint = await generateFingerprint({
 				apiKey,
 				username,
 				password,
@@ -175,14 +174,10 @@ export function updateMinHeightBasedOnMode() {
 	const mode = $('#modeSelect').val();
 	console.log(`[updateMinHeightBasedOnMode] mode: ${mode}`);
 
-	// Get the default height based on the mode
-	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight; // 825
+	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight;
 
-	// Get the current value from the field
 	const currentHeight = $('#minHeightInput').val();
-
-	// Only update if the field is empty OR if current value is one of the default values
-	if (!currentHeight || currentHeight === '600' || currentHeight === '825') {
+	if (!currentHeight || currentHeight === '600' || currentHeight === '925') {
 		$('#minHeightInput').val(defaultHeight);
 		if (extendedOptions) {
 			console.log(`[updateMinHeightBasedOnMode] Setting minHeight to ${defaultHeight}`);

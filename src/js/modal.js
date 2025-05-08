@@ -28,7 +28,6 @@ export function showModal(
 	autoClose = false,
 	closeDelay = 3000
 ) {
-	// Change the ID to something more unique
 	let modal = document.getElementById('appNotificationModal');
 	if (!modal) {
 		modal = document.createElement('div');
@@ -63,13 +62,7 @@ export function showModal(
 	modalTitle.textContent = title;
 	modalBody.innerHTML = message;
 
-	modalDialog.classList.remove(
-		'border',
-		'border-success',
-		'border-danger',
-		'border-warning',
-		'border-info'
-	);
+	modalDialog.classList.remove('border', 'border-success', 'border-danger', 'border-warning', 'border-info');
 	modalHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white');
 
 	// Apply type styling

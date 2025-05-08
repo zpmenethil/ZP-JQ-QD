@@ -18,6 +18,57 @@ import { SESSION_KEYS } from './globals.js';
 import { copyCodeToClipboard } from './helpers.js';
 
 /**
+ * Update the action buttons' state based on credential fields.
+ * @returns {void}
+ */
+export function updateActionButtonsState() {
+	// Renamed from updateDownloadButtonState
+	const apiKey = $('#apiKeyInput').val();
+	const username = $('#usernameInput').val();
+	const password = $('#passwordInput').val();
+	const merchantCode = $('#merchantCodeInput').val();
+	const downloadButton = $('#downloadDemoBtn');
+	const initializeButton = $('#initializePlugin');
+
+	console.log('[updateActionButtonsState] Checking credentials:', {
+		apiKey,
+		username,
+		password,
+		merchantCode,
+		downloadButtonExists: downloadButton.length > 0,
+		initButtonExists: initializeButton.length > 0,
+	});
+
+	if (apiKey && username && password && merchantCode) {
+		console.log('[updateActionButtonsState] All credentials present, enabling buttons');
+
+		// Enable Download Button
+		downloadButton.removeClass('btn-disabled'); // Use class for visual state
+		downloadButton.attr('title', 'Download Standalone Demo');
+
+		// Enable Initialize Plugin Button
+		initializeButton.prop('disabled', false);
+		initializeButton.attr('title', 'Initialize Plugin');
+	} else {
+		console.log('[updateActionButtonsState] Missing credentials, disabling buttons');
+
+		// "Disable" Download Button (visually, remains clickable)
+		downloadButton.addClass('btn-disabled');
+		downloadButton.attr(
+			'title',
+			'Please fill in API Key, Username, Password, and Merchant Code to enable download.'
+		);
+
+		// Disable Initialize Plugin Button (truly disabled)
+		initializeButton.prop('disabled', true);
+		initializeButton.attr(
+			'title',
+			'Please fill in API Key, Username, Password, and Merchant Code to initialize plugin.'
+		);
+	}
+}
+
+/**
  * Initialize input and select change listeners to trigger code preview updates.
  * @returns {void}
  */
@@ -31,7 +82,9 @@ export function initCredentialsListeners() {
 		};
 		saveSessionValues(paymentConfig);
 		updateCodePreview();
+		updateActionButtonsState(); // Call renamed function
 	});
+	updateActionButtonsState(); // Initial check on page load using renamed function
 }
 
 /**
