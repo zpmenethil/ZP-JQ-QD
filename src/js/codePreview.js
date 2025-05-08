@@ -4,8 +4,7 @@ import { $, hljs } from './globals.js';
 import { extendedOptions, DEFAULT_VALUES } from './globals.js';
 import { generateFingerprint } from './hash.js';
 import { paymentMethodOptions, additionalOptions } from './globals.js';
-import { generateCurrentDatetime, debounce } from './helpers.js'; // Import debounce
-
+import { generateCurrentDatetime, debounce } from './helpers.js';
 /**
  * Build the code snippet based on current form values and options.
  * @param {Object} config - Configuration object containing all necessary values.
@@ -28,38 +27,44 @@ function buildCodeSnippet({
 	fingerprint,
 }) {
 	const url = $('#urlPreview').val().trim();
+	const merchantCode =
+		$('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode;
+
+	// Get customer values without fallbacks
+	const customerReference = $('#customerReferenceInput').val().trim();
+	const customerName = $('#customerNameInput').val().trim();
+	const customerEmail = $('#customerEmailInput').val().trim();
+
+	const redirectUrl = $('#redirectUrlInput').val().trim() || DEFAULT_VALUES.extended.redirectUrl;
+
+	// Start with required properties (no customer fields yet)
 	const properties = [
+		`timeStamp: "${timestamp}"`,
 		`url: "${url}"`,
+		`merchantCode: "${merchantCode}"`,
 		`apiKey: "${apiKey}"`,
 		`fingerprint: "${fingerprint}"`,
 		`paymentAmount: ${paymentAmount}`,
 		`merchantUniquePaymentId: "${merchantUniquePaymentId}"`,
-		`timeStamp: "${timestamp}"`,
 		`mode: ${mode}`,
-		`merchantCode: "${$('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode}"`,
-		`customerReference: "${$('#customerReferenceInput').val().trim() || DEFAULT_VALUES.credentials.customerReference}"`,
-		`customerName: "${$('#customerNameInput').val().trim() || DEFAULT_VALUES.extended.customerName}"`,
-		`customerEmail: "${$('#customerEmailInput').val().trim() || DEFAULT_VALUES.extended.customerEmail}"`,
-		`redirectUrl: "${$('#redirectUrlInput').val().trim() || DEFAULT_VALUES.extended.redirectUrl}"`,
+		`redirectUrl: "${redirectUrl}"`,
 	];
+
+	// Only add customer fields if they have values
+	if (customerReference) {
+		properties.push(`customerReference: "${customerReference}"`);
+	}
+
+	if (customerName) {
+		properties.push(`customerName: "${customerName}"`);
+	}
+
+	if (customerEmail) {
+		properties.push(`customerEmail: "${customerEmail}"`);
+	}
 
 	if (extendedOptions.callbackUrl && extendedOptions.callbackUrl.trim() !== '') {
 		properties.push(`callbackUrl: "${extendedOptions.callbackUrl.trim()}"`);
-	}
-
-	if (extendedOptions.contactNumber && extendedOptions.contactNumber.trim() !== '') {
-		properties.push(`contactNumber: "${extendedOptions.contactNumber.trim()}"`);
-	}
-
-	// Only add minHeight if it's defined and different from the default
-	if (
-		extendedOptions.minHeight &&
-		String(extendedOptions.minHeight) !== DEFAULT_VALUES.options.minHeight
-	) {
-		console.debug(
-			`[buildCodeSnippet] Adding minHeight: ${extendedOptions.minHeight} (Different from default: ${DEFAULT_VALUES.options.minHeight})`
-		);
-		properties.push(`minHeight: ${extendedOptions.minHeight}`);
 	}
 
 	for (const option in paymentMethodOptions) {
@@ -74,10 +79,32 @@ function buildCodeSnippet({
 			if (mode === '1' && additionalOptions[option]) {
 				properties.push(`${option}: true`);
 			}
+		} else if (option === 'userMode' || option === 'overrideFeePayer') {
+			if (additionalOptions[option] !== 0) {
+				properties.push(`${option}: ${Number(additionalOptions[option])}`);
+			}
 		} else if (additionalOptions[option]) {
 			properties.push(`${option}: true`);
 		}
 	}
+
+	const getminheightfield = $('#minHeightInput').val();
+	const currentMode = $('#modeSelect').val();
+	if (currentMode === '1') {
+		if (getminheightfield !== '600') {
+			properties.push(`minHeight: ${getminheightfield}`);
+		}
+	}
+	if (currentMode === '0' || currentMode === '2' || currentMode === '3') {
+		if (getminheightfield !== '825') {
+			properties.push(`minHeight: ${getminheightfield}`);
+		}
+	}
+
+	if (extendedOptions.contactNumber !== '' && extendedOptions.contactNumber !== '0400001002') {
+		properties.push(`contactNumber: ${extendedOptions.contactNumber}`);
+	}
+
 	let snippet = `var payment = $.zpPayment({\n    ${properties.join(',\n    ')}\n});`;
 	snippet += `\n\npayment.open();`;
 
@@ -92,32 +119,36 @@ function _updateCodePreviewInternal() {
 	console.trace(`[updateCodePreview] Updating code preview...`);
 	const timestamp = generateCurrentDatetime();
 	const merchantUniquePaymentId = $('#merchantUniquePaymentIdInput').val().trim();
-	const apiKey = $('#apiKeyInput').val().trim();
-	const username = $('#usernameInput').val().trim();
-	const password = $('#passwordInput').val().trim();
+	const apiKey = $('#apiKeyInput').val().trim() || DEFAULT_VALUES.credentials.apiKey;
+	const username = $('#usernameInput').val().trim() || DEFAULT_VALUES.credentials.username;
+	const password = $('#passwordInput').val().trim() || DEFAULT_VALUES.credentials.password;
 	const paymentAmount = $('#paymentAmountInput').val() || 0.0;
 	const mode = $('#modeSelect').val();
 
 	let fingerprint = '';
-	if (
-		apiKey &&
-		username &&
-		password &&
-		paymentAmount &&
-		mode &&
-		timestamp &&
-		merchantUniquePaymentId
-	) {
-		// console.log(`[updateCodePreview] creating fingerprint`);
-		fingerprint = generateFingerprint({
-			apiKey,
-			username,
-			password,
-			mode,
-			paymentAmount,
-			merchantUniquePaymentId,
-			timestamp,
-		});
+	try {
+		// Only attempt to generate fingerprint if all required fields are present
+		if (
+			apiKey &&
+			username &&
+			password &&
+			paymentAmount &&
+			mode &&
+			timestamp &&
+			merchantUniquePaymentId
+		) {
+			fingerprint = generateFingerprint({
+				apiKey,
+				username,
+				password,
+				mode,
+				paymentAmount,
+				merchantUniquePaymentId,
+				timestamp,
+			});
+		}
+	} catch (error) {
+		console.warn('[updateCodePreview] Could not generate fingerprint:', error);
 	}
 
 	const snippet = buildCodeSnippet({
@@ -128,8 +159,6 @@ function _updateCodePreviewInternal() {
 		merchantUniquePaymentId,
 		fingerprint,
 	});
-
-	// Use jQuery selector for consistency
 	$('#codePreview').text(snippet);
 	hljs.highlightElement($('#codePreview')[0]);
 }
@@ -142,42 +171,21 @@ function _updateCodePreviewInternal() {
  */
 export const updateCodePreview = debounce(_updateCodePreviewInternal, 250);
 
-/**
- * Copy the code snippet to the clipboard.
- * @returns {void}
- */
-export function copyCodeToClipboard() {
-	const codeText = $('#codePreview').text();
-	navigator.clipboard
-		.writeText(codeText)
-		.then(() => {
-			// Show success feedback
-			const copyBtn = $('#copyCodeBtn');
-			const originalIcon = copyBtn.html();
-			copyBtn.html('<i class="bi bi-check-lg"></i>');
-
-			setTimeout(() => {
-				copyBtn.html(originalIcon);
-			}, 2000);
-		})
-		.catch((err) => {
-			console.error('Failed to copy code:', err);
-			alert('Failed to copy code. Please try again.');
-		});
-}
-
-/**
- * Update the minimum height input based on the selected payment mode.
- * @returns {void}
- */
 export function updateMinHeightBasedOnMode() {
 	const mode = $('#modeSelect').val();
+	console.log(`[updateMinHeightBasedOnMode] mode: ${mode}`);
 
-	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight;
-	if (!$('#minHeightInput').val()) {
+	// Get the default height based on the mode
+	const defaultHeight = mode === '1' ? '600' : DEFAULT_VALUES.options.minHeight; // 825
+
+	// Get the current value from the field
+	const currentHeight = $('#minHeightInput').val();
+
+	// Only update if the field is empty OR if current value is one of the default values
+	if (!currentHeight || currentHeight === '600' || currentHeight === '825') {
 		$('#minHeightInput').val(defaultHeight);
 		if (extendedOptions) {
-			// console.log(`[updateMinHeightBasedOnMode] Setting minHeight to ${defaultHeight}`);
+			console.log(`[updateMinHeightBasedOnMode] Setting minHeight to ${defaultHeight}`);
 			extendedOptions.minHeight = defaultHeight;
 		}
 	}
@@ -192,20 +200,16 @@ export function parseCodePreviewConfig() {
 	const codePreviewText = $('#codePreview').text();
 
 	try {
-		// Extract the configuration object portion using regex
 		const configMatch = codePreviewText.match(/\$\.zpPayment\(\{\s*([\s\S]*?)\s*\}\)/);
 
 		if (!configMatch || !configMatch[1]) {
 			throw new Error('Could not extract configuration from code preview');
 		}
-
-		// Process each line into key-value pairs
 		const configText = configMatch[1];
 		const configLines = configText.split(',\n');
 		const parsedConfig = {};
 
 		configLines.forEach((line) => {
-			// Extract key and value using regex
 			const match = line.trim().match(/^([^:]+):\s*(.+)$/);
 			if (!match) return;
 
@@ -213,32 +217,24 @@ export function parseCodePreviewConfig() {
 			key = key.trim();
 			value = value.trim();
 
-			// Handle different value types
 			if (value.startsWith('"') && value.endsWith('"')) {
-				// String value
 				parsedConfig[key] = value.substring(1, value.length - 1);
 			} else if (value === 'true') {
-				// Boolean true
 				parsedConfig[key] = true;
 			} else if (value === 'false') {
-				// Boolean false
 				parsedConfig[key] = false;
 			} else if (!isNaN(Number(value))) {
-				// Numeric value
 				parsedConfig[key] = Number(value);
 			} else {
-				// Default as string
 				parsedConfig[key] = value;
 			}
 		});
 
-		// Handle the timeStamp/timestamp difference
 		if (parsedConfig.timeStamp) {
 			parsedConfig.timestamp = parsedConfig.timeStamp;
 			delete parsedConfig.timeStamp;
 		}
 
-		console.log('[parseCodePreviewConfig] Successfully parsed configuration:', parsedConfig);
 		return parsedConfig;
 	} catch (err) {
 		console.error('[parseCodePreviewConfig] Error parsing code preview:', err);

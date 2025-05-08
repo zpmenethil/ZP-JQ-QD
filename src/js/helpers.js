@@ -140,3 +140,26 @@ export function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 }
+
+/**
+ * Copy the code snippet to the clipboard.
+ * @returns {void}
+ */
+export function copyCodeToClipboard() {
+	const codeText = $('#codePreview').text();
+	navigator.clipboard
+		.writeText(codeText)
+		.then(() => {
+			const copyBtn = $('#copyCodeBtn');
+			const originalIcon = copyBtn.html();
+			copyBtn.html('<i class="bi bi-check-lg"></i>');
+
+			setTimeout(() => {
+				copyBtn.html(originalIcon);
+			}, 2000);
+		})
+		.catch((err) => {
+			console.error('Failed to copy code:', err);
+			alert('Failed to copy code. Please try again.');
+		});
+}

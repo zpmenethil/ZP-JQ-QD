@@ -5,14 +5,17 @@
 
 import { $ } from './globals.js';
 import { paymentMethodOptions, additionalOptions } from './globals.js';
-import {
-	updateCodePreview,
-	copyCodeToClipboard,
-	updateMinHeightBasedOnMode,
-} from './codePreview.js';
+import { updateCodePreview, updateMinHeightBasedOnMode } from './codePreview.js';
 import { initializeZenPayPlugin } from './initZP.js';
 import { extendedOptions } from './globals.js';
-import { saveSessionValues } from './session.js';
+import {
+	saveSessionValues,
+	saveToSession,
+	savePaymentMethodValuesToSession,
+	saveAdditionalOptionsToSession,
+} from './session.js';
+import { SESSION_KEYS } from './globals.js';
+import { copyCodeToClipboard } from './helpers.js';
 
 /**
  * Initialize input and select change listeners to trigger code preview updates.
@@ -20,19 +23,11 @@ import { saveSessionValues } from './session.js';
  */
 export function initCredentialsListeners() {
 	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput').on('blur', function () {
-		// Build complete payment config to avoid losing credentials
 		const paymentConfig = {
 			apiKey: $('#apiKeyInput').val(),
 			username: $('#usernameInput').val(),
 			password: $('#passwordInput').val(),
 			merchantCode: $('#merchantCodeInput').val(),
-			mode: $('#modeSelect').val(),
-			subdomain: $('input[name="subdomain"]:checked').val(),
-			domain: $('#domainSelect').val(),
-			version: $('input[name="version"]:checked').val(),
-			callbackUrl: $('#callbackUrlInput').val(),
-			minHeight: $('#minHeightInput').val(),
-			paymentAmount: $('#paymentAmountInput').val(),
 		};
 		saveSessionValues(paymentConfig);
 		updateCodePreview();
@@ -48,25 +43,7 @@ export function initPaymentMethodToggleListeners() {
 	$('.payment-method-toggle').on('change', function () {
 		const option = $(this).data('option');
 		paymentMethodOptions[option] = $(this).prop('checked');
-
-		// Build complete payment config to avoid losing credentials
-		const paymentConfig = {
-			apiKey: $('#apiKeyInput').val(),
-			username: $('#usernameInput').val(),
-			password: $('#passwordInput').val(),
-			merchantCode: $('#merchantCodeInput').val(),
-			mode: $('#modeSelect').val(),
-			subdomain: $('input[name="subdomain"]:checked').val(),
-			domain: $('#domainSelect').val(),
-			version: $('input[name="version"]:checked').val(),
-			callbackUrl: $('#callbackUrlInput').val(),
-			minHeight: $('#minHeightInput').val(),
-			paymentAmount: $('#paymentAmountInput').val(),
-		};
-
-		// Save to session storage with complete config to preserve credentials
-		saveSessionValues(paymentConfig);
-
+		savePaymentMethodValuesToSession();
 		updateCodePreview();
 	});
 }
@@ -78,6 +55,7 @@ export function initAdditionalOptionsListeners() {
 	$('.option-toggle').on('change', function () {
 		const option = $(this).data('option');
 		additionalOptions[option] = $(this).prop('checked');
+		saveAdditionalOptionsToSession();
 		updateCodePreview();
 	});
 }
@@ -108,29 +86,17 @@ export function initModeSelectListener() {
 		const mode = $(this).val();
 		if (mode === '1') {
 			$('#tokenizationOptions').removeClass('d-none');
+			updateMinHeightBasedOnMode();
 		} else {
 			$('#tokenizationOptions').addClass('d-none');
+			updateMinHeightBasedOnMode();
 		}
-		updateMinHeightBasedOnMode();
+		// updateMinHeightBasedOnMode();
 
-		// Build complete payment config to avoid losing credentials
 		const paymentConfig = {
-			apiKey: $('#apiKeyInput').val(),
-			username: $('#usernameInput').val(),
-			password: $('#passwordInput').val(),
-			merchantCode: $('#merchantCodeInput').val(),
-			mode: mode,
-			subdomain: $('input[name="subdomain"]:checked').val(),
-			domain: $('#domainSelect').val(),
-			version: $('input[name="version"]:checked').val(),
-			callbackUrl: $('#callbackUrlInput').val(),
-			minHeight: $('#minHeightInput').val(),
-			paymentAmount: $('#paymentAmountInput').val(),
+			mode,
 		};
-
-		// Save to session storage with complete config to preserve credentials
 		saveSessionValues(paymentConfig);
-
 		updateCodePreview();
 	});
 }
@@ -142,8 +108,11 @@ export function initModeSelectListener() {
  */
 export function initUserModeToggle() {
 	$('input[name="userMode"]').on('change', function () {
-		console.debug(`[initUserModeToggle] User mode changed to: ${this.value}`);
-		extendedOptions.userMode = Number(this.value);
+		const numValue = Number(this.value);
+		console.debug(`[initUserModeToggle] User mode changed to: ${numValue}`);
+		additionalOptions.userMode = numValue; // Update additionalOptions directly
+		extendedOptions.userMode = numValue;
+		saveToSession(SESSION_KEYS.USER_MODE, numValue);
 		updateCodePreview();
 	});
 }
@@ -155,8 +124,11 @@ export function initUserModeToggle() {
  */
 export function initOverrideFeePayerToggle() {
 	$('input[name="overrideFeePayer"]').on('change', function () {
-		console.debug(`[initOverrideFeePayerToggle] Override fee payer changed to: ${this.value}`);
-		extendedOptions.overrideFeePayer = Number(this.value);
+		const numValue = Number(this.value);
+		console.debug(`[initOverrideFeePayerToggle] Override fee payer changed to: ${numValue}`);
+		additionalOptions.overrideFeePayer = numValue; // Update additionalOptions directly
+		extendedOptions.overrideFeePayer = numValue;
+		saveToSession(SESSION_KEYS.OVERRIDE_FEE_PAYER, numValue);
 		updateCodePreview();
 	});
 }
@@ -166,7 +138,7 @@ export function initOverrideFeePayerToggle() {
  * @returns {void}
  */
 export function initInitializePluginListener() {
-	console.debug(`[initInitializePluginListener] Initializing plugin listener`);
+	// console.debug(`[initInitializePluginListener] Initializing plugin listener`);
 	$('#initializePlugin').on('click', initializeZenPayPlugin);
 }
 
@@ -175,6 +147,7 @@ export function initInitializePluginListener() {
  * @returns {void}
  */
 export function initCopyCodeListener() {
+	// console.debug(`[initCopyCodeListener] Initializing copy code listener`);
 	$('#copyCodeBtn').on('click', copyCodeToClipboard);
 }
 
@@ -240,19 +213,21 @@ export function initPaymentModeChangeTooltip() {
  */
 export function initUrlBuilderListeners() {
 	$('#domainSelect, input[name="subdomain"], input[name="version"]').on('change', function () {
+		const protocol = 'https://';
+		const subdomain = $('input[name="subdomain"]:checked').val();
+		const domain = $('#domainSelect').val();
+		const suffix = '.com.au/Online/';
+		const version = $('input[name="version"]:checked').val();
+		const url = `${protocol}${subdomain}${domain}${suffix}${version}`;
+
 		const paymentConfig = {
-			apiKey: $('#apiKeyInput').val(),
-			username: $('#usernameInput').val(),
-			password: $('#passwordInput').val(),
-			merchantCode: $('#merchantCodeInput').val(),
-			mode: $('#modeSelect').val(),
-			subdomain: $('input[name="subdomain"]:checked').val(),
 			domain: $('#domainSelect').val(),
+			subdomain: $('input[name="subdomain"]:checked').val(),
 			version: $('input[name="version"]:checked').val(),
-			callbackUrl: $('#callbackUrlInput').val(),
-			minHeight: $('#minHeightInput').val(),
-			paymentAmount: $('#paymentAmountInput').val(),
+			url,
 		};
+		console.log(`[initUrlBuilderListeners] URL: ${url}`);
+		console.log(`[initUrlBuilderListeners] paymentConfig: ${JSON.stringify(paymentConfig)}`);
 		saveSessionValues(paymentConfig);
 		updateCodePreview();
 	});
@@ -264,24 +239,12 @@ export function initUrlBuilderListeners() {
  */
 export function initEmailConfirmationListeners() {
 	$('#sendEmailConfirmationToMerchant, #sendEmailConfirmationToCustomer').on('change', function () {
-		// Build complete payment config to avoid losing credentials
 		const paymentConfig = {
-			apiKey: $('#apiKeyInput').val(),
-			username: $('#usernameInput').val(),
-			password: $('#passwordInput').val(),
-			merchantCode: $('#merchantCodeInput').val(),
-			mode: $('#modeSelect').val(),
-			subdomain: $('input[name="subdomain"]:checked').val(),
-			domain: $('#domainSelect').val(),
-			version: $('input[name="version"]:checked').val(),
-			callbackUrl: $('#callbackUrlInput').val(),
-			minHeight: $('#minHeightInput').val(),
-			paymentAmount: $('#paymentAmountInput').val(),
+			sendEmailConfirmationToMerchant: $('#sendEmailConfirmationToMerchant').prop('checked'),
+			sendEmailConfirmationToCustomer: $('#sendEmailConfirmationToCustomer').prop('checked'),
 		};
-
-		// Save to session storage with complete config to preserve credentials
+		console.log(`[initEmailConfirmationListeners] paymentConfig: ${JSON.stringify(paymentConfig)}`);
 		saveSessionValues(paymentConfig);
-
 		updateCodePreview();
 	});
 }

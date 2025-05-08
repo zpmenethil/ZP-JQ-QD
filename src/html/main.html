@@ -321,11 +321,13 @@
 										<!-- Contact Number -->
 										<div class="form-floating mb-2">
 											<input
-												type="text"
+												type="tel"
 												class="form-control form-control-sm"
 												id="contactNumberInput"
 												placeholder="Contact Number"
-												value="0400123123"
+												pattern="[0-9]*"
+												inputmode="numeric"
+												oninput="this.value = this.value.replace(/[^0-9]/g, '')"
 											/>
 											<label for="contactNumberInput">Contact Number</label>
 										</div>
@@ -380,6 +382,10 @@
 							role="tabpanel"
 							aria-labelledby="payment-methods-tab"
 						>
+							<h6 class="mb-2 small">
+								<i class="bi bi-credit-card-2-front me-1"></i>Payment Methods
+							</h6>
+
 							<div class="payment-method-grid">
 								<!-- Bank Account -->
 								<div class="payment-method-card" data-option="allowBankAcOneOffPayment">
@@ -530,30 +536,48 @@
 									<div class="col-md-6">
 										<div class="options-section">
 											<h6 class="mb-2 small"><i class="bi bi-bell me-1"></i>Notifications</h6>
-											<div class="option-chips">
+											<div class="payment-method-grid">
 												<!-- Send Email to Customer -->
-												<div class="option-chip">
+												<div
+													class="payment-method-card"
+													data-option="sendConfirmationEmailToCustomer"
+												>
 													<input
 														type="checkbox"
-														class="option-toggle visually-hidden"
+														class="payment-method-toggle visually-hidden"
 														id="sendConfirmationEmailToCustomer"
 														data-option="sendConfirmationEmailToCustomer"
 													/>
-													<label for="sendConfirmationEmailToCustomer" class="option-label">
-														<i class="bi bi-envelope me-1"></i>Email Customer
+													<label for="sendConfirmationEmailToCustomer" class="payment-method-label">
+														<div class="payment-method-icon">
+															<i class="bi bi-envelope"></i>
+														</div>
+														<div class="payment-method-name">Email Customer</div>
+														<div class="payment-method-status">
+															<i class="bi bi-check-circle-fill"></i>
+														</div>
 													</label>
 												</div>
 
 												<!-- Send Email to Merchant -->
-												<div class="option-chip">
+												<div
+													class="payment-method-card"
+													data-option="sendConfirmationEmailToMerchant"
+												>
 													<input
 														type="checkbox"
-														class="option-toggle visually-hidden"
+														class="payment-method-toggle visually-hidden"
 														id="sendConfirmationEmailToMerchant"
 														data-option="sendConfirmationEmailToMerchant"
 													/>
-													<label for="sendConfirmationEmailToMerchant" class="option-label">
-														<i class="bi bi-envelope-fill me-1"></i>Email Merchant
+													<label for="sendConfirmationEmailToMerchant" class="payment-method-label">
+														<div class="payment-method-icon">
+															<i class="bi bi-envelope-fill"></i>
+														</div>
+														<div class="payment-method-name">Email Merchant</div>
+														<div class="payment-method-status">
+															<i class="bi bi-check-circle-fill"></i>
+														</div>
 													</label>
 												</div>
 											</div>
@@ -564,30 +588,42 @@
 									<div class="col-md-6">
 										<div class="options-section">
 											<h6 class="mb-2 small"><i class="bi bi-display me-1"></i>UI Options</h6>
-											<div class="option-chips">
+											<div class="payment-method-grid">
 												<!-- Hide Terms and Conditions -->
-												<div class="option-chip">
+												<div class="payment-method-card" data-option="hideTermsAndConditions">
 													<input
 														type="checkbox"
-														class="option-toggle visually-hidden"
+														class="payment-method-toggle visually-hidden"
 														id="hideTermsAndConditions"
 														data-option="hideTermsAndConditions"
 													/>
-													<label for="hideTermsAndConditions" class="option-label">
-														<i class="bi bi-file-earmark-text me-1"></i>Hide Terms
+													<label for="hideTermsAndConditions" class="payment-method-label">
+														<div class="payment-method-icon">
+															<i class="bi bi-file-earmark-text"></i>
+														</div>
+														<div class="payment-method-name">Hide Terms</div>
+														<div class="payment-method-status">
+															<i class="bi bi-check-circle-fill"></i>
+														</div>
 													</label>
 												</div>
 
 												<!-- Hide Merchant Logo -->
-												<div class="option-chip">
+												<div class="payment-method-card" data-option="hideMerchantLogo">
 													<input
 														type="checkbox"
-														class="option-toggle visually-hidden"
+														class="payment-method-toggle visually-hidden"
 														id="hideMerchantLogo"
 														data-option="hideMerchantLogo"
 													/>
-													<label for="hideMerchantLogo" class="option-label">
-														<i class="bi bi-image me-1"></i>Hide Logo
+													<label for="hideMerchantLogo" class="payment-method-label">
+														<div class="payment-method-icon">
+															<i class="bi bi-image"></i>
+														</div>
+														<div class="payment-method-name">Hide Logo</div>
+														<div class="payment-method-status">
+															<i class="bi bi-check-circle-fill"></i>
+														</div>
 													</label>
 												</div>
 											</div>
@@ -601,7 +637,9 @@
 									<div class="col-md-6">
 										<div class="options-section">
 											<h6 class="mb-2 small"><i class="bi bi-person me-1"></i>User Mode</h6>
-											<div class="option-chips">
+											<div class="segmented-buttons">
+												<div class="segmented-buttons-slider"></div>
+												<!-- ADD THIS SLIDER ELEMENT -->
 												<div class="option-chip">
 													<input
 														type="radio"
@@ -639,7 +677,9 @@
 											<h6 class="mb-2 small">
 												<i class="bi bi-currency-dollar me-1"></i>Override Fee Payer
 											</h6>
-											<div class="option-chips">
+											<div class="segmented-buttons">
+												<div class="segmented-buttons-slider"></div>
+												<!-- ADD THIS SLIDER ELEMENT -->
 												<div class="option-chip">
 													<input
 														type="radio"
@@ -692,6 +732,11 @@
 										class="form-control form-control-sm"
 										id="minHeightInput"
 										placeholder="Min Height"
+										min="300"
+										max="2000"
+										step="1"
+										inputmode="numeric"
+										oninput="this.value = this.value.replace(/[^0-9]/g, '')"
 									/>
 									<label for="minHeightInput">Min Height (px)</label>
 								</div>
@@ -701,30 +746,42 @@
 									<h6 class="mb-2 small">
 										<i class="bi bi-credit-card-2-front me-1"></i>Tokenization Options
 									</h6>
-									<div class="option-chips">
+									<div class="payment-method-grid">
 										<!-- Show Fee on Tokenising -->
-										<div class="option-chip">
+										<div class="payment-method-card" data-option="showFeeOnTokenising">
 											<input
 												type="checkbox"
-												class="option-toggle visually-hidden"
+												class="payment-method-toggle visually-hidden"
 												id="showFeeOnTokenising"
 												data-option="showFeeOnTokenising"
 											/>
-											<label for="showFeeOnTokenising" class="option-label">
-												<i class="bi bi-cash me-1"></i>Show Fee
+											<label for="showFeeOnTokenising" class="payment-method-label">
+												<div class="payment-method-icon">
+													<i class="bi bi-cash"></i>
+												</div>
+												<div class="payment-method-name">Show Fee</div>
+												<div class="payment-method-status">
+													<i class="bi bi-check-circle-fill"></i>
+												</div>
 											</label>
 										</div>
 
 										<!-- Show Failed Payment Fee -->
-										<div class="option-chip">
+										<div class="payment-method-card" data-option="showFailedPaymentFeeOnTokenising">
 											<input
 												type="checkbox"
-												class="option-toggle visually-hidden"
+												class="payment-method-toggle visually-hidden"
 												id="showFailedPaymentFeeOnTokenising"
 												data-option="showFailedPaymentFeeOnTokenising"
 											/>
-											<label for="showFailedPaymentFeeOnTokenising" class="option-label">
-												<i class="bi bi-exclamation-triangle me-1"></i>Show Failed Fee
+											<label for="showFailedPaymentFeeOnTokenising" class="payment-method-label">
+												<div class="payment-method-icon">
+													<i class="bi bi-exclamation-triangle"></i>
+												</div>
+												<div class="payment-method-name">Show Failed Fee</div>
+												<div class="payment-method-status">
+													<i class="bi bi-check-circle-fill"></i>
+												</div>
 											</label>
 										</div>
 									</div>

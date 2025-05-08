@@ -48,11 +48,12 @@ body {
 		color 0.3s ease;
 	display: flex;
 	flex-direction: column;
-	/* min-height: 100vh; */
+	min-height: 100vh;
+	margin: 0; /* Ensure no default margin */
 }
 
 main {
-	flex: 1 0 auto;
+	flex: 1 0 auto; /* This makes the main content expand to fill available space */
 }
 
 .header {
@@ -66,7 +67,7 @@ main {
 .footer {
 	background-color: var(--footer-bg);
 	border-top: 1px solid var(--border-color);
-	height: 28px; /* Fixed height for footer */
+	height: 32px; /* Fixed height for footer */
 	display: flex;
 	align-items: center;
 }
@@ -369,23 +370,69 @@ pre {
 	padding: 0.25rem 0.5rem;
 }
 
-/* Configuration Tabs Styling */
+.nav-tabs {
+	border-bottom: 1px solid var(--border-color);
+	gap: 0.25rem; /* Add spacing between tabs */
+}
+
 .nav-tabs .nav-link {
 	color: var(--secondary-color);
 	font-size: 0.8rem;
-	padding: 0.4rem 0.75rem;
+	padding: 0.5rem 0.75rem;
+	margin-bottom: -1px; /* Align with bottom border */
+	background-color: rgba(0, 0, 0, 0.03); /* Light gray background */
+	border: 1px solid var(--border-color);
+	border-bottom-color: transparent;
+	border-radius: 0.25rem 0.25rem 0 0;
+	transition: all 0.2s ease;
+	position: relative;
+	top: 0;
+}
+
+/* Inactive tab hover effect */
+.nav-tabs .nav-link:not(.active):hover {
+	background-color: rgba(0, 0, 0, 0.08);
+	border-color: var(--border-color);
+	color: var(--text-color);
 }
 
 .nav-tabs .nav-link.active {
 	color: var(--primary-color);
-	font-weight: 500;
+	font-weight: 600;
+	background-color: var(--card-bg);
+	border-bottom-color: var(--card-bg);
+	border-top: 2px solid var(--primary-color);
+	padding-top: calc(0.5rem - 1px);
+	box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+	z-index: 1;
 }
 
 .tab-content {
 	background-color: var(--card-bg);
+	border-left: 1px solid var(--border-color);
+	border-right: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--border-color);
+	border-radius: 0 0 0.25rem 0.25rem;
+	padding: 1rem !important;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+[data-bs-theme='dark'] .nav-tabs .nav-link {
+	background-color: rgba(255, 255, 255, 0.03);
 }
 
-/* Payment Method Grid Styling */
+[data-bs-theme='dark'] .nav-tabs .nav-link:not(.active):hover {
+	background-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-tabs .nav-link i {
+	margin-right: 0.35rem;
+	opacity: 0.7;
+}
+
+.nav-tabs .nav-link.active i {
+	opacity: 1;
+}
+
 .payment-method-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -532,39 +579,6 @@ pre {
 		padding-right: 0.25rem;
 	}
 }
-/* 
-[data-bs-theme='dark'] .modal-content {
-	background-color: var(--card-bg);
-	color: var(--text-color);
-}
-
-[data-bs-theme='dark'] .modal-header,
-[data-bs-theme='dark'] .modal-footer {
-	border-color: var(--border-color);
-}
-
-.modal-content {
-	background-color: var(--card-bg);
-	color: var(--text-color);
-	border-color: var(--border-color);
-}
-
-.modal-header,
-.modal-footer {
-	border-color: var(--border-color);
-}
-
-.modal-body .form-label {
-	margin-bottom: 0.5rem;
-	color: var(--text-color);
-}
-.modal-body {
-	padding: 1.25rem;
-}
-
-.modal-body .mb-3 {
-	margin-bottom: 1rem !important;
-} */
 
 /* Card title and spacing adjustments */
 .card-title {
@@ -896,4 +910,59 @@ hr {
 #credentials .input-group .form-floating label {
 	opacity: 0.65;
 	transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+#minHeightInput::-webkit-inner-spin-button,
+#minHeightInput::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+#minHeightInput {
+	-moz-appearance: textfield;
+	appearance: textfield;
+}
+/* Segmented Button Style */
+/* Add to your custom CSS file */
+.segmented-buttons {
+	display: flex;
+	/* flex-wrap: wrap; /* OLD: Caused wrapping */
+	flex-wrap: nowrap; /* NEW: Forces buttons onto a single line */
+	gap: 0.25rem; /* Keeps the small space between buttons */
+	position: relative; /* Added for the upcoming sliding effect */
+	border-radius: 6px; /* Optional: if you want the whole group to have rounded corners */
+	/* background-color: var(--option-chip-bg); /* Optional: Background for the track if using sliding effect */
+}
+
+.segmented-buttons .option-chip {
+	flex-grow: 1; /* Each chip will grow equally */
+	flex-shrink: 1; /* Each chip can shrink if needed */
+	flex-basis: 0; /* Start with a basis of 0, space distributed by flex-grow */
+	/* min-width: fit-content; /* REMOVED: Could prevent equal sizing or cause overflow with nowrap */
+	min-width: 0; /* ADDED: Allows chips to shrink smaller than their content if necessary */
+	text-align: center;
+	position: relative; /* Added for z-index if using sliding effect */
+	z-index: 2; /* Ensures labels are above the slider */
+}
+.segmented-buttons .option-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%; /* Label takes full width of its chip */
+	padding: 0.4rem 0.5rem; /* Reduced padding */
+	font-size: 0.8rem; /* Reduced font size */
+	font-weight: 500;
+	border-radius: 6px; /* This will be for individual labels if not using a slider */
+	text-align: center;
+	transition: all 0.15s ease;
+	/* border: 1px solid var(--border-color); /* Keep if not using slider, remove if using slider */
+	/* background-color: var(--option-chip-bg); /* Keep if not using slider, remove if using slider */
+}
+
+/* Original active state - will be modified for sliding effect */
+.segmented-buttons .option-toggle:checked + .option-label {
+	background-color: var(--primary-color);
+	color: white;
+	/* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Keep if not using slider */
+	border-color: var(--primary-color); /* Keep if not using slider */
 }

@@ -13,7 +13,7 @@ import { base64EncodeASCII, base64DecodeASCII } from './helpers.js';
  */
 export const STORAGE_TYPE = {
 	SESSION: 'session',
-	LOCAL: 'local',
+	LOCAL: 'local'
 };
 
 /**
@@ -23,7 +23,7 @@ export const STORAGE_TYPE = {
 export const ENCODING_TYPE = {
 	NONE: 'none',
 	JSON: 'json',
-	BASE64: 'base64',
+	BASE64: 'base64'
 };
 
 /**
@@ -35,22 +35,18 @@ export const ENCODING_TYPE = {
  */
 export function saveToStorage(key, value, storageType = STORAGE_TYPE.SESSION) {
 	try {
-		console.debug(`[saveToStorage] Starting save operation for ${key} with value:`, value);
 
 		// Choose storage
 		const storage = storageType === STORAGE_TYPE.LOCAL ? localStorage : sessionStorage;
 
 		// Convert to string if needed
 		let stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-		console.debug(`[saveToStorage] Converted value to string: ${stringValue}`);
 
 		// Always encode with base64
 		const encodedValue = base64EncodeASCII(stringValue);
-		console.debug(`[saveToStorage] Encoded with BASE64: ${encodedValue}`);
 
 		// Store value
 		storage.setItem(key, encodedValue);
-		console.debug(`[saveToStorage] Successfully saved to ${storageType} storage: ${key}`);
 
 		return true;
 	} catch (e) {
@@ -68,14 +64,12 @@ export function saveToStorage(key, value, storageType = STORAGE_TYPE.SESSION) {
  */
 export function getFromStorage(key, defaultValue = null, storageType = STORAGE_TYPE.SESSION) {
 	try {
-		console.debug(`[getFromStorage] Starting retrieval for ${key}`);
 
 		// Choose storage
 		const storage = storageType === STORAGE_TYPE.LOCAL ? localStorage : sessionStorage;
 
 		// Get encoded value
 		const encodedValue = storage.getItem(key);
-		console.debug(`[getFromStorage] Retrieved encoded value: ${encodedValue}`);
 
 		// Return default if not found
 		if (encodedValue === null) {
@@ -83,9 +77,7 @@ export function getFromStorage(key, defaultValue = null, storageType = STORAGE_T
 			return defaultValue;
 		}
 
-		console.debug(`[getFromStorage] Found value for ${key}:`, encodedValue);
 		const decodedValue = base64DecodeASCII(encodedValue);
-		console.debug(`[getFromStorage] Decoded value: ${decodedValue}`);
 
 		// Handle boolean strings
 		if (decodedValue === 'true') return true;
@@ -98,8 +90,6 @@ export function getFromStorage(key, defaultValue = null, storageType = STORAGE_T
 			return num;
 		}
 
-		// Return as regular string
-		console.debug(`[getFromStorage] Returning as string: ${decodedValue}`);
 		return decodedValue;
 	} catch (e) {
 		console.error(`[getFromStorage] Error retrieving from ${storageType} storage:`, e);
@@ -110,7 +100,7 @@ export function getFromStorage(key, defaultValue = null, storageType = STORAGE_T
 // Create a helper function to manage the ZPS object
 function getZPSObject() {
 	try {
-		console.debug('[getZPSObject] Retrieving ZPS object from sessionStorage');
+		// console.debug('[getZPSObject] Retrieving ZPS object from sessionStorage');
 		const storedData = sessionStorage.getItem('ZPS');
 		// Check if data exists before trying to decode
 		if (!storedData) {
@@ -120,7 +110,7 @@ function getZPSObject() {
 
 		// Decode and parse the stored data
 		const decodedData = base64DecodeASCII(storedData);
-		console.debug('[getZPSObject] Decoded ZPS data:', decodedData);
+		// console.debug('[getZPSObject] Decoded ZPS data:', decodedData);
 		return JSON.parse(decodedData);
 	} catch (e) {
 		console.error('[getZPSObject] Error retrieving ZPS data:', e);
@@ -131,7 +121,7 @@ function getZPSObject() {
 // Update saveToSession to save to the ZPS object
 export function saveToSession(key, value) {
 	try {
-		console.debug(`[saveToSession] Saving ${key}:`, value);
+		// console.debug(`[saveToSession] Saving ${key}:`, value);
 
 		// Get current ZPS object
 		const zpsData = getZPSObject();
@@ -156,7 +146,7 @@ export function saveToSession(key, value) {
 // Update getFromSession to read from the ZPS object
 export function getFromSession(key, defaultValue = null) {
 	try {
-		console.debug(`[getFromSession] Retrieving ${key}`);
+		// console.debug(`[getFromSession] Retrieving ${key}`);
 
 		// Get ZPS object
 		const zpsData = getZPSObject();
@@ -193,15 +183,11 @@ export function restoreSessionValues() {
 	}
 
 	if ($('#merchantCodeInput').length) {
-		$('#merchantCodeInput').val(
-			getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION)
-		);
+		$('#merchantCodeInput').val(getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION));
 	}
 
 	if ($('#paymentAmountInput').length) {
-		$('#paymentAmountInput').val(
-			getFromSession(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION)
-		);
+		$('#paymentAmountInput').val(getFromSession(SESSION_KEYS.PAYMENT_AMOUNT, '', STORAGE_TYPE.SESSION));
 	}
 
 	if ($('#modeSelect').length) {
@@ -260,29 +246,30 @@ export function restoreSessionValues() {
 }
 
 /**
- * Save all form field values to session storage.
+ * Save all form field values from paymentConfig to session storage.
+ * @param {Object} paymentConfig - The payment configuration object with varying properties
  * @returns {void}
  */
 export function saveSessionValues(paymentConfig) {
-	saveToSession(SESSION_KEYS.API_KEY, paymentConfig.apiKey);
-	saveToSession(SESSION_KEYS.USERNAME, paymentConfig.username);
-	saveToSession(SESSION_KEYS.PASSWORD, paymentConfig.password);
-	saveToSession(SESSION_KEYS.MERCHANT_CODE, paymentConfig.merchantCode);
-	saveToSession(SESSION_KEYS.MODE, paymentConfig.mode);
-	saveToSession(SESSION_KEYS.SUBDOMAIN, paymentConfig.subdomain);
-	saveToSession(SESSION_KEYS.DOMAIN, paymentConfig.domain);
-	saveToSession(SESSION_KEYS.VERSION, paymentConfig.version);
-	saveToSession(SESSION_KEYS.CALLBACK_URL, paymentConfig.callbackUrl);
-	const minHeightValue = paymentConfig.minHeight;
-	if (minHeightValue && minHeightValue !== DEFAULT_VALUES.options.minHeight.default) {
-		saveToSession(SESSION_KEYS.MIN_HEIGHT, minHeightValue);
-	}
+	if (!paymentConfig) return;
+	Object.entries(paymentConfig).forEach(([key, value]) => {
+		if (value === undefined || value === null) return;
+		if (key === 'minHeight' && value === DEFAULT_VALUES.options.minHeight.default) {
+			return;
+		}
+		const sessionKey = SESSION_KEYS[key.toUpperCase()] || key;
+		saveToSession(sessionKey, value);
+	});
+}
 
+export function savePaymentMethodValuesToSession() {
 	$('.payment-method-toggle').each(function () {
 		const option = $(this).data('option');
 		saveToSession(`demo_${option}`, $(this).prop('checked'));
 	});
+}
 
+export function saveAdditionalOptionsToSession() {
 	$('.option-toggle').each(function () {
 		const option = $(this).data('option');
 		saveToSession(`demo_${option}`, $(this).prop('checked'));

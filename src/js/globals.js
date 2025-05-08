@@ -70,8 +70,8 @@ export const SESSION_KEYS = {
 	SENDEMAILCONFIRMATIONTOCUSTOMER: 'sendEmailConfirmationToCustomer',
 	HIDETERMSANDCONDITIONS: 'hideTermsAndConditions',
 	HIDEMERCHANTLOGO: 'hideMerchantLogo',
-	USERMODE: 'userMode',
-	OVERRIDEFEEPAYER: 'overrideFeePayer',
+	USER_MODE: 'userMode',
+	OVERRIDE_FEE_PAYER: 'overrideFeePayer',
 	SHOWFEEONTOKENISING: 'showFeeOnTokenising',
 	SHOWFAILED_PAYMENTFEEONTOKENISING: 'showFailedPaymentFeeOnTokenising',
 	ALLOWBANKONEOFF: 'allowBankOneOff',
@@ -99,11 +99,11 @@ export const SESSION_KEYS = {
 export const DEFAULT_VALUES = {
 	// Credentials tab defaults
 	credentials: {
-		apiKey: '', // String - left blank
-		username: '', // String - left blank
-		password: '', // String - left blank
-		merchantCode: '', // String - left blank
-		paymentAmount: '', // String - randomly generated
+		apiKey: '<<API-KEY>>',
+		username: '<<USERNAME>>',
+		password: '<<PASSWORD>>',
+		merchantCode: '<<MERCHANT-CODE>>',
+		paymentAmount: '',
 	},
 
 	// Extended tab defaults
@@ -114,10 +114,9 @@ export const DEFAULT_VALUES = {
 		customerReference: '', // String - randomly generated UUID
 		customerEmail: '', // String - generated from name
 		merchantUniquePaymentId: '', // String - randomly generated UUID
-		contactNumber: '0400001002', // String - default phone number
+		contactNumber: '0400001002',
 	},
 
-	// Payment Methods tab defaults (all booleans default to false)
 	paymentMethods: {
 		allowBankAcOneOffPayment: false,
 		allowPayToOneOffPayment: false,
@@ -128,21 +127,20 @@ export const DEFAULT_VALUES = {
 		allowSaveCardUserOption: false,
 	},
 
-	// Options tab defaults
 	options: {
 		// Notification options
 		sendConfirmationEmailToCustomer: false,
 		sendConfirmationEmailToMerchant: false,
 		// UI options
 		hideTermsAndConditions: false,
-		hideMerchantLogo: false,
+		hideMerchantLogo: true,
 		userMode: 0,
 		overrideFeePayer: 0,
 		// Tokenization options
 		showFeeOnTokenising: false,
 		showFailedPaymentFeeOnTokenising: false,
 		// UI height options based on payment mode
-		minHeight: '825',
+		minHeight: 825,
 	},
 
 	// URL builder defaults
