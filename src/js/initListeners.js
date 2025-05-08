@@ -12,14 +12,7 @@ import {
 } from './codePreview.js';
 import { initializeZenPayPlugin } from './initZP.js';
 import { extendedOptions } from './globals.js';
-
-// /**
-//  * Initialize input and select change listeners to trigger code preview updates.
-//  * @returns {void}
-//  */
-// export function initInputPreviewListeners() {
-// 	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput, #paymentAmountInput, #modeSelect').on('input change', updateCodePreview);
-// }
+import { saveSessionValues } from './session.js';
 
 /**
  * Initialize input and select change listeners to trigger code preview updates.
@@ -27,8 +20,21 @@ import { extendedOptions } from './globals.js';
  */
 export function initCredentialsListeners() {
 	$('#apiKeyInput, #usernameInput, #passwordInput, #merchantCodeInput').on('blur', function () {
-		// const fieldName = $(this).attr('id');
-		// extendedOptions[fieldName] = $(this).val();
+		// Build complete payment config to avoid losing credentials
+		const paymentConfig = {
+			apiKey: $('#apiKeyInput').val(),
+			username: $('#usernameInput').val(),
+			password: $('#passwordInput').val(),
+			merchantCode: $('#merchantCodeInput').val(),
+			mode: $('#modeSelect').val(),
+			subdomain: $('input[name="subdomain"]:checked').val(),
+			domain: $('#domainSelect').val(),
+			version: $('input[name="version"]:checked').val(),
+			callbackUrl: $('#callbackUrlInput').val(),
+			minHeight: $('#minHeightInput').val(),
+			paymentAmount: $('#paymentAmountInput').val(),
+		};
+		saveSessionValues(paymentConfig);
 		updateCodePreview();
 	});
 }
@@ -42,7 +48,25 @@ export function initPaymentMethodToggleListeners() {
 	$('.payment-method-toggle').on('change', function () {
 		const option = $(this).data('option');
 		paymentMethodOptions[option] = $(this).prop('checked');
-		sessionStorage.setItem(`demo_${option}`, paymentMethodOptions[option]);
+
+		// Build complete payment config to avoid losing credentials
+		const paymentConfig = {
+			apiKey: $('#apiKeyInput').val(),
+			username: $('#usernameInput').val(),
+			password: $('#passwordInput').val(),
+			merchantCode: $('#merchantCodeInput').val(),
+			mode: $('#modeSelect').val(),
+			subdomain: $('input[name="subdomain"]:checked').val(),
+			domain: $('#domainSelect').val(),
+			version: $('input[name="version"]:checked').val(),
+			callbackUrl: $('#callbackUrlInput').val(),
+			minHeight: $('#minHeightInput').val(),
+			paymentAmount: $('#paymentAmountInput').val(),
+		};
+
+		// Save to session storage with complete config to preserve credentials
+		saveSessionValues(paymentConfig);
+
 		updateCodePreview();
 	});
 }
@@ -88,6 +112,25 @@ export function initModeSelectListener() {
 			$('#tokenizationOptions').addClass('d-none');
 		}
 		updateMinHeightBasedOnMode();
+
+		// Build complete payment config to avoid losing credentials
+		const paymentConfig = {
+			apiKey: $('#apiKeyInput').val(),
+			username: $('#usernameInput').val(),
+			password: $('#passwordInput').val(),
+			merchantCode: $('#merchantCodeInput').val(),
+			mode: mode,
+			subdomain: $('input[name="subdomain"]:checked').val(),
+			domain: $('#domainSelect').val(),
+			version: $('input[name="version"]:checked').val(),
+			callbackUrl: $('#callbackUrlInput').val(),
+			minHeight: $('#minHeightInput').val(),
+			paymentAmount: $('#paymentAmountInput').val(),
+		};
+
+		// Save to session storage with complete config to preserve credentials
+		saveSessionValues(paymentConfig);
+
 		updateCodePreview();
 	});
 }
@@ -99,6 +142,7 @@ export function initModeSelectListener() {
  */
 export function initUserModeToggle() {
 	$('input[name="userMode"]').on('change', function () {
+		console.debug(`[initUserModeToggle] User mode changed to: ${this.value}`);
 		extendedOptions.userMode = Number(this.value);
 		updateCodePreview();
 	});
@@ -111,6 +155,7 @@ export function initUserModeToggle() {
  */
 export function initOverrideFeePayerToggle() {
 	$('input[name="overrideFeePayer"]').on('change', function () {
+		console.debug(`[initOverrideFeePayerToggle] Override fee payer changed to: ${this.value}`);
 		extendedOptions.overrideFeePayer = Number(this.value);
 		updateCodePreview();
 	});
@@ -186,5 +231,57 @@ export function initPaymentModeHoverTooltip() {
 export function initPaymentModeChangeTooltip() {
 	$('#modeSelect').on('change', function () {
 		$('.payment-mode-info').tooltip('hide');
+	});
+}
+
+/**
+ * Initialize URL builder change listeners.
+ * @returns {void}
+ */
+export function initUrlBuilderListeners() {
+	$('#domainSelect, input[name="subdomain"], input[name="version"]').on('change', function () {
+		const paymentConfig = {
+			apiKey: $('#apiKeyInput').val(),
+			username: $('#usernameInput').val(),
+			password: $('#passwordInput').val(),
+			merchantCode: $('#merchantCodeInput').val(),
+			mode: $('#modeSelect').val(),
+			subdomain: $('input[name="subdomain"]:checked').val(),
+			domain: $('#domainSelect').val(),
+			version: $('input[name="version"]:checked').val(),
+			callbackUrl: $('#callbackUrlInput').val(),
+			minHeight: $('#minHeightInput').val(),
+			paymentAmount: $('#paymentAmountInput').val(),
+		};
+		saveSessionValues(paymentConfig);
+		updateCodePreview();
+	});
+}
+
+/**
+ * Initialize email confirmation option listeners.
+ * @returns {void}
+ */
+export function initEmailConfirmationListeners() {
+	$('#sendEmailConfirmationToMerchant, #sendEmailConfirmationToCustomer').on('change', function () {
+		// Build complete payment config to avoid losing credentials
+		const paymentConfig = {
+			apiKey: $('#apiKeyInput').val(),
+			username: $('#usernameInput').val(),
+			password: $('#passwordInput').val(),
+			merchantCode: $('#merchantCodeInput').val(),
+			mode: $('#modeSelect').val(),
+			subdomain: $('input[name="subdomain"]:checked').val(),
+			domain: $('#domainSelect').val(),
+			version: $('input[name="version"]:checked').val(),
+			callbackUrl: $('#callbackUrlInput').val(),
+			minHeight: $('#minHeightInput').val(),
+			paymentAmount: $('#paymentAmountInput').val(),
+		};
+
+		// Save to session storage with complete config to preserve credentials
+		saveSessionValues(paymentConfig);
+
+		updateCodePreview();
 	});
 }

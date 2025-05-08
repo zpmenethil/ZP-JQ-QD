@@ -74,7 +74,6 @@ export function showModal(
 
 	// Apply type styling
 	if (type) {
-		// modalDialog.classList.add('border', `border-${type}`);
 		modalHeader.classList.add(`bg-${type}`, 'text-white');
 	}
 

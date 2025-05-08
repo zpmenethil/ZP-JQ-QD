@@ -31,9 +31,14 @@ module.exports = [
 			minimize: false,
 		},
 		devtool: 'source-map',
+		watch: true,
+		watchOptions: {
+			ignored: /node_modules/,
+			aggregateTimeout: 300,
+			poll: 1000,
+		},
 	},
 
-	// Minified bundle.min.js configuration
 	{
 		name: 'minified',
 		mode: 'production',
@@ -66,6 +71,12 @@ module.exports = [
 					extractComments: false,
 				}),
 			],
+		},
+		watch: true,
+		watchOptions: {
+			ignored: /node_modules/,
+			aggregateTimeout: 300,
+			poll: 1000,
 		},
 	},
 ];

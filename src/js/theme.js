@@ -15,35 +15,29 @@ function determineInitialTheme() {
 	let theme;
 
 	if (typeof raw === 'string') {
-		// 1) Try to parse JSON wrapper
 		try {
 			const obj = JSON.parse(raw);
 			if (obj && typeof obj.theme === 'string') {
 				theme = obj.theme;
 			}
-			// eslint-disable-next-line no-unused-vars
-		} catch (e) {
-			// not JSON, ignore
-		}
-		// 2) Fallback: if it’s literally "light" or "dark"
+
+			// eslint-disable-next-line no-empty, no-unused-vars
+		} catch (e) {}
 		if (!theme && (raw === 'light' || raw === 'dark')) {
 			theme = raw;
 		}
-	}
-	// (Edge-case) if getFromStorage ever returned an object
-	else if (raw && typeof raw === 'object' && typeof raw.theme === 'string') {
+	} else if (raw && typeof raw === 'object' && typeof raw.theme === 'string') {
 		theme = raw.theme;
 	}
 
 	if (theme === 'light' || theme === 'dark') {
-		console.log(`Theme found in storage: ${theme}`);
 		return theme;
 	}
 
 	// No usable stored theme → system preference
 	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 	theme = prefersDark ? 'dark' : 'light';
-	console.log(`Device preference found: ${theme}`);
+	// console.log(`Device preference found: ${theme}`);
 	return theme;
 }
 
@@ -55,14 +49,10 @@ function applyTheme(theme) {
 	const lightIcon = $('#lightIcon');
 	const darkIcon = $('#darkIcon');
 
-	// 1) Update attribute
 	document.documentElement.setAttribute('data-bs-theme', theme);
 
-	// 2) Persist as a JSON object
 	saveToStorage(THEME_STORAGE_KEY, { theme }, STORAGE_TYPE.LOCAL);
-	console.log(`Theme saved to localStorage as JSON: ${JSON.stringify({ theme })}`);
 
-	// 3) Icon swap
 	if (theme === 'dark') {
 		lightIcon.addClass('d-none');
 		darkIcon.removeClass('d-none');
@@ -71,7 +61,6 @@ function applyTheme(theme) {
 		lightIcon.removeClass('d-none');
 	}
 
-	// 4) Highlight & tooltips
 	const codePreview = document.getElementById('codePreview');
 	if (codePreview) hljs.highlightElement(codePreview);
 	reinitializeTooltips();

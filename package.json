@@ -18,18 +18,17 @@
         "gulp"
     ],
     "scripts": {
-        "build:js": "webpack --config webpack.js.config.js --watch",
-        "build:js:fp": "webpack --config webpack.js.fp.config.js",
+        "build:js": "webpack --config webpack.js.config.js",
+        "build:js:watch": "webpack --config webpack.js.build.watch.js --watch",
         "build:css": "webpack --config webpack.css.config.js",
         "build:html": "gulp --gulpfile gulpfile.js",
-        "build:html:fp": "gulp --gulpfile gulpfile.fp.js",
+        "build:html:watch": "gulp --gulpfile gulpfile.html.watch.js --watch",
         "lint": "eslint . --fix",
         "clean": "rimraf ./build",
         "pretty": "npx prettier --write .",
-        "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html && npm run lint && npm run pretty",
-        "build:fp": "npm run build:js:fp && npm run build:html:fp && npm run lint && npm run pretty",
-        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-        "analyze": "webpack --config webpack.js.config.js --json > stats.json && npx webpack-bundle-analyzer stats.json"
+        "format:build": "npx prettier --write build --ignore-path NUL",
+        "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html && npm run lint && npm run pretty && npm run format:build",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
     "devDependencies": {
         "@babel/core": "^7.23.2",

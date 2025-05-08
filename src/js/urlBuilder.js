@@ -13,14 +13,9 @@ export function updateRedirectUrl() {
 	const subdomain = $('input[name="subdomain"]:checked').val();
 	const redirectUrl = `https://${subdomain}.${domain}.com.au/demo/`;
 	const callbackUrl = `https://${subdomain}.${domain}.com.au/callback/`;
-
 	$('#redirectUrlInput').val(redirectUrl);
 	$('#callbackUrlInput').attr('placeholder', callbackUrl);
-
-	// Update extended options
 	extendedOptions.redirectUrl = redirectUrl;
-
-	// Trigger code preview update if available
 	if (typeof updateCodePreview === 'function') {
 		updateCodePreview();
 	}

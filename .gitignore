@@ -48,3 +48,8 @@ repomix-output-js.md
 package-lock.json
 _playwright/
 .v3/
+tests/
+.v2/
+.v1/
+.scripts/
+.github/

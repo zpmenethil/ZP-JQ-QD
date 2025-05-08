@@ -43,10 +43,10 @@ export const sha3_512 =
 	typeof globalThis.sha3_512 === 'function'
 		? globalThis.sha3_512.bind(globalThis)
 		: // eslint-disable-next-line no-unused-vars
-		  data => {
+			(data) => {
 				console.warn('sha3_512 function is not defined. Ensure the library is loaded.');
 				return '';
-		  };
+			};
 
 // Session Keys
 /**
@@ -54,33 +54,39 @@ export const sha3_512 =
  * @constant {Object}
  */
 export const SESSION_KEYS = {
-	// CREDS
-	API_KEY: 'demoApiKey',
-	USERNAME: 'demoUsername',
-	PASSWORD: 'demoPassword',
-	MERCHANT_CODE: 'demoMerchantCode',
-	//
-	PAYMENT_AMOUNT: 'demoPaymentAmount',
-	// MODE
-	MODE: 'demoMode',
-	// URL
-	SUBDOMAIN: 'demoSubdomain',
-	DOMAIN: 'demoDomain',
-	VERSION: 'demoVersion',
-	// Extended options
-	MIN_HEIGHT: 'demo_minHeight ',
-	REDIRECT_URL: 'demo_redirectUrl',
-	CALLBACK_URL: 'demo_callbackUrl',
-	SENDEMAILCONFIRMATIONTOMERCHANT: 'demo_sendEmailConfirmationToMerchant',
-	SENDEMAILCONFIRMATIONTOCUSTOMER: 'demo_sendEmailConfirmationToCustomer',
-	// Payment method options
-	ALLOWBANKONEOFF: 'demo_allowBankOneOff',
-	ALLOWPAYTO: 'demo_allowPayTo',
-	ALLOWPAYID: 'demo_allowPayID',
-	ALLOWAPPLEPAY: 'demo_allowApplePay',
-	ALLOWGOOGLEPAY: 'demo_allowGooglePay',
-	ALLOWSAVECARDINFO: 'demo_allowSaveCardInfo',
-	ALLOWLATITUDEPAY: 'demo_allowLatitudePay'
+	API_KEY: 'ApiKey',
+	USERNAME: 'username',
+	PASSWORD: 'password',
+	MERCHANT_CODE: 'MerchantCode',
+	REDIRECT_URL: 'redirectUrl',
+	CALLBACK_URL: 'callbackUrl',
+	MODE: 'mode',
+	SUBDOMAIN: 'subdomain',
+	DOMAIN: 'domain',
+	VERSION: 'version',
+	URL: 'url',
+	MIN_HEIGHT: 'minHeight',
+	SENDEMAILCONFIRMATIONTOMERCHANT: 'sendEmailConfirmationToMerchant',
+	SENDEMAILCONFIRMATIONTOCUSTOMER: 'sendEmailConfirmationToCustomer',
+	HIDETERMSANDCONDITIONS: 'hideTermsAndConditions',
+	HIDEMERCHANTLOGO: 'hideMerchantLogo',
+	USERMODE: 'userMode',
+	OVERRIDEFEEPAYER: 'overrideFeePayer',
+	SHOWFEEONTOKENISING: 'showFeeOnTokenising',
+	SHOWFAILED_PAYMENTFEEONTOKENISING: 'showFailedPaymentFeeOnTokenising',
+	ALLOWBANKONEOFF: 'allowBankOneOff',
+	ALLOWPAYTO: 'allowPayTo',
+	ALLOWPAYID: 'allowPayID',
+	ALLOWAPPLEPAY: 'allowApplePay',
+	ALLOWGOOGLEPAY: 'allowGooglePay',
+	ALLOWSAVECARDINFO: 'allowSaveCardInfo',
+	ALLOWLATITUDEPAY: 'allowLatitudePay',
+	PAYMENT_AMOUNT: 'PaymentAmount', // Un-commented this line
+	// CUSTOMER_NAME: 'customerName',  // dump
+	// CUSTOMER_REFERENCE: 'customerReference', // dump
+	// CUSTOMER_EMAIL: 'customerEmail', // dump
+	// MERCHANTUNIQUEPAYMENTID: 'merchantUniquePaymentId', // dump
+	// CONTACT_NUMBER: 'contactNumber', // dump
 };
 
 // ============================================================================
@@ -97,7 +103,7 @@ export const DEFAULT_VALUES = {
 		username: '', // String - left blank
 		password: '', // String - left blank
 		merchantCode: '', // String - left blank
-		paymentAmount: '' // String - randomly generated
+		paymentAmount: '', // String - randomly generated
 	},
 
 	// Extended tab defaults
@@ -108,7 +114,7 @@ export const DEFAULT_VALUES = {
 		customerReference: '', // String - randomly generated UUID
 		customerEmail: '', // String - generated from name
 		merchantUniquePaymentId: '', // String - randomly generated UUID
-		contactNumber: '0400001002' // String - default phone number
+		contactNumber: '0400001002', // String - default phone number
 	},
 
 	// Payment Methods tab defaults (all booleans default to false)
@@ -119,7 +125,7 @@ export const DEFAULT_VALUES = {
 		allowApplePayOneOffPayment: false,
 		allowGooglePayOneOffPayment: false,
 		allowLatitudePayOneOffPayment: false,
-		allowSaveCardUserOption: false
+		allowSaveCardUserOption: false,
 	},
 
 	// Options tab defaults
@@ -136,20 +142,15 @@ export const DEFAULT_VALUES = {
 		showFeeOnTokenising: false,
 		showFailedPaymentFeeOnTokenising: false,
 		// UI height options based on payment mode
-		minHeight: '825'
+		minHeight: '825',
 	},
 
 	// URL builder defaults
 	url: {
 		subdomain: 'payuat',
 		domain: 'travelpay',
-		version: 'v5'
+		version: 'v5',
 	},
-
-	// Special case tracked values
-	special: {
-		sessionTrackedPaymentAmount: '65.00'
-	}
 };
 
 // ============================================================================
@@ -168,7 +169,7 @@ export const paymentMethodsTab = {
 	allowApplePayOneOffPayment: DEFAULT_VALUES.paymentMethods.allowApplePayOneOffPayment,
 	allowGooglePayOneOffPayment: DEFAULT_VALUES.paymentMethods.allowGooglePayOneOffPayment,
 	allowLatitudePayOneOffPayment: DEFAULT_VALUES.paymentMethods.allowLatitudePayOneOffPayment,
-	allowSaveCardUserOption: DEFAULT_VALUES.paymentMethods.allowSaveCardUserOption
+	allowSaveCardUserOption: DEFAULT_VALUES.paymentMethods.allowSaveCardUserOption,
 };
 export const paymentMethodOptions = paymentMethodsTab;
 // ============================================================================
@@ -196,7 +197,7 @@ export const additionalOptionsTab = {
 	showFeeOnTokenising: DEFAULT_VALUES.options.showFeeOnTokenising,
 	showFailedPaymentFeeOnTokenising: DEFAULT_VALUES.options.showFailedPaymentFeeOnTokenising,
 	// UI settings
-	minHeight: DEFAULT_VALUES.options.minHeight
+	minHeight: DEFAULT_VALUES.options.minHeight,
 };
 export const additionalOptions = additionalOptionsTab;
 
@@ -213,7 +214,7 @@ export const credentialsTab = {
 	username: DEFAULT_VALUES.credentials.username,
 	password: DEFAULT_VALUES.credentials.password,
 	merchantCode: DEFAULT_VALUES.credentials.merchantCode,
-	paymentAmount: DEFAULT_VALUES.credentials.paymentAmount
+	paymentAmount: DEFAULT_VALUES.credentials.paymentAmount,
 };
 // ============================================================================
 // EXTENDED OPTIONS
@@ -240,6 +241,6 @@ export const extendedOptionsTab = {
 	contactNumber: DEFAULT_VALUES.extended.contactNumber,
 
 	// UI settings - populated based on mode
-	minHeight: ''
+	minHeight: DEFAULT_VALUES.options.minHeight,
 };
 export const extendedOptions = extendedOptionsTab;

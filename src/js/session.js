@@ -110,8 +110,18 @@ export function getFromStorage(key, defaultValue = null, storageType = STORAGE_T
 // Create a helper function to manage the ZPS object
 function getZPSObject() {
 	try {
+		console.debug('[getZPSObject] Retrieving ZPS object from sessionStorage');
 		const storedData = sessionStorage.getItem('ZPS');
-		return storedData ? JSON.parse(base64DecodeASCII(storedData)) : {};
+		// Check if data exists before trying to decode
+		if (!storedData) {
+			console.debug('[getZPSObject] No ZPS data found in sessionStorage');
+			return {};
+		}
+
+		// Decode and parse the stored data
+		const decodedData = base64DecodeASCII(storedData);
+		console.debug('[getZPSObject] Decoded ZPS data:', decodedData);
+		return JSON.parse(decodedData);
 	} catch (e) {
 		console.error('[getZPSObject] Error retrieving ZPS data:', e);
 		return {};
@@ -254,15 +264,11 @@ export function restoreSessionValues() {
  * @returns {void}
  */
 export function saveSessionValues(paymentConfig) {
-	console.trace(`[saveSessionValues] Saving session values called`);
-	// Save credential fields
 	saveToSession(SESSION_KEYS.API_KEY, paymentConfig.apiKey);
 	saveToSession(SESSION_KEYS.USERNAME, paymentConfig.username);
 	saveToSession(SESSION_KEYS.PASSWORD, paymentConfig.password);
 	saveToSession(SESSION_KEYS.MERCHANT_CODE, paymentConfig.merchantCode);
-	// Mode
 	saveToSession(SESSION_KEYS.MODE, paymentConfig.mode);
-	// URL
 	saveToSession(SESSION_KEYS.SUBDOMAIN, paymentConfig.subdomain);
 	saveToSession(SESSION_KEYS.DOMAIN, paymentConfig.domain);
 	saveToSession(SESSION_KEYS.VERSION, paymentConfig.version);
@@ -281,33 +287,4 @@ export function saveSessionValues(paymentConfig) {
 		const option = $(this).data('option');
 		saveToSession(`demo_${option}`, $(this).prop('checked'));
 	});
-}
-
-/**
- * Setup event listeners for automatic session storage.
- * @returns {void}
- */
-export function setupSessionListeners() {
-	// Listen to payment method toggles
-	$('.payment-method-toggle').on('change', saveSessionValues);
-	console.log(
-		`[setupSessionListeners] Payment method toggles saved to session storage ${SESSION_KEYS.ALLOWBANKONEOFF}, ${SESSION_KEYS.ALLOWAPPLEPAY}, ${SESSION_KEYS.ALLOWGOOGLEPAY}, ${SESSION_KEYS.ALLOWSAVECARDINFO}, ${SESSION_KEYS.ALLOWPAYID}, ${SESSION_KEYS.ALLOWPAYTO}, ${SESSION_KEYS.ALLOWLATITUDEPAY}`
-	);
-	// Listen to mode changes
-	$('#modeSelect').on('change', saveSessionValues);
-	console.log(`[setupSessionListeners] Mode changes saved to session storage ${SESSION_KEYS.MODE}`);
-	// Listen to URL builder changes
-	$('#domainSelect, input[name="subdomain"], input[name="version"]').on(
-		'change',
-		saveSessionValues
-	);
-	console.log(
-		`[setupSessionListeners] URL builder changes saved to session storage ${SESSION_KEYS.DOMAIN}, ${SESSION_KEYS.SUBDOMAIN}, ${SESSION_KEYS.VERSION}`
-	);
-	// Listen to extended options
-	$('#sendEmailConfirmationToMerchant').on('change', saveSessionValues);
-	$('#sendEmailConfirmationToCustomer').on('change', saveSessionValues);
-	console.log(
-		`[setupSessionListeners] Extended options saved to session storage ${SESSION_KEYS.SENDEMAILCONFIRMATIONTOMERCHANT}, ${SESSION_KEYS.SENDEMAILCONFIRMATIONTOCUSTOMER}`
-	);
 }

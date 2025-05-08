@@ -16,7 +16,6 @@ module.exports = (_, argv) => {
 					use: [
 						MiniCssExtractPlugin.loader,
 						'css-loader',
-						// Removed postcss-loader to avoid the error
 					],
 				},
 			],

@@ -1,7 +1,4 @@
 node_modules
-dist
-build/css
-build/js
 coverage
 .cache
 .v1/

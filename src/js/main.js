@@ -9,9 +9,10 @@ import { initThemeToggle } from './theme.js';
 import { initUrlBuilder } from './urlBuilder.js';
 import { initExtendedOptions } from './extendedOptions.js';
 import { initPlaceholder, setupPlaceholderStyling } from './placeholders.js';
-import { restoreSessionValues, setupSessionListeners } from './session.js';
+import { restoreSessionValues } from './session.js';
+// import { setupSessionListeners } from './initListeners.js';
 import { updateCodePreview, updateMinHeightBasedOnMode } from './codePreview.js';
-import './applogger.js';
+import './appLogger.js';
 import {
 	initCredentialsListeners,
 	initPaymentMethodToggleListeners,
@@ -26,7 +27,9 @@ import {
 	initPaymentAmountListener,
 	initUserModeToggle,
 	initOverrideFeePayerToggle,
-} from './listener.js';
+	initUrlBuilderListeners,
+	initEmailConfirmationListeners,
+} from './initListeners.js';
 import { generateAndSetUuids } from './helpers.js';
 import { initFileInputListener } from './fileInput.js';
 import { generateRandomPaymentAmount } from './helpers.js';
@@ -46,6 +49,10 @@ export function initializeApp() {
 	initFileInputListener();
 	initOptionTooltips();
 
+	// Initialize new listeners that were moved from session.js
+	initUrlBuilderListeners();
+	initEmailConfirmationListeners();
+
 	initThemeToggle();
 	initUrlBuilder(true);
 	initExtendedOptions(false);
@@ -54,17 +61,15 @@ export function initializeApp() {
 
 	initPaymentAmountListener();
 	initUserModeToggle();
-	initOverrideFeePayerToggle(); //
+	initOverrideFeePayerToggle();
 
+	// Restore session values
 	restoreSessionValues();
-	setupSessionListeners();
+	// setupSessionListeners() is deprecated - all listeners now in initListeners.js
 
 	$('#paymentAmountInput').val($('#paymentAmountInput').val() || generateRandomPaymentAmount());
 	updateMinHeightBasedOnMode();
 	generateAndSetUuids();
-	// if (!$('#customerReferenceInput').val()) {
-	// 	generateAndSetUuids();
-	// }
 	updateCodePreview();
 }
 

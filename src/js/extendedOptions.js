@@ -36,9 +36,6 @@ export function initExtendedOptions() {
 
 	// Generate UUIDs for customer reference and merchant unique payment ID
 	generateAndSetUuids();
-	console.log(
-		`[initExtendedOptions] Generated UUIDs: customerReference=${extendedOptions.customerReference}, merchantUniquePaymentId=${extendedOptions.merchantUniquePaymentId}`
-	);
 	// Maps HTML input IDs to their corresponding property names in the extendedOptions object
 	const formFieldToOptionMapping = {
 		redirectUrlInput: 'redirectUrl',
