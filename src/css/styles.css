@@ -57,6 +57,8 @@ body {
 	/* flex-direction: column; */
 	min-height: 100vh;
 	margin: 0;
+	padding-top: 32px;
+	padding-bottom: 32px;
 }
 
 main {
@@ -69,6 +71,12 @@ main {
 	height: 32px;
 	display: flex;
 	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	z-index: 1030;
 }
 
 .footer {
@@ -77,6 +85,12 @@ main {
 	height: 32px;
 	display: flex;
 	align-items: center;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	z-index: 1030;
 }
 
 .card {
@@ -189,12 +203,6 @@ pre {
 
 .header .fs-4 {
 	font-size: 1rem !important;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-}
-.header {
-	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-	transition: box-shadow 0.3s ease;
 }
 
 .footer {
@@ -350,16 +358,6 @@ pre {
 	flex: 1 1 auto;
 	display: flex;
 	flex-direction: column;
-	background: var(--card-bg);
-	border-radius: 0.5rem;
-	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-	transition:
-		transform 0.2s ease,
-		box-shadow 0.3s ease;
-}
-.row.equal-height .card:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
 }
 
 .row.equal-height .card-body {
@@ -367,7 +365,6 @@ pre {
 	display: flex;
 	flex-direction: column;
 }
-
 .form-control,
 .form-select,
 .input-group-text {
@@ -995,4 +992,14 @@ hr {
 	color: white;
 	/* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Keep if not using slider */
 	border-color: var(--primary-color); /* Keep if not using slider */
+}
+
+.modal-header button.btn {
+	background-color: red !important;
+	color: white !important;
+	border: 1px solid darkred !important;
+	margin-left: auto !important;
+	margin-right: 0 !important;
+	padding: 0.25rem 0.5rem !important;
+	border-radius: 0.25rem !important;
 }

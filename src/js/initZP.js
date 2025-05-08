@@ -1,4 +1,4 @@
-// F:\_Zenith_Github\ZP-JQ-QD\src\js\modified\initZP.js
+// F:\_Zenith_Github\ZP-JQ-QD\src\js\initZP.js
 
 import { $ } from './globals.js';
 import { generateFingerprint } from './hash.js';
@@ -12,12 +12,14 @@ import { parseCodePreviewConfig } from './codePreview.js';
  * @returns {void}
  */
 export async function initializeZenPayPlugin() {
+
 	try {
 		const parsedConfig = parseCodePreviewConfig();
 		console.log('[initializeZenPayPlugin] Parsed config from code preview:', parsedConfig);
 
 		const username = $('#usernameInput').val().trim();
 		const password = $('#passwordInput').val().trim();
+
 		if (!username || !password) {
 			showError('Validation Error', 'Username and password are required for initialization.');
 			return;
@@ -26,13 +28,16 @@ export async function initializeZenPayPlugin() {
 		const timestamp = generateCurrentDatetime();
 		parsedConfig.timestamp = timestamp;
 
-		console.log(
-			`[initializeZenPayPlugin] Generating fingerprint with API Key: ${parsedConfig.apiKey}, Timestamp: ${timestamp}, Mode: ${parsedConfig.mode}, Payment Amount: ${parsedConfig.paymentAmount}, Merchant Unique Payment ID: ${parsedConfig.merchantUniquePaymentId}, Username: ${username}, Password: ${password}`
-		);
+		if (!parsedConfig.apiKey || parsedConfig.apiKey === '<<API-KEY>>') {
+			console.error('[initializeZenPayPlugin] Invalid API Key for fingerprint generation');
+			showError('Validation Error', 'A valid API Key is required for initialization.');
+			return;
+		}
+
 		const fingerprint = await generateFingerprint({
 			apiKey: parsedConfig.apiKey,
 			username: username,
-			password: password,
+			password: password, 
 			mode: String(parsedConfig.mode),
 			paymentAmount: String(parsedConfig.paymentAmount),
 			merchantUniquePaymentId: parsedConfig.merchantUniquePaymentId,
@@ -43,24 +48,25 @@ export async function initializeZenPayPlugin() {
 			console.error('[initializeZenPayPlugin] Failed to generate fingerprint');
 			showError(
 				'Validation Error',
-				'[initializeZenPayPlugin] Failed to generate security fingerprint. Please check API credentials.'
+				'Failed to generate security fingerprint. Please check API credentials.'
 			);
 			return;
 		}
 
+		console.log(`[initializeZenPayPlugin] Using fingerprint: ${fingerprint}`);
 		parsedConfig.fingerprint = fingerprint;
-
 		const minHeightFromUI = $('#minHeightInput').val() ? $('#minHeightInput').val().trim() : '';
-		parsedConfig.minHeight = minHeightFromUI;
+        parsedConfig.minHeight = minHeightFromUI;
+
 		const sessionConfig = { ...parsedConfig };
 		sessionConfig.username = username;
 		sessionConfig.password = password;
 
 		saveSessionValues(sessionConfig);
 		const payment = $.zpPayment(parsedConfig);
-		console.log('[initializeZenPayPlugin] 👇 ZP Payload 👇 ');
+		console.log('[initializeZenPayPlugin] 👇 ZP Payload 👇');
 		console.log(parsedConfig);
-		console.log('[initializeZenPayPlugin] 👇 Payment object initialized 👇 ');
+		console.log('[initializeZenPayPlugin] 👇 Payment object initialized 👇');
 		console.log(payment.options);
 		payment.open();
 	} catch (err) {

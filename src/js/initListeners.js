@@ -30,18 +30,7 @@ export function updateActionButtonsState() {
 	const downloadButton = $('#downloadDemoBtn');
 	const initializeButton = $('#initializePlugin');
 
-	console.log('[updateActionButtonsState] Checking credentials:', {
-		apiKey,
-		username,
-		password,
-		merchantCode,
-		downloadButtonExists: downloadButton.length > 0,
-		initButtonExists: initializeButton.length > 0,
-	});
-
 	if (apiKey && username && password && merchantCode) {
-		console.log('[updateActionButtonsState] All credentials present, enabling buttons');
-
 		// Enable Download Button
 		downloadButton.removeClass('btn-disabled'); // Use class for visual state
 		downloadButton.attr('title', 'Download Standalone Demo');
@@ -50,8 +39,6 @@ export function updateActionButtonsState() {
 		initializeButton.prop('disabled', false);
 		initializeButton.attr('title', 'Initialize Plugin');
 	} else {
-		console.log('[updateActionButtonsState] Missing credentials, disabling buttons');
-
 		// "Disable" Download Button (visually, remains clickable)
 		downloadButton.addClass('btn-disabled');
 		downloadButton.attr(
@@ -123,10 +110,21 @@ export function initUiMinHeightListener() {
 
 /**
  * Initialize listener for payment amount input to update the code preview.
+ * Also formats the payment amount to two decimal places.
  * @returns {void}
  */
 export function initPaymentAmountListener() {
-	$('#paymentAmountInput').on('blur', updateCodePreview);
+	$('#paymentAmountInput').on('blur', function () {
+		let value = $(this).val().trim();
+		if (value) {
+			const numValue = parseFloat(value);
+			if (!isNaN(numValue)) {
+				const formattedValue = numValue.toFixed(2);
+				$(this).val(formattedValue);
+			}
+		}
+		updateCodePreview();
+	});
 }
 
 /**
