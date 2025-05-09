@@ -18,10 +18,7 @@
 }
 
 .badge {
-	font-family:
-		system-ui,
-		-apple-system,
-		sans-serif;
+	font-family: system-ui, -apple-system, sans-serif;
 	font-size: 0.8rem;
 	padding: 0.35em 0.65em;
 }
@@ -66,7 +63,6 @@
 	background-color: rgba(var(--bs-secondary-rgb), 0.2);
 }
 
-/* Table header styles */
 #errorCodesModal thead th,
 #parametersModal thead th,
 #returnParametersModal thead th {
@@ -78,7 +74,6 @@
 	color: var(--secondary-color);
 }
 
-/* Table cell styles */
 #errorCodesModal tbody td,
 #parametersModal tbody td,
 #returnParametersModal tbody td {
@@ -86,7 +81,6 @@
 	padding: 0.75rem 0.5rem;
 }
 
-/* Form styles */
 #errorCodesModal .form-floating input:focus,
 #errorCodesModal .form-floating select:focus,
 #parametersModal .form-floating input:focus,
@@ -96,12 +90,10 @@
 	border-color: var(--primary-color);
 }
 
-/* Error Codes specific styles */
 #errorCodesModal .badge {
 	font-family: monospace;
 }
 
-/* Parameters table specific styles */
 .parameters-table tr,
 .return-parameters-table tr {
 	cursor: pointer;
@@ -120,7 +112,6 @@
 	font-size: 0.9rem;
 }
 
-/* Detail row styles */
 .param-details {
 	background-color: rgba(var(--bs-primary-rgb), 0.03);
 }
@@ -133,7 +124,6 @@
 	padding: 1rem;
 }
 
-/* Highlight & animation */
 .highlight-row {
 	background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
 	animation: highlight-pulse 2s ease-in-out;
@@ -148,7 +138,6 @@
 	}
 }
 
-/* Icon transitions */
 .expand-icon {
 	transition: transform 0.2s ease;
 }
@@ -157,7 +146,6 @@
 	transform: rotate(90deg);
 }
 
-/* Badge styles */
 .type-badge {
 	font-size: 0.75rem !important;
 	text-transform: uppercase;
@@ -169,12 +157,10 @@
 	margin-bottom: 0.25rem;
 }
 
-/* Legend styles */
 .param-legend h6 {
 	color: var(--secondary-color);
 }
 
-/* Related params */
 .related-params {
 	display: flex;
 	flex-wrap: wrap;
@@ -192,7 +178,6 @@
 	color: white !important;
 }
 
-/* Return Parameters specific styles */
 .return-parameters-table .category-header {
 	background-color: rgba(var(--bs-secondary-rgb), 0.05);
 	font-size: 0.9rem;
@@ -218,7 +203,6 @@
 	margin-bottom: 0;
 }
 
-/* Responsive fixes */
 @media (max-width: 768px) {
 	#errorCodesModal .row > div,
 	#parametersModal .row > div,

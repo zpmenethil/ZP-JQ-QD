@@ -18,9 +18,17 @@ import { generateCurrentDatetime, debounce } from './helpers.js';
  * @param {string} config.fingerprint - Hash fingerprint for the transaction.
  * @returns {string} Formatted code snippet as a string.
  */
-function buildCodeSnippet({ apiKey, paymentAmount, mode, timestamp, merchantUniquePaymentId, fingerprint }) {
+function buildCodeSnippet({
+	apiKey,
+	paymentAmount,
+	mode,
+	timestamp,
+	merchantUniquePaymentId,
+	fingerprint,
+}) {
 	const url = $('#urlPreview').val().trim();
-	const merchantCode = $('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode;
+	const merchantCode =
+		$('#merchantCodeInput').val().trim() || DEFAULT_VALUES.credentials.merchantCode;
 
 	// Get customer values without fallbacks
 	const customerReference = $('#customerReferenceInput').val().trim();
@@ -39,7 +47,7 @@ function buildCodeSnippet({ apiKey, paymentAmount, mode, timestamp, merchantUniq
 		`paymentAmount: ${paymentAmount}`,
 		`merchantUniquePaymentId: "${merchantUniquePaymentId}"`,
 		`mode: ${mode}`,
-		`redirectUrl: "${redirectUrl}"`
+		`redirectUrl: "${redirectUrl}"`,
 	];
 
 	// Only add customer fields if they have values
@@ -118,7 +126,15 @@ async function _updateCodePreviewInternal() {
 	const mode = $('#modeSelect').val();
 	let fingerprint = '';
 	try {
-		if (apiKey && username && password && paymentAmount && mode && timestamp && merchantUniquePaymentId) {
+		if (
+			apiKey &&
+			username &&
+			password &&
+			paymentAmount &&
+			mode &&
+			timestamp &&
+			merchantUniquePaymentId
+		) {
 			fingerprint = await generateFingerprint({
 				apiKey,
 				username,
@@ -126,7 +142,7 @@ async function _updateCodePreviewInternal() {
 				mode,
 				paymentAmount,
 				merchantUniquePaymentId,
-				timestamp
+				timestamp,
 			});
 		}
 	} catch (error) {
@@ -139,7 +155,7 @@ async function _updateCodePreviewInternal() {
 		mode,
 		timestamp,
 		merchantUniquePaymentId,
-		fingerprint
+		fingerprint,
 	});
 
 	// Update the code preview and re-highlight safely
@@ -191,7 +207,7 @@ export function parseCodePreviewConfig() {
 		const configLines = configText.split(',\n');
 		const parsedConfig = {};
 
-		configLines.forEach(line => {
+		configLines.forEach((line) => {
 			const match = line.trim().match(/^([^:]+):\s*(.+)$/);
 			if (!match) return;
 

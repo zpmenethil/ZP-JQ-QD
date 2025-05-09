@@ -50,11 +50,9 @@
 body {
 	background-color: var(--background-color);
 	color: var(--text-color);
-	transition:
-		background-color 0.3s ease,
-		color 0.3s ease;
+	transition: background-color 0.3s ease, color 0.3s ease;
 	display: flex;
-	/* flex-direction: column; */
+
 	min-height: 100vh;
 	margin: 0;
 	padding-top: 32px;
@@ -96,9 +94,7 @@ main {
 .card {
 	background-color: var(--card-bg);
 	border-color: var(--border-color);
-	transition:
-		background-color 0.3s ease,
-		border-color 0.3s ease;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card-header {
@@ -257,10 +253,7 @@ pre {
 .btn-outline-secondary {
 	color: var(--icon-color);
 	border-color: var(--border-color);
-	transition:
-		background-color 0.3s ease,
-		color 0.3s ease,
-		transform 0.2s ease;
+	transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 .btn-outline-secondary:hover {
 	background-color: var(--payment-method-hover);
@@ -513,7 +506,6 @@ pre {
 	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* Option Chips Styling */
 .options-container {
 	padding: 0.25rem 0;
 }
@@ -590,7 +582,6 @@ pre {
 	}
 }
 
-/* Card title and spacing adjustments */
 .card-title {
 	margin-bottom: 1rem;
 	font-size: 1.1rem;
@@ -699,7 +690,6 @@ hr {
 	font-weight: bold;
 }
 
-/* Dark theme */
 [data-bs-theme='dark'] .hljs {
 	color: #e6e6e6;
 	background: #2b3035;
@@ -765,38 +755,28 @@ hr {
 	color: #9e9e9e;
 }
 
-/* Ensure code preview has proper padding */
 #codePreview {
 	padding: 1rem;
 }
 
-/* Main tabs styling */
 #mainConfigTabs .nav-link {
 	font-size: 0.75rem;
 	padding: 0.35rem 0.5rem;
-	transition:
-		color 0.3s ease,
-		transform 0.2s ease;
+	transition: color 0.3s ease, transform 0.2s ease;
 }
 #mainConfigTabs .nav-link:hover {
 	color: var(--primary-color);
 	transform: translateY(-2px);
 }
 #mainConfigTabs .nav-link.active {
-	background-image: linear-gradient(
-		45deg,
-		var(--primary-gradient-start),
-		var(--primary-gradient-end)
-	);
+	background-image: linear-gradient(45deg, var(--primary-gradient-start), var(--primary-gradient-end));
 	color: #fff;
 }
 
-/* Fix placeholder spacing in callback field */
 .form-floating input::placeholder {
 	opacity: 0.5;
 }
 
-/* Dark mode adjustments for floating labels */
 [data-bs-theme='dark'] .form-floating > label {
 	color: var(--secondary-color);
 }
@@ -805,7 +785,6 @@ hr {
 	color: rgba(255, 255, 255, 0.4);
 }
 
-/* Ensure the floating labels work properly with the theme toggle */
 .form-floating > .form-control:focus,
 .form-floating > .form-control:not(:placeholder-shown) {
 	padding-top: 1.25rem;
@@ -818,12 +797,11 @@ hr {
 	transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
 
-/* Adjust the select element in floating labels */
 .form-floating > .form-select {
 	padding-top: 1.25rem;
 	padding-bottom: 0.25rem;
 }
-/* Dark mode adjustments for floating labels */
+
 [data-bs-theme='dark'] .form-floating > label {
 	color: var(--secondary-color);
 }
@@ -832,7 +810,6 @@ hr {
 	color: rgba(255, 255, 255, 0.4);
 }
 
-/* Fix for select elements in input groups */
 .form-floating > .input-group > .form-select {
 	padding-left: 0.75rem;
 }
@@ -856,11 +833,10 @@ hr {
 	padding: 0.25rem 0.5rem;
 }
 
-/* Extended Options Styling */
 .extended-options-fields {
 	transition: opacity 0.3s ease;
 }
-/* Add these styles for floating labels */
+
 .form-floating > .form-control,
 .form-floating > .form-select {
 	height: calc(2.8rem + 2px);
@@ -869,22 +845,19 @@ hr {
 
 .form-floating > label {
 	color: var(--secondary-color);
-	transition:
-		opacity 0.1s ease-in-out,
-		transform 0.1s ease-in-out;
+	transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
 }
-/* Ensure proper spacing between placeholder and label */
+
 .form-floating > .form-control:not(:placeholder-shown) {
 	padding-top: 1.25rem;
 	padding-bottom: 0.25rem;
 }
-/* Ensure proper tooltip display for payment mode info */
+
 .payment-mode-info .tooltip-inner {
 	max-width: 300px;
 	text-align: left;
 }
 
-/* Class to make placeholder fields behave like filled fields */
 .form-floating > .form-control.placeholder-as-value {
 	padding-top: 1.25rem;
 	padding-bottom: 0.25rem;
@@ -895,7 +868,6 @@ hr {
 	transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
 
-/* Using your CSS variables */
 .form-floating > .form-control.placeholder-as-value::placeholder {
 	color: var(--secondary-color);
 	opacity: 0.7;
@@ -906,7 +878,7 @@ hr {
 	background-color: var(--disabled-bg);
 	border-color: var(--border-color);
 	color: var(--disabled-text);
-	cursor: not-allowed; /* Indicate non-interactive state */
+	cursor: not-allowed;
 }
 
 [data-bs-theme='dark'] .form-floating > .form-control.placeholder-as-value::placeholder {
@@ -949,49 +921,43 @@ hr {
 	-moz-appearance: textfield;
 	appearance: textfield;
 }
-/* Segmented Button Style */
-/* Add to your custom CSS file */
+
 .segmented-buttons {
 	display: flex;
-	/* flex-wrap: wrap; /* OLD: Caused wrapping */
-	flex-wrap: nowrap; /* NEW: Forces buttons onto a single line */
-	gap: 0.25rem; /* Keeps the small space between buttons */
-	position: relative; /* Added for the upcoming sliding effect */
-	border-radius: 6px; /* Optional: if you want the whole group to have rounded corners */
-	/* background-color: var(--option-chip-bg); /* Optional: Background for the track if using sliding effect */
+
+	flex-wrap: nowrap;
+	gap: 0.25rem;
+	position: relative;
+	border-radius: 6px;
 }
 
 .segmented-buttons .option-chip {
-	flex-grow: 1; /* Each chip will grow equally */
-	flex-shrink: 1; /* Each chip can shrink if needed */
-	flex-basis: 0; /* Start with a basis of 0, space distributed by flex-grow */
-	/* min-width: fit-content; /* REMOVED: Could prevent equal sizing or cause overflow with nowrap */
-	min-width: 0; /* ADDED: Allows chips to shrink smaller than their content if necessary */
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+
+	min-width: 0;
 	text-align: center;
-	position: relative; /* Added for z-index if using sliding effect */
-	z-index: 2; /* Ensures labels are above the slider */
+	position: relative;
+	z-index: 2;
 }
 .segmented-buttons .option-label {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%; /* Label takes full width of its chip */
-	padding: 0.4rem 0.5rem; /* Reduced padding */
-	font-size: 0.8rem; /* Reduced font size */
+	width: 100%;
+	padding: 0.4rem 0.5rem;
+	font-size: 0.8rem;
 	font-weight: 500;
-	border-radius: 6px; /* This will be for individual labels if not using a slider */
+	border-radius: 6px;
 	text-align: center;
 	transition: all 0.15s ease;
-	/* border: 1px solid var(--border-color); /* Keep if not using slider, remove if using slider */
-	/* background-color: var(--option-chip-bg); /* Keep if not using slider, remove if using slider */
 }
 
-/* Original active state - will be modified for sliding effect */
 .segmented-buttons .option-toggle:checked + .option-label {
 	background-color: var(--primary-color);
 	color: white;
-	/* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Keep if not using slider */
-	border-color: var(--primary-color); /* Keep if not using slider */
+	border-color: var(--primary-color);
 }
 
 .modal-header button.btn {

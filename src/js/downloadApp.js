@@ -14,11 +14,7 @@ export function downloadStandaloneDemo() {
 		const merchantCode = $('#merchantCodeInput').val() || DEFAULT_VALUES.credentials.merchantCode;
 		const gateway = $('#urlPreview').val();
 		const mode = $('#modeSelect').val();
-
-		// Get current code snippet
 		const codeSnippet = $('#codePreview').text();
-
-		// Parse URL components
 		let subdomain = 'payuat';
 		let domain = 'travelpay';
 		let version = 'v5';
@@ -38,34 +34,14 @@ export function downloadStandaloneDemo() {
 			console.error('Error parsing URL:', parseError);
 		}
 
-		// Map mode to descriptive text
-		// const getModeText = modeValue => {
-		// 	switch (parseInt(modeValue)) {
-		// 		case 0:
-		// 			return 'Mode 0: Make Payment';
-		// 		case 1:
-		// 			return 'Mode 1: Tokenize Card';
-		// 		case 2:
-		// 			return 'Mode 2: Custom Payment';
-		// 		case 3:
-		// 			return 'Mode 3: Preauth';
-		// 		default:
-		// 			return `Mode ${modeValue}: Unknown Mode`;
-		// 	}
-		// };
-
-		// const modeText = getModeText(mode);
-
-		// Fetch the template file using a relative path
 		fetch('./Template.html')
-			.then((response) => {
+			.then(response => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
 				return response.text();
 			})
-			.then((templateHtml) => {
-				// Create injection script
+			.then(templateHtml => {
 				const injectScript = `
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -125,15 +101,9 @@ export function downloadStandaloneDemo() {
         });
         </script>
         `;
-
-				// Insert script before closing body tag
 				const modifiedTemplate = templateHtml.replace('</body>', `${injectScript}\n</body>`);
-
-				// Create downloadable blob
 				const blob = new Blob([modifiedTemplate], { type: 'text/html' });
 				const url = URL.createObjectURL(blob);
-
-				// Trigger download
 				const link = document.createElement('a');
 				link.href = url;
 				link.download = `ZenPay_Tester_${merchantCode || 'Demo'}.html`;
@@ -141,10 +111,8 @@ export function downloadStandaloneDemo() {
 				link.click();
 				document.body.removeChild(link);
 				URL.revokeObjectURL(url);
-
-				console.log('Template fetched and demo prepared for download.');
 			})
-			.catch((error) => {
+			.catch(error => {
 				console.error('Error fetching or processing template:', error);
 			});
 	} catch (error) {
@@ -155,18 +123,11 @@ export function downloadStandaloneDemo() {
 export function initDownloadFunctionality(buttonSelector) {
 	const button = $(buttonSelector);
 	if (button.length) {
-		// Initial state is handled by initCredentialsListeners calling updateActionButtonsState
-		// which will add/remove 'btn-disabled' class and set the title.
-
 		button.on('click', function () {
-			// Changed to a function to access 'this'
 			if ($(this).hasClass('btn-disabled')) {
-				showError(
-					'Missing Credentials',
-					'Please fill in API Key, Username, Password, and Merchant Code to download the demo.'
-				);
+				showError('Missing Credentials', 'Please fill in API Key, Username, Password, and Merchant Code to download the demo.');
 			} else {
-				downloadStandaloneDemo(); // Call the original download function
+				downloadStandaloneDemo();
 			}
 		});
 	} else {

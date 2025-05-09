@@ -46,7 +46,7 @@ export function updateActionButtonsState() {
 			'Please fill in API Key, Username, Password, and Merchant Code to enable download.'
 		);
 
-		 // "Disable" Initialize Plugin Button (visually, remains clickable)
+		// "Disable" Initialize Plugin Button (visually, remains clickable)
 		initializeButton.addClass('btn-disabled');
 		initializeButton.attr(
 			'title',
@@ -117,7 +117,7 @@ export function initPaymentAmountListener() {
 	$('#paymentAmountInput').on('blur', function () {
 		const formatted = parseFloat($(this).val() || 0).toFixed(2);
 		$(this).val(formatted);
-        console.log(`[initPaymentAmountListener] Payment amount changed to: ${formatted}`);
+		console.log(`[initPaymentAmountListener] Payment amount changed to: ${formatted}`);
 		updateCodePreview();
 	});
 }

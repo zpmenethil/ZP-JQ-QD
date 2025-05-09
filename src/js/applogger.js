@@ -2,7 +2,6 @@
 export const DEBUG_MODE = true;
 export const TRACE_MODE = false;
 
-// Store original console methods
 const originalConsole = {
 	log: window.console.log,
 	info: window.console.info,

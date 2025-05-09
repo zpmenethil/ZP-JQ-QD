@@ -18,54 +18,32 @@
         "gulp"
     ],
     "scripts": {
-        "build:js": "webpack --config webpack.js.config.js",
-        "build:js:watch": "webpack --config webpack.js.build.watch.js --watch",
-        "build:css": "webpack --config webpack.css.config.js",
+        "clean:pre": "rimraf ./build",
+        "clean:post": "rimraf ./build/js/styles.js && rimraf ./build/js/styles.min.js &&rimraf ./build/css/temp.js",
+        "build:assets:dev": "webpack --config webpack.config.dev.js --mode=development && npm run clean:post",
+        "build:assets:prod": "webpack --config webpack.config.prod.js --mode=production && npm run clean:post",
         "build:html": "gulp --gulpfile gulpfile.js",
-        "build:html:watch": "gulp --gulpfile gulpfile.html.watch.js --watch",
+        "dev": "npm run clean:pre && npm run build:assets:dev && npm run build:html && npm run clean:post",
+        "build": "npm run clean:pre && npm run build:assets:prod && npm run build:html && npm run clean:post",
         "lint": "eslint . --fix",
-        "clean": "rimraf ./build",
-        "pretty": "npx prettier --write .",
-        "format:build": "npx prettier --write build --ignore-path NUL",
-        "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html && npm run lint && npm run pretty && npm run format:build",
+        "pretty": "prettier --write .",
+        "format:build": "prettier --write build --ignore-path NUL",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
-    "devDependencies": {
-        "@babel/core": "^7.23.2",
-        "@babel/preset-env": "^7.23.2",
-        "babel-loader": "^10.0.0",
-        "browser-sync": "^3.0.4",
+    "dependencies": {
+        "autoprefixer": "^10.4.21",
         "css-loader": "^7.1.2",
-        "css-minimizer-webpack-plugin": "^7.0.2",
-        "eslint-webpack-plugin": "^5.0.1",
-        "file-include-webpack-plugin": "^1.3.9",
-        "globals": "^16.0.0",
+        "cssnano": "^7.0.7",
         "gulp": "^5.0.0",
         "gulp-file-include": "^2.3.0",
         "gulp-plumber": "^1.2.1",
-        "gulp-rename": "^2.0.0",
-        "html-loader": "^5.1.0",
-        "html-webpack-plugin": "^5.6.3",
-        "jest-environment-jsdom": "^29.7.0",
         "mini-css-extract-plugin": "^2.9.2",
-        "rimraf": "^6.0.1",
-        "terser-webpack-plugin": "^5.3.14",
-        "webpack": "^5.99.7",
-        "webpack-bundle-analyzer": "^4.10.2",
-        "webpack-cli": "^6.0.1",
-        "webpack-dev-server": "^5.2.1",
-        "webpack-merge": "^5.10.0"
-    },
-    "dependencies": {
-        "@eslint/css": "^0.7.0",
-        "@eslint/js": "^9.26.0",
-        "@eslint/json": "^0.12.0",
-        "@eslint/markdown": "^6.4.0",
-        "autoprefixer": "^10.4.21",
-        "eslint": "^9.26.0",
         "postcss-loader": "^8.1.1",
-        "sass": "^1.87.0",
-        "sass-loader": "^16.0.5",
-        "typescript-eslint": "^8.31.1"
+        "postcss-preset-env": "^10.1.6",
+        "rimraf": "^6.0.1",
+        "webpack": "^5.99.8"
+    },
+    "devDependencies": {
+        "webpack-cli": "^6.0.1"
     }
 }

@@ -40,12 +40,15 @@ export async function initializeZenPayPlugin() {
 			mode: String(parsedConfig.mode),
 			paymentAmount: paymentAmount,
 			merchantUniquePaymentId: parsedConfig.merchantUniquePaymentId,
-			timestamp: timestamp
+			timestamp: timestamp,
 		});
 
 		if (!fingerprint) {
 			console.error('[initializeZenPayPlugin] Failed to generate fingerprint');
-			showError('Validation Error', 'Failed to generate security fingerprint. Please check API credentials.');
+			showError(
+				'Validation Error',
+				'Failed to generate security fingerprint. Please check API credentials.'
+			);
 			return;
 		}
 

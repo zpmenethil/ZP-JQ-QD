@@ -13,7 +13,7 @@ import { base64EncodeASCII, base64DecodeASCII } from './helpers.js';
  */
 export const STORAGE_TYPE = {
 	SESSION: 'session',
-	LOCAL: 'local'
+	LOCAL: 'local',
 };
 
 /**
@@ -23,7 +23,7 @@ export const STORAGE_TYPE = {
 export const ENCODING_TYPE = {
 	NONE: 'none',
 	JSON: 'json',
-	BASE64: 'base64'
+	BASE64: 'base64',
 };
 
 /**
@@ -159,7 +159,9 @@ export function restoreSessionValues() {
 	}
 
 	if ($('#merchantCodeInput').length) {
-		$('#merchantCodeInput').val(getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION));
+		$('#merchantCodeInput').val(
+			getFromSession(SESSION_KEYS.MERCHANT_CODE, '', STORAGE_TYPE.SESSION)
+		);
 	}
 
 	if ($('#modeSelect').length) {

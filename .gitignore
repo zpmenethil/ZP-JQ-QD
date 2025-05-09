@@ -56,7 +56,8 @@ tests/
 CCEP.json
 babel.config.js
 eslint.config.js
-gulpfile*.*
-**webpack**
-**gulpfile**
-webpack*.*
+jest.config.js
+repomix.config.json
+public_/
+gulpfile.html.watch.js
+build/

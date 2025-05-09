@@ -2,8 +2,9 @@
     <!-- Optional: Info Panel or Additional Guidance -->
     <div class="alert alert-info small-text">
         <i class="bi bi-info-circle-fill me-2"></i>
-        <strong>Note:</strong> In production, never hard-code sensitive credentials (API key, password,
-        etc.). Use a secure server-side integration or environment variables to manage secrets safely.
+        <strong>Note:</strong>
+        In production, never hard-code credentials (API keys, passwords); use environment variables or server-side
+        integrations instead.
     </div>
 
     <!-- Row: Form Inputs + Action -->
@@ -12,7 +13,10 @@
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Plugin Configuration</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear-fill me-2"></i>
+                        Plugin Configuration
+                    </h5>
                     <button class="browse-btn-icon" id="browseConfigBtn" title="Browse Configuration"
                         aria-label="Browse configuration" data-bs-toggle="tooltip" data-bs-placement="top">
                         <i class="bi bi-folder2-open"></i>
@@ -65,27 +69,31 @@
                             <button class="nav-link active" id="credentials-tab" data-bs-toggle="tab"
                                 data-bs-target="#credentials" type="button" role="tab" aria-controls="credentials"
                                 aria-selected="true">
-                                <i class="bi bi-key me-1"></i>Credentials
+                                <i class="bi bi-key me-1"></i>
+                                Credentials
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="extended-tab" data-bs-toggle="tab" data-bs-target="#extended"
                                 type="button" role="tab" aria-controls="extended" aria-selected="false">
-                                <i class="bi bi-gear-wide-connected me-1"></i>Extended
+                                <i class="bi bi-gear-wide-connected me-1"></i>
+                                Extended
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="payment-methods-tab" data-bs-toggle="tab"
                                 data-bs-target="#payment-methods" type="button" role="tab"
                                 aria-controls="payment-methods" aria-selected="false">
-                                <i class="bi bi-credit-card me-1"></i>Payment
+                                <i class="bi bi-credit-card me-1"></i>
+                                Payment
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="additional-options-tab" data-bs-toggle="tab"
                                 data-bs-target="#additional-options" type="button" role="tab"
                                 aria-controls="additional-options" aria-selected="false">
-                                <i class="bi bi-sliders me-1"></i>Options
+                                <i class="bi bi-sliders me-1"></i>
+                                Options
                             </button>
                         </li>
                     </ul>
@@ -247,7 +255,8 @@
                         <div class="tab-pane fade" id="payment-methods" role="tabpanel"
                             aria-labelledby="payment-methods-tab">
                             <h6 class="mb-2 small">
-                                <i class="bi bi-credit-card-2-front me-1"></i>Payment Methods
+                                <i class="bi bi-credit-card-2-front me-1"></i>
+                                Payment Methods
                             </h6>
 
                             <div class="payment-method-grid">
@@ -380,7 +389,10 @@
                                     <!-- Notifications (col 1) -->
                                     <div class="col-md-6">
                                         <div class="options-section">
-                                            <h6 class="mb-2 small"><i class="bi bi-bell me-1"></i>Notifications</h6>
+                                            <h6 class="mb-2 small">
+                                                <i class="bi bi-bell me-1"></i>
+                                                Notifications
+                                            </h6>
                                             <div class="payment-method-grid">
                                                 <!-- Send Email to Customer -->
                                                 <div class="payment-method-card"
@@ -428,7 +440,10 @@
                                     <!-- UI Options (col 2) -->
                                     <div class="col-md-6">
                                         <div class="options-section">
-                                            <h6 class="mb-2 small"><i class="bi bi-display me-1"></i>UI Options</h6>
+                                            <h6 class="mb-2 small">
+                                                <i class="bi bi-display me-1"></i>
+                                                UI Options
+                                            </h6>
                                             <div class="payment-method-grid">
                                                 <!-- Hide Terms and Conditions -->
                                                 <div class="payment-method-card" data-option="hideTermsAndConditions"
@@ -474,7 +489,10 @@
                                     <!-- User Mode (col 1) -->
                                     <div class="col-md-6">
                                         <div class="options-section">
-                                            <h6 class="mb-2 small"><i class="bi bi-person me-1"></i>User Mode</h6>
+                                            <h6 class="mb-2 small">
+                                                <i class="bi bi-person me-1"></i>
+                                                User Mode
+                                            </h6>
                                             <div class="segmented-buttons" data-bs-toggle="tooltip"
                                                 data-bs-placement="top" title="Select user mode: Customer or Merchant">
                                                 <div class="segmented-buttons-slider"></div>
@@ -482,17 +500,15 @@
                                                     <input type="radio" class="option-toggle visually-hidden"
                                                         name="userMode" id="selectUserModeCustomer"
                                                         data-option="userMode" value="0" checked />
-                                                    <label for="selectUserModeCustomer" class="option-label">
-                                                        Customer
-                                                    </label>
+                                                    <label for="selectUserModeCustomer"
+                                                        class="option-label">Customer</label>
                                                 </div>
                                                 <div class="option-chip">
                                                     <input type="radio" class="option-toggle visually-hidden"
                                                         name="userMode" id="selectUserModeMerchant"
                                                         data-option="userMode" value="1" />
-                                                    <label for="selectUserModeMerchant" class="option-label">
-                                                        Merchant
-                                                    </label>
+                                                    <label for="selectUserModeMerchant"
+                                                        class="option-label">Merchant</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -502,7 +518,8 @@
                                     <div class="col-md-6">
                                         <div class="options-section">
                                             <h6 class="mb-2 small">
-                                                <i class="bi bi-currency-dollar me-1"></i>Override Fee Payer
+                                                <i class="bi bi-currency-dollar me-1"></i>
+                                                Override Fee Payer
                                             </h6>
                                             <div class="segmented-buttons" data-bs-toggle="tooltip"
                                                 data-bs-placement="top"
@@ -512,25 +529,22 @@
                                                     <input type="radio" class="option-toggle visually-hidden"
                                                         name="overrideFeePayer" id="overrideFeePayerDefault"
                                                         data-option="overrideFeePayer" value="0" checked />
-                                                    <label for="overrideFeePayerDefault" class="option-label">
-                                                        Default
-                                                    </label>
+                                                    <label for="overrideFeePayerDefault"
+                                                        class="option-label">Default</label>
                                                 </div>
                                                 <div class="option-chip">
                                                     <input type="radio" class="option-toggle visually-hidden"
                                                         name="overrideFeePayer" id="overrideFeePayerCustomer"
                                                         data-option="overrideFeePayer" value="1" />
-                                                    <label for="overrideFeePayerCustomer" class="option-label">
-                                                        Customer
-                                                    </label>
+                                                    <label for="overrideFeePayerCustomer"
+                                                        class="option-label">Customer</label>
                                                 </div>
                                                 <div class="option-chip">
                                                     <input type="radio" class="option-toggle visually-hidden"
                                                         name="overrideFeePayer" id="overrideFeePayerMerchant"
                                                         data-option="overrideFeePayer" value="2" />
-                                                    <label for="overrideFeePayerMerchant" class="option-label">
-                                                        Merchant
-                                                    </label>
+                                                    <label for="overrideFeePayerMerchant"
+                                                        class="option-label">Merchant</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -549,7 +563,8 @@
                                 <!-- Tokenization-specific options (only visible when mode is 1) -->
                                 <div id="tokenizationOptions" class="options-section d-none">
                                     <h6 class="mb-2 small">
-                                        <i class="bi bi-credit-card-2-front me-1"></i>Tokenization Options
+                                        <i class="bi bi-credit-card-2-front me-1"></i>
+                                        Tokenization Options
                                     </h6>
                                     <div class="payment-method-grid">
                                         <!-- Show Fee on Tokenising -->
@@ -576,15 +591,14 @@
                                             <input type="checkbox" class="payment-method-toggle visually-hidden"
                                                 id="showFailedPaymentFeeOnTokenising"
                                                 data-option="showFailedPaymentFeeOnTokenising" />
-                                            <label for="showFailedPaymentFeeOnTokenising"
-                                                class="payment-method-label"></label>
-                                            <div class="payment-method-icon">
-                                                <i class="bi bi-exclamation-triangle"></i>
-                                            </div>
-                                            <div class="payment-method-name">Show Failed Fee</div>
-                                            <div class="payment-method-status">
-                                                <i class="bi bi-check-circle-fill"></i>
-                                            </div>
+                                            <label for="showFailedPaymentFeeOnTokenising" class="payment-method-label">
+                                                <div class="payment-method-icon">
+                                                    <i class="bi bi-exclamation-triangle"></i>
+                                                </div>
+                                                <div class="payment-method-name">Show Failed Fee</div>
+                                                <div class="payment-method-status">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                </div>
                                             </label>
                                         </div>
                                     </div>
@@ -594,18 +608,13 @@
                     </div>
 
                     <hr />
-                    <!-- Wrapper for Bootstrap tooltip on disabled button
-                    <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
-                        title="">
-                        <button id="initializePlugin" class="btn btn-primary w-100" type="button">
-                            <i class="bi bi-play-fill me-2"></i>Initialize Plugin
-                        </button> -->
 
                     <div class="d-grid gap-2 mt-auto">
                         <button id="initializePlugin" class="btn btn-primary w-100" type="button"
                             data-bs-toggle="tooltip" data-bs-placement="top"
                             title="Please fill in API Key, Username, Password, and Merchant Code to initialize plugin.">
-                            <i class="bi bi-play-fill me-2"></i>Initialize Plugin
+                            <i class="bi bi-play-fill me-2"></i>
+                            Initialize Plugin
                         </button>
                     </div>
                 </div>
@@ -616,7 +625,10 @@
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-code-slash me-2"></i>Code Preview</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-code-slash me-2"></i>
+                        Code Preview
+                    </h5>
                     <div class="btn-group" role="group">
                         <button class="copy-btn-icon" id="copyCodeBtn" title="Copy Code to Clipboard"
                             aria-label="Copy code to clipboard" data-bs-toggle="tooltip" data-bs-placement="top">
