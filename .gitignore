@@ -54,3 +54,9 @@ tests/
 .scripts/
 .github/
 CCEP.json
+babel.config.js
+eslint.config.js
+gulpfile*.*
+**webpack**
+**gulpfile**
+webpack*.*
